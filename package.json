@@ -10,7 +10,8 @@
   ],
   "type": "module",
   "scripts": {
-    "test": "mocha",
+    "test": "npm run test:generate && mocha",
+    "test:generate": "node test/generate-tests.js",
     "start": "node index.js"
   },
   "bin": {
