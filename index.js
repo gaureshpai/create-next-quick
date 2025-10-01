@@ -91,8 +91,8 @@ import { createPages, createLayout } from './lib/templates.js';
         {
             type: "confirm",
             name: "useShadcn",
-            message: "Do you want to use Shadcn UI? (default: No)",
-            default: false
+            message: "Do you want to use Shadcn UI? (default: Yes)",
+            default: true
         }
     ]);
 

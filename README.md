@@ -40,7 +40,7 @@ When you run `npx create-next-quick`, you will be prompted to:
 6. **Enter the names of the pages you want to create (default: none)**
 7. **Choose a linter (default: none)**
 8. **Choose an ORM (default: none)**
-9. **Choose to use Shadcn UI (default: No)**
+9. **Choose to use Shadcn UI (default: Yes)**
 
 Example run:
 
@@ -58,7 +58,7 @@ npx create-next-quick
 ? Enter the names of the pages you want to create (comma-separated): home, about, contact
 ? Choose a linter (default: none): none
 ? Choose an ORM (default: none): prisma
-? Do you want to use Shadcn UI? No
+? Do you want to use Shadcn UI? Yes
 ```
 
 ## Commands
