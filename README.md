@@ -8,16 +8,17 @@
 
 ## Features
 
+- **CLI Argument for Project Name** — skip the project name prompt by passing the app name as a CLI argument.
 - **Package Manager Detection** — automatically detects installed package managers (`npm`, `yarn`, `pnpm`) and only prompts with available options.
 - **Next.js App Directory** — support for the new Next.js app directory.
 - **Custom Page Generation** — create multiple pages at once.
 - **Linter Support** — choose between no linter, ESLint, and Biome.
-- **Shadcn UI** — automatically install and configure Shadcn UI.
+- **Shadcn UI** — automatically installs and configures Shadcn UI with a default style and color.
 - **Clean Project Setup** — removes default favicon and clears public folder.
 - **Empty Default Page** — overwrites the default `page.tsx` or `index.tsx` with an empty template.
 - **Dynamic Metadata** — always overwrites the `layout.tsx` or `layout.jsx` with a minimal template.
 - **Conditional API Route Deletion** — deletes the default `api/hello.js` route if using the `src` directory and not the `app` directory.
-- **Flexible Project Naming** — allows using `.` to create the project in the current directory.
+- **Safe Project Creation** — checks if the current directory is empty when creating a project in the current directory (`.`) and prevents accidental overwrites.
 - **ORM Support** — choose between no ORM, Prisma, and Drizzle.
 
 ## Installation
@@ -30,7 +31,23 @@ npx create-next-quick
 
 ## 🛠 Usage
 
-When you run `npx create-next-quick`, you will be prompted to:
+You can run `npx create-next-quick` with or without a project name.
+
+### With a Project Name
+
+```bash
+npx create-next-quick my-app
+```
+
+This will skip the project name prompt and create a new directory named `my-app`.
+
+### Without a Project Name
+
+```bash
+npx create-next-quick
+```
+
+When you run `npx create-next-quick` without a project name, you will be prompted to:
 
 1. **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory). If you use `.` the directory must be empty.
 2. **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose.
@@ -40,7 +57,6 @@ When you run `npx create-next-quick`, you will be prompted to:
 6. **Enter the names of the pages you want to create (default: none)**
 7. **Choose a linter (default: none)**
 8. **Choose an ORM (default: none)**
-9. **Choose to use Shadcn UI (default: No)**
 
 Example run:
 

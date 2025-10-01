@@ -17,25 +17,49 @@ import { createPages, createLayout } from './lib/templates.js';
         availablePackageManagers.push("pnpm");
     } catch (error) { }
 
-    const answers = await inquirer.prompt([
-        {
-            type: "input",
-            name: "projectName",
-            message: "Enter project name:",
-            filter: (input) => input.trim() === '' ? '.' : input.trim(),
-            validate: (input) => {
-                if (input !== input.toLowerCase()) {
-                    return "Project name must be in lowercase.";
-                }
-                if (input === ".") {
-                    const files = fs.readdirSync(process.cwd());
-                    if (files.length > 0) {
-                        return "The current directory is not empty. Please use a different project name.";
-                    }
-                }
-                return true;
+    const validateProjectName = (input) => {
+        if (input !== input.toLowerCase()) {
+            return "Project name must be in lowercase.";
+        }
+        if (input === ".") {
+            const files = fs.readdirSync(process.cwd());
+            if (files.length > 0) {
+                return "The current directory is not empty. Please use a different project name.";
             }
-        },
+        } else {
+            if (fs.existsSync(input)) {
+                return `A directory named "${input}" already exists. Please use a different project name.`;
+            }
+        }
+        return true;
+    };
+
+    const appName = process.argv[2];
+    const answers = {};
+
+    if (appName) {
+        const validationResult = validateProjectName(appName);
+        if (validationResult !== true) {
+            console.error(validationResult);
+        } else {
+            answers.projectName = appName;
+        }
+    }
+
+    if (!answers.projectName) {
+        const appNameAnswers = await inquirer.prompt([
+            {
+                type: "input",
+                name: "projectName",
+                message: "Enter project name:",
+                filter: (input) => input.trim() === '' ? '.' : input.trim(),
+                validate: validateProjectName
+            }
+        ]);
+        answers.projectName = appNameAnswers.projectName;
+    }
+
+    const otherAnswers = await inquirer.prompt([
         {
             type: "list",
             name: "packageManager",
@@ -95,6 +119,8 @@ import { createPages, createLayout } from './lib/templates.js';
             default: false
         }
     ]);
+
+    Object.assign(answers, otherAnswers);
 
     const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn } = answers;
     const projectPath = path.join(process.cwd(), projectName);
