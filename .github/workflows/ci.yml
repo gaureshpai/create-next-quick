@@ -87,8 +87,7 @@ jobs:
                 }
 
                 for (const test of results.tests) {
-                  commentBody += `- ${test.state === 'passed' ? '✅' : '❌'} ${test.fullTitle}\n`;
-                  if (test.state === 'failed' && test.err) {
+                                      commentBody += `- ${test.state === 'passed' ? '✅' : (test.state === 'failed' ? '❌' : '➖')} ${test.fullTitle}\n`;                  if (test.state === 'failed' && test.err) {
                     commentBody += `  \`\`\`\n  ${test.err.message}\n  \`\`\`\n`;
                   }
                 }
