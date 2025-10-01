@@ -12,7 +12,7 @@
 - **Next.js App Directory** — support for the new Next.js app directory.
 - **Custom Page Generation** — create multiple pages at once.
 - **Linter Support** — choose between no linter, ESLint, and Biome.
-- **Shadcn UI** — automatically install and configure Shadcn UI.
+- **Shadcn UI** — automatically installs and configures Shadcn UI with a default style and color.
 - **Clean Project Setup** — removes default favicon and clears public folder.
 - **Empty Default Page** — overwrites the default `page.tsx` or `index.tsx` with an empty template.
 - **Dynamic Metadata** — always overwrites the `layout.tsx` or `layout.jsx` with a minimal template.

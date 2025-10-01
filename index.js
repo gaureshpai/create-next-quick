@@ -32,6 +32,10 @@ import { createPages, createLayout } from './lib/templates.js';
                     if (files.length > 0) {
                         return "The current directory is not empty. Please use a different project name.";
                     }
+                } else {
+                    if (fs.existsSync(input)) {
+                        return `A directory named "${input}" already exists. Please use a different project name.`;
+                    }
                 }
                 return true;
             }
@@ -226,7 +230,7 @@ export const users = pgTable('users', {
 
     if (useShadcn) {
         run(`${packageManager} install --save-dev tailwindcss-animate class-variance-authority`, projectPath);
-        run(`npx shadcn@latest init`, projectPath);
+        run(`npx --yes shadcn@latest init -d`, projectPath);
         const componentsJsonPath = path.join(projectPath, "components.json");
         const componentsJsonContent = {
             "$schema": "https://ui.shadcn.com/schema.json",
