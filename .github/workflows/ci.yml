@@ -31,28 +31,82 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests and generate JSON report
+        run: npm test -- --reporter json --reporter-options output=test-results-${{ matrix.node-version }}.json
 
-      - name: Add test status comment to PR
-        if: github.event_name == 'pull_request' && always()
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: test-results-${{ matrix.node-version }}.json
+          retention-days: 1
+
+  report-status:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: always()
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-results-*
+          path: test-results
+          merge-multiple: true
+
+      - name: Combine and post comment
         uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const testResultsDir = 'test-results';
+            let commentBody = '## Test Results Summary\n\n';
+            let overallStatus = '✅ All tests passed across all Node.js versions.';
+            let hasFailures = false;
+
+            const files = fs.readdirSync(testResultsDir);
+            for (const file of files) {
+              if (file.startsWith('test-results-') && file.endsWith('.json')) {
+                const nodeVersion = file.replace('test-results-', '').replace('.json', '');
+                const filePath = path.join(testResultsDir, file);
+                const results = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+                commentBody += `### Node.js ${nodeVersion}\n`;
+                if (results.stats.failures > 0) {
+                  hasFailures = true;
+                  commentBody += `❌ **${results.stats.failures} of ${results.stats.tests} tests failed.**\n`;
+                  overallStatus = '❌ Some tests failed. Please review the logs for details.';
+                } else {
+                  commentBody += `✅ **All ${results.stats.tests} tests passed.**\n`;
+                }
+
+                for (const suite of results.suites) {
+                  for (const test of suite.tests) {
+                    commentBody += `- ${test.state === 'passed' ? '✅' : '❌'} ${test.fullTitle}\n`;
+                    if (test.state === 'failed' && test.err) {
+                      commentBody += `  \`\`\`\n  ${test.err.message}\n  \`\`\`\n`;
+                    }
+                  }
+                }
+                commentBody += '\n';
+              }
+            }
+
+            commentBody = `${overallStatus}\n\n${commentBody}`;
+
             const issue_number = context.issue.number;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const jobStatus = '${{ job.status }}';
-            let body;
-            if (jobStatus === 'success') {
-              body = '✅ All tests passed!';
-            } else {
-              body = '❌ Tests failed. Please review the logs for details.';
-            }
+
             github.rest.issues.createComment({
               owner,
               repo,
               issue_number,
-              body
+              body: commentBody
             });
