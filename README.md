@@ -20,6 +20,7 @@
 - **Conditional API Route Deletion** — deletes the default `api/hello.js` route if using the `src` directory and not the `app` directory.
 - **Safe Project Creation** — checks if the current directory is empty when creating a project in the current directory (`.`) and prevents accidental overwrites.
 - **ORM Support** — choose between no ORM, Prisma, and Drizzle.
+- **Automated CI/CD Feedback** — Pull Requests now receive automated comments on test status.
 
 ## Installation
 
@@ -49,14 +50,14 @@ npx create-next-quick
 
 When you run `npx create-next-quick` without a project name, you will be prompted to:
 
-1. **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory). If you use `.` the directory must be empty.
-2. **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose.
-3. **Choose to use TypeScript (default: Yes)**
-4. **Choose to use Tailwind CSS (default: Yes)**
-5. **Choose to use the app directory (default: Yes)**
-6. **Enter the names of the pages you want to create (default: none)**
-7. **Choose a linter (default: none)**
-8. **Choose an ORM (default: none)**
+1.  **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory). If you use `.` the directory must be empty.
+2.  **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose.
+3.  **Choose to use TypeScript (default: Yes)**
+4.  **Choose to use Tailwind CSS (default: Yes)**
+5.  **Choose to use the app directory (default: Yes)**
+6.  **Enter the names of the pages you want to create (default: none)**
+7.  **Choose a linter (default: none)**
+8.  **Choose an ORM (default: none)**
 
 Example run:
 
@@ -79,28 +80,52 @@ npx create-next-quick
 
 ## Commands
 
-- `npm run dev` — starts the development server.
-- `npm run build` — builds the project for production.
-- `npm start` — starts the production server.
-- `npm run lint` — lints the project.
+-   `npm run dev` — starts the development server.
+-   `npm run build` — builds the project for production.
+-   `npm start` — starts the production server.
+
+## Testing
+
+The test suite for `create-next-quick` is designed to be dynamic and data-driven. Test cases are automatically generated based on the available options in `index.js`, ensuring comprehensive coverage as the CLI evolves.
+
+To run the tests:
+
+1.  **Generate Test Cases:** First, generate the test cases by running:
+    ```bash
+    npm run test:generate
+    ```
+    This script parses `index.js` and creates `test/generated-test-cases.js`.
+2.  **Run Tests:** Then, execute the test suite:
+    ```bash
+    npm test
+    ```
+    This will run all generated test cases using Mocha.
 
 ## Contributing
 
 We welcome contributions! Follow these steps:
 
-1. Fork the repository
-2. Create a new branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -m "Added new feature"`
-4. Push to your branch: `git push origin feature-name`
-5. Open a Pull Request
+1.  Fork the repository
+2.  Create a new branch: `git checkout -b feature-name`
+3.  Commit your changes: `git commit -m "Added new feature"`
+4.  Push to your branch: `git push origin feature-name`
+5.  Open a Pull Request
+
+Our CI/CD pipeline will automatically run tests and provide feedback directly on your Pull Request.
 
 Before submitting, please ensure:
 
-- Your code follows project style guidelines
-- You have tested your changes locally
+-   Your code follows project style guidelines
+-   You have tested your changes locally
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-> Credits: Special thanks to [@harshgupta20](https://github.com/harshgupta20) for the idea and inspiration for this project.
+## Contributors
+
+<div align="center">
+<a href="https://github.com/gaureshpai/create-next-quick/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=gaureshpai/create-next-quick" /> 
+</a>
+</div>
