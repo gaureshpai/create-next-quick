@@ -1,0 +1,32 @@
+name: Welcome New Contributors
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  greet-first-time-contributors:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Greet First-Time Contributors
+        uses: actions/first-interaction@v1
+        with:
+          issue-message: |
+            👋 Hello @{{ github.actor }}!
+
+            Thank you for opening your first issue here! We appreciate your contribution and will review it as soon as possible. In the meantime, please check out our [contributing guidelines](https://github.com/gaureshpai/create-next-quick/blob/main/CONTRIBUTING.md) for more information.
+
+            We're excited to have you in our community!
+          pr-message: |
+            🎉 Welcome, @{{ github.actor }}!
+
+            Thank you for submitting your first Pull Request to our repository! We're thrilled to see your contribution. Our team will review it shortly.
+
+            Please make sure your PR adheres to our [contributing guidelines](https://github.com/gaureshpai/create-next-quick/blob/main/CONTRIBUTING.md).
+
+            We appreciate your effort and look forward to collaborating with you!

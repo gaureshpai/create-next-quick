@@ -5,11 +5,12 @@
   "main": "index.js",
   "files": [
     "index.js",
-    "lib"
+    "lib",
+    "test"
   ],
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node index.js"
   },
   "bin": {
@@ -41,5 +42,9 @@
     "fs": "^0.0.1-security",
     "inquirer": "^9.2.7",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "inquirer-test": "^2.0.1",
+    "mocha": "^11.7.3"
   }
 }
