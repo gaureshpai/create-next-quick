@@ -8,7 +8,7 @@
 
 ## Features
 
-- **Interactive Setup** — prompts you for project name, TypeScript, Tailwind CSS, and more.
+- **Package Manager Detection** — automatically detects installed package managers (`npm`, `yarn`, `pnpm`) and only prompts with available options.
 - **Next.js App Directory** — support for the new Next.js app directory.
 - **Custom Page Generation** — create multiple pages at once.
 - **Linter Support** — choose between no linter, ESLint, and Biome.
@@ -33,7 +33,7 @@ npx create-next-quick
 When you run `npx create-next-quick`, you will be prompted to:
 
 1. **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory)
-2. **Choose a package manager (default: pnpm)**
+2. **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose.
 3. **Choose to use TypeScript (default: Yes)**
 4. **Choose to use Tailwind CSS (default: Yes)**
 5. **Choose to use the app directory (default: Yes)**
