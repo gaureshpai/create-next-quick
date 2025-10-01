@@ -86,12 +86,10 @@ jobs:
                   commentBody += `✅ **All ${results.stats.tests} tests passed.**\n`;
                 }
 
-                for (const suite of results.suites) {
-                  for (const test of suite.tests) {
-                    commentBody += `- ${test.state === 'passed' ? '✅' : '❌'} ${test.fullTitle}\n`;
-                    if (test.state === 'failed' && test.err) {
-                      commentBody += `  \`\`\`\n  ${test.err.message}\n  \`\`\`\n`;
-                    }
+                for (const test of results.tests) {
+                  commentBody += `- ${test.state === 'passed' ? '✅' : '❌'} ${test.fullTitle}\n`;
+                  if (test.state === 'failed' && test.err) {
+                    commentBody += `  \`\`\`\n  ${test.err.message}\n  \`\`\`\n`;
                   }
                 }
                 commentBody += '\n';
