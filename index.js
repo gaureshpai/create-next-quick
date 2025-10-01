@@ -5,6 +5,17 @@ import { run, deleteFolder, createFolder, deleteFile, fileExists, writeFile } fr
 import { createPages, createLayout } from './lib/templates.js';
 
 (async () => {
+    const availablePackageManagers = ["npm"];
+    try {
+        run("yarn --version", process.cwd(), true);
+        availablePackageManagers.push("yarn");
+    } catch (error) { }
+
+    try {
+        run("pnpm --version", process.cwd(), true);
+        availablePackageManagers.push("pnpm");
+    } catch (error) { }
+
     const answers = await inquirer.prompt([
         {
             type: "input",
@@ -22,7 +33,7 @@ import { createPages, createLayout } from './lib/templates.js';
             type: "list",
             name: "packageManager",
             message: "Choose a package manager:",
-            choices: ["npm", "yarn", "pnpm"],
+            choices: availablePackageManagers,
             default: "pnpm"
         },
         {
