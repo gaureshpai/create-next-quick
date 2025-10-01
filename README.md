@@ -32,7 +32,7 @@ npx create-next-quick
 
 When you run `npx create-next-quick`, you will be prompted to:
 
-1. **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory)
+1. **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory). If you use `.` the directory must be empty.
 2. **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose.
 3. **Choose to use TypeScript (default: Yes)**
 4. **Choose to use Tailwind CSS (default: Yes)**

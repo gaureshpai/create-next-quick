@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import inquirer from "inquirer";
 import path from "path";
+import fs from "fs";
 import { run, deleteFolder, createFolder, deleteFile, fileExists, writeFile } from './lib/utils.js';
 import { createPages, createLayout } from './lib/templates.js';
 
@@ -25,6 +26,12 @@ import { createPages, createLayout } from './lib/templates.js';
             validate: (input) => {
                 if (input !== input.toLowerCase()) {
                     return "Project name must be in lowercase.";
+                }
+                if (input === ".") {
+                    const files = fs.readdirSync(process.cwd());
+                    if (files.length > 0) {
+                        return "The current directory is not empty. Please use a different project name.";
+                    }
                 }
                 return true;
             }
