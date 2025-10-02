@@ -69,7 +69,7 @@ npx create-next-quick
 
 ## CLI Demo
 
-<video src="cli_demo.mp4" controls width="600"></video>
+<video src="https://github.com/user-attachments/assets/ea7d6d99-8ebb-4d43-b33f-efbfb806fbc3" controls width="600"></video>
 
 ## Commands
 
