@@ -3,15 +3,11 @@ import inquirer from "inquirer";
 import path from "path";
 import fs from "fs";
 import chalk from "chalk";
-import ora from "ora";
 import { run, deleteFolder, createFolder, deleteFile, fileExists, writeFile } from './lib/utils.js';
 import { createPages, createLayout } from './lib/templates.js';
 
 (async () => {
   const availablePackageManagers = ["npm"];
-  
-  // Detect if running in test environment
-  const isTest = process.env.NODE_ENV === 'test' || process.env.CI === 'true';
 
   try {
     run("yarn --version", process.cwd(), true);
@@ -42,14 +38,6 @@ import { createPages, createLayout } from './lib/templates.js';
 
   const appName = process.argv[2];
   const answers = {};
-
-  // Only show banner in non-test mode
-  if (!isTest) {
-    console.log(chalk.bold.cyan("╔═══════════════════════════════════════╗"));
-    console.log(chalk.bold.cyan("║") + chalk.bold.white("   🚀 Create Next Quick CLI Tool      ") + chalk.bold.cyan(" ║"));
-    console.log(chalk.bold.cyan("╚═══════════════════════════════════════╝"));
-    console.log();
-  }
 
   if (appName) {
     const validationResult = validateProjectName(appName);
@@ -139,16 +127,7 @@ import { createPages, createLayout } from './lib/templates.js';
   const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn } = answers;
   const projectPath = path.join(process.cwd(), projectName);
 
-  // Only show fancy output in non-test mode
-  if (!isTest) {
-    console.log();
-    console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
-    console.log(chalk.bold.white(`  🔧 Creating project: ${projectName}`));
-    console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
-    console.log();
-  } else {
-    console.log(`Creating ${projectName}...`);
-  }
+  console.log(`Creating ${projectName}...`);
 
   let command = `npx --yes create-next-app@latest ${projectName} --use-${packageManager} --yes`;
   if (useTypeScript) command += " --ts";
@@ -159,44 +138,19 @@ import { createPages, createLayout } from './lib/templates.js';
   else command += " --no-app";
   if (linter === "none") command += " --no-eslint";
 
-  // Use spinner only in non-test mode
-  let spinner;
-  if (!isTest) {
-    spinner = ora(`Installing dependencies with ${packageManager}...`).start();
-  }
-  
-  try {
-    run(command);
-    if (spinner) spinner.succeed("Dependencies installed successfully");
-  } catch {
-    if (spinner) spinner.fail("Failed to install dependencies");
-    process.exit(1);
-  }
+  run(command);
 
-  // Use spinner only in non-test mode
-  let cleanupSpinner;
-  if (!isTest) {
-    cleanupSpinner = ora("Cleaning up default files...").start();
-  }
-  
   if (!useAppDir) {
     const apiHelloPath = useSrcDir
       ? path.join(projectPath, "src", "pages", "api", "hello.js")
       : path.join(projectPath, "pages", "api", "hello.js");
     if (fileExists(apiHelloPath)) deleteFile(apiHelloPath);
   }
+  
   const publicPath = path.join(projectPath, "public");
   deleteFolder(publicPath);
   createFolder(publicPath);
-  
-  if (cleanupSpinner) cleanupSpinner.succeed("Cleanup complete");
 
-  // Use spinner only in non-test mode
-  let layoutSpinner;
-  if (!isTest) {
-    layoutSpinner = ora("Creating layout files...").start();
-  }
-  
   createLayout(projectPath, projectName, useTypeScript, useAppDir, useSrcDir);
 
   const pagesPath = useAppDir
@@ -221,8 +175,6 @@ import { createPages, createLayout } from './lib/templates.js';
   writeFile(defaultPagePath, emptyPageContent);
 
   writeFile(path.join(projectPath, "README.md"), `# ${projectName}`);
-  
-  if (layoutSpinner) layoutSpinner.succeed("Layout and pages created");
 
   if (linter === "biome") {
     run(`${packageManager} install --save-dev @biomejs/biome`, projectPath);
@@ -308,19 +260,10 @@ export const users = pgTable('users', {
     writeFile(path.join(projectPath, ".env"), envContent);
   }
 
-  console.log();
-  if (!isTest) {
-    console.log(chalk.bold.white("Next steps:"));
-    console.log(chalk.hex("#23f0bcff")(`  cd ${chalk.white(`${projectName}`)}`));
-    console.log(chalk.cyan(`  ${packageManager} ${chalk.white(`run dev`)}`));
-    console.log();
-    console.log(chalk.white.bold(`Thank you for using create-next-quick!✨`));
-  } else {
-    console.log("Setup complete!");
-    console.log(`
+  console.log("Setup complete!");
+  console.log(`
 Thankyou for using create-next-quick!
 Next steps:
 cd ${projectName}
 ${packageManager} run dev`);
-  }
 })();
