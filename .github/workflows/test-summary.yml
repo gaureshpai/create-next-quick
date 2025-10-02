@@ -1,4 +1,4 @@
-```yaml
+
 name: Test Summary Comment
 on:
   workflow_run:
@@ -117,4 +117,4 @@ jobs:
               issue_number: pr.number,
               body: summary
             });
-```
+
