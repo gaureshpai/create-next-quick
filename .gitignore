@@ -1,1 +1,6 @@
 node_modules
+test/generated-test-cases.js
+debug-auth.js
+quick-auth-test.js
+test-auth-providers.js
+verify-auth.js

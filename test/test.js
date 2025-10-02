@@ -62,6 +62,14 @@ describe('create-next-quick', function () {
         testCase.options.linter + '\n',
         testCase.options.orm + '\n',
         testCase.options.useShadcn ? 'y\n' : '\n',
+        (() => {
+          const auth = testCase.options.auth || 'none';
+          if (!auth || auth === 'none') return '\n';
+          const map = { nextauth: 1, clerk: 2, firebase: 3 };
+          const downs = map[auth];
+          if (!downs) return '\n';
+          return '\x1B[B'.repeat(downs) + '\n';
+        })(),
       ];
 
       const assertions = () => {
