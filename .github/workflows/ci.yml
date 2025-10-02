@@ -31,10 +31,3 @@ jobs:
 
       - name: Run tests and generate JSON report
         run: npm test -- --reporter json --reporter-options output=test-results-${{ matrix.node-version }}.json
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-${{ matrix.node-version }}
-          path: test-results-${{ matrix.node-version }}.json
-          retention-days: 1
