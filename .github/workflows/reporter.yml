@@ -17,10 +17,11 @@ jobs:
       - name: Download all test results
         uses: actions/download-artifact@v4
         with:
-          name: test-results-${{ matrix.node-version }}
           path: test-results
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
+          pattern: test-results-*
+          merge-multiple: true
 
       - name: Combine and post comment
         uses: actions/github-script@v7
