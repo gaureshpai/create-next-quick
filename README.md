@@ -2,6 +2,8 @@
 
 **create-next-quick** is a CLI tool that lets you instantly create a new Next.js project with your choice of options.
 
+📖 **[View Documentation](https://shubham15986.github.io/create-next-quick/)** | 🚀 **[Quick Start](#installation)**
+
 ## Why create-next-quick?
 
 `create-next-quick` is a lightweight and fast alternative to `create-next-app`. It provides an interactive setup process that lets you choose the options you want for your project, such as TypeScript, Tailwind CSS, and the Next.js app directory. It also lets you create multiple pages at once, which can save you a lot of time when starting a new project.
@@ -78,6 +80,19 @@ npx create-next-quick
 ? Do you want to use Shadcn UI? No
 ```
 
+## Documentation
+
+For comprehensive documentation, examples, templates, and API reference, visit:
+
+**[https://shubham15986.github.io/create-next-quick/](https://shubham15986.github.io/create-next-quick/)**
+
+The documentation includes:
+- Detailed usage examples and configurations
+- Template references and code samples
+- Advanced features and customization options
+- Contributing guidelines and development setup
+- Complete API reference and troubleshooting
+
 ## Commands
 
 -   `npm run dev` — starts the development server.
@@ -101,6 +116,20 @@ To run the tests:
     ```
     This will run all generated test cases using Mocha.
 
+## Documentation Development
+
+To work with the documentation locally:
+
+```bash
+# Serve docs locally (requires Python)
+npm run docs:serve
+
+# Open documentation website
+npm run docs:open
+```
+
+The documentation is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+
 ## Contributing
 
 We welcome contributions! Follow these steps:
@@ -117,6 +146,7 @@ Before submitting, please ensure:
 
 -   Your code follows project style guidelines
 -   You have tested your changes locally
+-   Update documentation if adding new features
 
 ## License
 

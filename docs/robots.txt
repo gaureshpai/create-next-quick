@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shubham15986.github.io/create-next-quick/sitemap.xml

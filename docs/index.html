@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>create-next-quick - Documentation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-color: #0070f3;
+            --primary-dark: #0051c7;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #e1e1e1;
+            --code-bg: #f8f8f8;
+            --sidebar-bg: #fafafa;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-menu {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.5rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background-color: rgba(0, 112, 243, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2rem;
+            max-width: calc(100vw - 280px);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .section {
+            display: none;
+            margin-bottom: 3rem;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .section h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--text-color);
+        }
+
+        .section h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-color);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            background: none;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background-color: #dbeafe;
+            border-left-color: var(--primary-color);
+            color: #1e40af;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            border-left-color: var(--success-color);
+            color: #065f46;
+        }
+
+        .alert-warning {
+            background-color: #fef3c7;
+            border-left-color: var(--warning-color);
+            color: #92400e;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            font-weight: 600;
+            background-color: var(--sidebar-bg);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                max-width: 100vw;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="logo">
+                    <i class="fas fa-rocket"></i>
+                    create-next-quick
+                </a>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-section">
+                    <div class="nav-section-title">Getting Started</div>
+                    <a href="#" class="nav-item active" data-section="home">Home</a>
+                    <a href="#" class="nav-item" data-section="installation">Installation</a>
+                    <a href="#" class="nav-item" data-section="quick-start">Quick Start</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Usage</div>
+                    <a href="#" class="nav-item" data-section="cli-options">CLI Options</a>
+                    <a href="#" class="nav-item" data-section="features">Features</a>
+                    <a href="#" class="nav-item" data-section="examples">Examples</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Advanced</div>
+                    <a href="#" class="nav-item" data-section="templates">Templates</a>
+                    <a href="#" class="nav-item" data-section="testing">Testing</a>
+                    <a href="#" class="nav-item" data-section="contributing">Contributing</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Reference</div>
+                    <a href="#" class="nav-item" data-section="api">API</a>
+                    <a href="#" class="nav-item" data-section="changelog">Changelog</a>
+                    <a href="#" class="nav-item" data-section="faq">FAQ</a>
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <!-- Home Section -->
+            <section id="home" class="section active">
+                <div class="hero">
+                    <h1>create-next-quick</h1>
+                    <p>A lightning-fast CLI tool to scaffold Next.js projects with your choice of options</p>
+                    <div class="hero-buttons">
+                        <a href="#" class="btn btn-primary" data-section="installation">
+                            <i class="fas fa-download"></i>
+                            Get Started
+                        </a>
+                        <a href="https://github.com/Shubham15986/create-next-quick" class="btn btn-secondary" target="_blank">
+                            <i class="fab fa-github"></i>
+                            View on GitHub
+                        </a>
+                    </div>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Lightning Fast</h3>
+                        <p>Instantly scaffold Next.js projects with minimal configuration and maximum speed.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-cogs"></i>
+                        <h3>Flexible Options</h3>
+                        <p>Choose TypeScript, Tailwind CSS, App Directory, linters, ORMs, and more through interactive prompts.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-magic"></i>
+                        <h3>Smart Defaults</h3>
+                        <p>Sensible defaults for modern Next.js development with the ability to customize everything.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-package"></i>
+                        <h3>Package Manager Detection</h3>
+                        <p>Automatically detects installed package managers (npm, yarn, pnpm) and prompts accordingly.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Multiple Pages</h3>
+                        <p>Create multiple pages at once to jumpstart your project structure.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Safe Creation</h3>
+                        <p>Prevents accidental overwrites by checking directory contents before creation.</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Why create-next-quick?</strong><br>
+                    create-next-quick is a lightweight and fast alternative to create-next-app with additional features like multiple page generation, ORM setup, and enhanced customization options.
+                </div>
+            </section>
+
+            <!-- Installation Section -->
+            <section id="installation" class="section">
+                <h2>Installation</h2>
+                <p>You don't need to install create-next-quick globally. Run it instantly with npx:</p>
+                
+                <div class="code-block">
+                    <pre><code class="language-bash">npx create-next-quick</code></pre>
+                </div>
+
+                <h3>Requirements</h3>
+                <ul>
+                    <li>Node.js 16.x or higher</li>
+                    <li>npm, yarn, or pnpm</li>
+                </ul>
+
+                <div class="alert alert-success">
+                    <strong>Tip:</strong> The tool will automatically detect which package managers you have installed and only show available options.
+                </div>
+            </section>
+
+            <!-- Quick Start Section -->
+            <section id="quick-start" class="section">
+                <h2>Quick Start</h2>
+                
+                <h3>Basic Usage</h3>
+                <div class="code-block">
+                    <pre><code class="language-bash"># Create a new project with interactive prompts
+npx create-next-quick
+
+# Create with project name (skips name prompt)
+npx create-next-quick my-awesome-app</code></pre>
+                </div>
+
+                <h3>Interactive Setup</h3>
+                <p>When you run the command, you'll be prompted to configure your project:</p>
+                
+                <div class="code-block">
+                    <pre><code class="language-bash">? Enter project name: my-portfolio
+? Choose a package manager: pnpm
+? Do you want to use TypeScript? Yes
+? Do you want to use Tailwind CSS? Yes
+? Do you want to use src directory? Yes
+? Do you want to use the app directory? Yes
+? Enter the names of the pages you want to create: home, about, contact
+? Choose a linter: eslint
+? Choose an ORM: prisma
+? Do you want to use Shadcn UI? Yes</code></pre>
+                </div>
+
+                <h3>What Gets Created</h3>
+                <ul>
+                    <li>A clean Next.js project with your selected options</li>
+                    <li>Custom pages if specified</li>
+                    <li>Configured linting tools</li>
+                    <li>ORM setup with boilerplate code</li>
+                    <li>Shadcn UI integration (if selected)</li>
+                    <li>Clean public folder (removes default favicon)</li>
+                    <li>Empty default page template</li>
+                </ul>
+
+                <div class="alert alert-info">
+                    <strong>Next Steps:</strong><br>
+                    After creation, navigate to your project directory and run <code>npm run dev</code> to start the development server.
+                </div>
+            </section>
+
+            <!-- CLI Options Section -->
+            <section id="cli-options" class="section">
+                <h2>CLI Options</h2>
+                
+                <h3>Command Line Arguments</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Argument</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>[project-name]</code></td>
+                            <td>Project name (optional)</td>
+                            <td><code>npx create-next-quick my-app</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>.</code></td>
+                            <td>Create in current directory</td>
+                            <td><code>npx create-next-quick .</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Interactive Prompts</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Description</th>
+                            <th>Default</th>
+                            <th>Choices</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Package Manager</td>
+                            <td>Which package manager to use</td>
+                            <td>pnpm</td>
+                            <td>npm, yarn, pnpm (detected)</td>
+                        </tr>
+                        <tr>
+                            <td>TypeScript</td>
+                            <td>Use TypeScript instead of JavaScript</td>
+                            <td>Yes</td>
+                            <td>Yes/No</td>
+                        </tr>
+                        <tr>
+                            <td>Tailwind CSS</td>
+                            <td>Include Tailwind CSS</td>
+                            <td>Yes</td>
+                            <td>Yes/No</td>
+                        </tr>
+                        <tr>
+                            <td>Src Directory</td>
+                            <td>Use src/ directory structure</td>
+                            <td>Yes</td>
+                            <td>Yes/No</td>
+                        </tr>
+                        <tr>
+                            <td>App Directory</td>
+                            <td>Use Next.js 13+ app directory</td>
+                            <td>Yes</td>
+                            <td>Yes/No</td>
+                        </tr>
+                        <tr>
+                            <td>Pages</td>
+                            <td>Custom pages to create</td>
+                            <td>None</td>
+                            <td>Comma-separated list</td>
+                        </tr>
+                        <tr>
+                            <td>Linter</td>
+                            <td>Code linting tool</td>
+                            <td>none</td>
+                            <td>none, eslint, biome</td>
+                        </tr>
+                        <tr>
+                            <td>ORM</td>
+                            <td>Database ORM</td>
+                            <td>none</td>
+                            <td>none, prisma, drizzle</td>
+                        </tr>
+                        <tr>
+                            <td>Shadcn UI</td>
+                            <td>Include Shadcn UI components</td>
+                            <td>No</td>
+                            <td>Yes/No</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-warning">
+                    <strong>Note:</strong> Project names must be lowercase. The tool will validate this automatically.
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section id="features" class="section">
+                <h2>Features</h2>
+
+                <h3>🚀 Core Features</h3>
+                <ul>
+                    <li><strong>CLI Argument Support</strong> - Pass project name as argument to skip prompt</li>
+                    <li><strong>Package Manager Detection</strong> - Automatically detects npm, yarn, pnpm</li>
+                    <li><strong>TypeScript Support</strong> - Full TypeScript configuration</li>
+                    <li><strong>Tailwind CSS Integration</strong> - Pre-configured styling framework</li>
+                    <li><strong>Next.js App Directory</strong> - Support for new app router</li>
+                    <li><strong>Src Directory Structure</strong> - Organized project layout</li>
+                </ul>
+
+                <h3>📄 Page Generation</h3>
+                <ul>
+                    <li><strong>Multiple Pages</strong> - Create multiple pages at once</li>
+                    <li><strong>Clean Default Page</strong> - Empty template for quick start</li>
+                    <li><strong>Dynamic Routing</strong> - Supports both pages and app directory</li>
+                </ul>
+
+                <h3>🔧 Development Tools</h3>
+                <ul>
+                    <li><strong>ESLint Support</strong> - Code quality and consistency</li>
+                    <li><strong>Biome Integration</strong> - Modern linting and formatting</li>
+                    <li><strong>No Linter Option</strong> - Keep it minimal if preferred</li>
+                </ul>
+
+                <h3>🗄️ Database Integration</h3>
+                <ul>
+                    <li><strong>Prisma ORM</strong> - Full Prisma setup with client configuration</li>
+                    <li><strong>Drizzle ORM</strong> - Modern TypeScript ORM with schema</li>
+                    <li><strong>Environment Variables</strong> - Pre-configured .env files</li>
+                </ul>
+
+                <h3>🎨 UI Components</h3>
+                <ul>
+                    <li><strong>Shadcn UI</strong> - Beautiful component library</li>
+                    <li><strong>Auto Configuration</strong> - Components.json setup</li>
+                    <li><strong>Tailwind Integration</strong> - Seamless styling integration</li>
+                </ul>
+
+                <h3>🛡️ Safety Features</h3>
+                <ul>
+                    <li><strong>Directory Validation</strong> - Prevents accidental overwrites</li>
+                    <li><strong>Empty Directory Check</strong> - Safe current directory creation</li>
+                    <li><strong>Name Validation</strong> - Ensures lowercase project names</li>
+                </ul>
+
+                <h3>🧹 Clean Setup</h3>
+                <ul>
+                    <li><strong>Clean Public Folder</strong> - Removes default assets</li>
+                    <li><strong>Custom README</strong> - Project-specific documentation</li>
+                    <li><strong>API Route Cleanup</strong> - Removes unnecessary default routes</li>
+                    <li><strong>Favicon Removal</strong> - Clean slate for branding</li>
+                </ul>
+            </section>
+
+            <!-- Examples Section -->
+            <section id="examples" class="section">
+                <h2>Examples</h2>
+
+                <h3>Basic Next.js Project</h3>
+                <div class="code-block">
+                    <pre><code class="language-bash">npx create-next-quick simple-blog</code></pre>
+                </div>
+                <p>Creates a basic Next.js project with TypeScript and Tailwind CSS.</p>
+
+                <h3>Full-Stack Project with Prisma</h3>
+                <div class="code-block">
+                    <pre><code class="language-bash">npx create-next-quick full-stack-app</code></pre>
+                </div>
+                <p>Interactive setup choosing Prisma ORM, ESLint, and multiple pages.</p>
+
+                <h3>E-commerce Starter</h3>
+                <div class="code-block">
+                    <pre><code class="language-bash">npx create-next-quick ecommerce-store</code></pre>
+                </div>
+                <p>Example configuration:</p>
+                <ul>
+                    <li>TypeScript: Yes</li>
+                    <li>Tailwind CSS: Yes</li>
+                    <li>Pages: home, products, cart, checkout</li>
+                    <li>ORM: Prisma</li>
+                    <li>Shadcn UI: Yes</li>
+                </ul>
+
+                <h3>Portfolio Website</h3>
+                <div class="code-block">
+                    <pre><code class="language-bash">npx create-next-quick portfolio</code></pre>
+                </div>
+                <p>Example configuration:</p>
+                <ul>
+                    <li>TypeScript: Yes</li>
+                    <li>Tailwind CSS: Yes</li>
+                    <li>Pages: about, projects, contact</li>
+                    <li>ORM: None</li>
+                    <li>Linter: ESLint</li>
+                </ul>
+
+                <h3>API-First Application</h3>
+                <div class="code-block">
+                    <pre><code class="language-bash">npx create-next-quick api-app</code></pre>
+                </div>
+                <p>Example configuration:</p>
+                <ul>
+                    <li>App Directory: No (for API routes)</li>
+                    <li>ORM: Drizzle</li>
+                    <li>Linter: Biome</li>
+                </ul>
+
+                <div class="alert alert-info">
+                    <strong>Pro Tip:</strong> Use descriptive page names like "user-profile" or "product-details" for better project structure.
+                </div>
+            </section>
+
+            <!-- Templates Section -->
+            <section id="templates" class="section">
+                <h2>Templates</h2>
+                
+                <h3>Page Templates</h3>
+                <p>create-next-quick generates clean, minimal page templates based on your configuration:</p>
+
+                <h4>App Directory Page (TypeScript)</h4>
+                <div class="code-block">
+                    <pre><code class="language-tsx">export default function Page() {
+  return (
+    &lt;&gt;&lt;/&gt;
+  );
+}</code></pre>
+                </div>
+
+                <h4>Pages Directory (JavaScript)</h4>
+                <div class="code-block">
+                    <pre><code class="language-jsx">export default function Page() {
+  return (
+    &lt;&gt;&lt;/&gt;
+  );
+}</code></pre>
+                </div>
+
+                <h3>Layout Templates</h3>
+                <p>Automatic layout generation with project metadata:</p>
+
+                <div class="code-block">
+                    <pre><code class="language-tsx">export const metadata = {
+  title: 'Project Name',
+  description: 'Generated by create-next-quick',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;html lang="en"&gt;
+      &lt;body&gt;{children}&lt;/body&gt;
+    &lt;/html&gt;
+  )
+}</code></pre>
+                </div>
+
+                <h3>ORM Templates</h3>
+
+                <h4>Prisma Client Setup</h4>
+                <div class="code-block">
+                    <pre><code class="language-typescript">import { PrismaClient } from '@prisma/client'
+
+declare global {
+  var prisma: PrismaClient | undefined
+}
+
+const prisma = global.prisma || new PrismaClient()
+
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma
+
+export default prisma;</code></pre>
+                </div>
+
+                <h4>Drizzle Schema</h4>
+                <div class="code-block">
+                    <pre><code class="language-typescript">import { pgTable, serial, text } from 'drizzle-orm/pg-core';
+
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+});</code></pre>
+                </div>
+            </section>
+
+            <!-- Testing Section -->
+            <section id="testing" class="section">
+                <h2>Testing</h2>
+                
+                <p>create-next-quick includes a comprehensive test suite to ensure reliability and catch regressions.</p>
+
+                <h3>Running Tests</h3>
+                <div class="code-block">
+                    <pre><code class="language-bash"># Generate test cases
+npm run test:generate
+
+# Run all tests
+npm test
+
+# Or run both in sequence
+npm run test && npm test</code></pre>
+                </div>
+
+                <h3>Test Structure</h3>
+                <p>The testing system is dynamic and data-driven:</p>
+                <ul>
+                    <li><strong>Automatic Test Generation</strong> - Tests are generated based on CLI options</li>
+                    <li><strong>Comprehensive Coverage</strong> - Tests all option combinations</li>
+                    <li><strong>Integration Testing</strong> - Validates actual project creation</li>
+                    <li><strong>Mocha Framework</strong> - Reliable testing with detailed output</li>
+                </ul>
+
+                <h3>Test Categories</h3>
+                <ul>
+                    <li>CLI argument parsing</li>
+                    <li>Interactive prompt handling</li>
+                    <li>Project structure validation</li>
+                    <li>File content verification</li>
+                    <li>Package manager detection</li>
+                    <li>Error handling</li>
+                </ul>
+
+                <div class="alert alert-info">
+                    <strong>Contributing:</strong> When adding new features, the test generation system will automatically create tests for new options.
+                </div>
+            </section>
+
+            <!-- Contributing Section -->
+            <section id="contributing" class="section">
+                <h2>Contributing</h2>
+
+                <p>We welcome contributions to make create-next-quick even better!</p>
+
+                <h3>Getting Started</h3>
+                <ol>
+                    <li>Fork the repository on GitHub</li>
+                    <li>Clone your fork locally</li>
+                    <li>Create a new branch for your feature</li>
+                    <li>Make your changes</li>
+                    <li>Test your changes thoroughly</li>
+                    <li>Submit a pull request</li>
+                </ol>
+
+                <div class="code-block">
+                    <pre><code class="language-bash"># Clone your fork
+git clone https://github.com/yourusername/create-next-quick.git
+cd create-next-quick
+
+# Create a feature branch
+git checkout -b feature-name
+
+# Make your changes
+# ... edit files ...
+
+# Test your changes
+npm test
+
+# Commit and push
+git commit -m "Add new feature"
+git push origin feature-name</code></pre>
+                </div>
+
+                <h3>Development Guidelines</h3>
+                <ul>
+                    <li><strong>Code Style</strong> - Follow existing patterns and conventions</li>
+                    <li><strong>Testing</strong> - Add tests for new features</li>
+                    <li><strong>Documentation</strong> - Update docs for user-facing changes</li>
+                    <li><strong>Backwards Compatibility</strong> - Avoid breaking changes</li>
+                </ul>
+
+                <h3>Pull Request Process</h3>
+                <ol>
+                    <li>Ensure your code follows project style guidelines</li>
+                    <li>Add or update tests as needed</li>
+                    <li>Update documentation if necessary</li>
+                    <li>Ensure all tests pass</li>
+                    <li>Write a clear PR description</li>
+                </ol>
+
+                <h3>Automated CI/CD</h3>
+                <p>Our CI/CD pipeline automatically:</p>
+                <ul>
+                    <li>Runs tests on all pull requests</li>
+                    <li>Provides feedback directly on PRs</li>
+                    <li>Ensures code quality standards</li>
+                    <li>Validates compatibility across environments</li>
+                </ul>
+
+                <div class="alert alert-success">
+                    <strong>Thank You!</strong> Every contribution, no matter how small, helps improve create-next-quick for everyone.
+                </div>
+            </section>
+
+            <!-- API Section -->
+            <section id="api" class="section">
+                <h2>API Reference</h2>
+
+                <h3>Core Functions</h3>
+
+                <h4>run(command, cwd, silent)</h4>
+                <p>Executes shell commands with proper error handling.</p>
+                <ul>
+                    <li><code>command</code> - Command to execute</li>
+                    <li><code>cwd</code> - Working directory (optional)</li>
+                    <li><code>silent</code> - Suppress output (optional)</li>
+                </ul>
+
+                <h4>createPages(pagesPath, pages, useTypeScript, useAppDir, useSrcDir)</h4>
+                <p>Generates custom pages based on user input.</p>
+
+                <h4>createLayout(projectPath, projectName, useTypeScript, useAppDir, useSrcDir)</h4>
+                <p>Creates the root layout file with project metadata.</p>
+
+                <h3>Validation Functions</h3>
+
+                <h4>validateProjectName(input)</h4>
+                <p>Validates project name according to rules:</p>
+                <ul>
+                    <li>Must be lowercase</li>
+                    <li>Cannot overwrite existing directories</li>
+                    <li>Current directory must be empty when using "."</li>
+                </ul>
+
+                <h3>Configuration Options</h3>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Type</th>
+                            <th>Default</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>projectName</td>
+                            <td>string</td>
+                            <td>-</td>
+                            <td>Name of the project directory</td>
+                        </tr>
+                        <tr>
+                            <td>packageManager</td>
+                            <td>string</td>
+                            <td>"pnpm"</td>
+                            <td>Package manager choice</td>
+                        </tr>
+                        <tr>
+                            <td>useTypeScript</td>
+                            <td>boolean</td>
+                            <td>true</td>
+                            <td>Enable TypeScript</td>
+                        </tr>
+                        <tr>
+                            <td>useTailwind</td>
+                            <td>boolean</td>
+                            <td>true</td>
+                            <td>Include Tailwind CSS</td>
+                        </tr>
+                        <tr>
+                            <td>useAppDir</td>
+                            <td>boolean</td>
+                            <td>true</td>
+                            <td>Use app directory structure</td>
+                        </tr>
+                        <tr>
+                            <td>useSrcDir</td>
+                            <td>boolean</td>
+                            <td>true</td>
+                            <td>Use src directory</td>
+                        </tr>
+                        <tr>
+                            <td>pages</td>
+                            <td>array</td>
+                            <td>[]</td>
+                            <td>Custom pages to create</td>
+                        </tr>
+                        <tr>
+                            <td>linter</td>
+                            <td>string</td>
+                            <td>"none"</td>
+                            <td>Linter choice</td>
+                        </tr>
+                        <tr>
+                            <td>orm</td>
+                            <td>string</td>
+                            <td>"none"</td>
+                            <td>ORM choice</td>
+                        </tr>
+                        <tr>
+                            <td>useShadcn</td>
+                            <td>boolean</td>
+                            <td>false</td>
+                            <td>Include Shadcn UI</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Changelog Section -->
+            <section id="changelog" class="section">
+                <h2>Changelog</h2>
+
+                <h3>v1.0.6 (Latest)</h3>
+                <ul>
+                    <li>Added Shadcn UI support with automatic configuration</li>
+                    <li>Improved ORM setup with better boilerplate code</li>
+                    <li>Enhanced error handling and validation</li>
+                    <li>Added automated CI/CD feedback on pull requests</li>
+                </ul>
+
+                <h3>v1.0.5</h3>
+                <ul>
+                    <li>Added Drizzle ORM support</li>
+                    <li>Improved Prisma setup with client configuration</li>
+                    <li>Better package manager detection</li>
+                </ul>
+
+                <h3>v1.0.4</h3>
+                <ul>
+                    <li>Added Biome linter support</li>
+                    <li>Enhanced project validation</li>
+                    <li>Improved template generation</li>
+                </ul>
+
+                <h3>v1.0.3</h3>
+                <ul>
+                    <li>Added multiple page creation feature</li>
+                    <li>Improved CLI argument handling</li>
+                    <li>Better error messages</li>
+                </ul>
+
+                <h3>v1.0.2</h3>
+                <ul>
+                    <li>Added package manager selection</li>
+                    <li>Enhanced project structure setup</li>
+                    <li>Improved documentation</li>
+                </ul>
+
+                <h3>v1.0.1</h3>
+                <ul>
+                    <li>Initial release</li>
+                    <li>Basic Next.js project scaffolding</li>
+                    <li>TypeScript and Tailwind CSS support</li>
+                </ul>
+            </section>
+
+            <!-- FAQ Section -->
+            <section id="faq" class="section">
+                <h2>Frequently Asked Questions</h2>
+
+                <h3>General Questions</h3>
+
+                <h4>Q: How is this different from create-next-app?</h4>
+                <p>A: create-next-quick offers additional features like multiple page creation, ORM setup, enhanced customization options, and package manager detection while maintaining the simplicity of create-next-app.</p>
+
+                <h4>Q: Can I use this in production projects?</h4>
+                <p>A: Absolutely! create-next-quick generates standard Next.js projects with best practices and is suitable for production use.</p>
+
+                <h4>Q: What Node.js version is required?</h4>
+                <p>A: Node.js 16.x or higher is required, which aligns with Next.js requirements.</p>
+
+                <h3>Usage Questions</h3>
+
+                <h4>Q: Can I create a project in the current directory?</h4>
+                <p>A: Yes, use <code>npx create-next-quick .</code> but ensure the current directory is empty.</p>
+
+                <h4>Q: How do I add more pages after creation?</h4>
+                <p>A: You can manually create pages following the same structure as generated pages, or run the tool again in a different directory.</p>
+
+                <h4>Q: Can I skip certain prompts?</h4>
+                <p>A: Currently, all prompts are interactive, but you can quickly accept defaults by pressing Enter.</p>
+
+                <h3>Technical Questions</h3>
+
+                <h4>Q: Which package managers are supported?</h4>
+                <p>A: npm, yarn, and pnpm are all supported. The tool automatically detects which ones you have installed.</p>
+
+                <h4>Q: Can I use both Prisma and Drizzle?</h4>
+                <p>A: No, you can only choose one ORM per project. However, you can manually add another ORM later if needed.</p>
+
+                <h4>Q: Does it work with the latest Next.js version?</h4>
+                <p>A: Yes, create-next-quick uses the latest version of create-next-app under the hood, ensuring compatibility with the newest Next.js features.</p>
+
+                <h3>Troubleshooting</h3>
+
+                <h4>Q: I'm getting a "directory not empty" error</h4>
+                <p>A: This happens when trying to create in a non-empty directory with ".". Either choose a different name or clean the current directory.</p>
+
+                <h4>Q: The tool seems to hang during installation</h4>
+                <p>A: This usually happens during package installation. Check your internet connection and package manager configuration.</p>
+
+                <h4>Q: Some features aren't working as expected</h4>
+                <p>A: Make sure you're using the latest version by running the command again. If issues persist, check the GitHub repository for known issues.</p>
+
+                <div class="alert alert-info">
+                    <strong>Need Help?</strong> If you can't find an answer here, feel free to open an issue on the GitHub repository.
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetSection = this.getAttribute('data-section');
+
+                    // Update active nav item
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Show target section
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetSection) {
+                            section.classList.add('active');
+                        }
+                    });
+
+                    // Scroll to top
+                    window.scrollTo(0, 0);
+                });
+            });
+
+            // Handle hero button clicks
+            document.querySelectorAll('[data-section]').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const targetSection = this.getAttribute('data-section');
+                    if (targetSection && this.classList.contains('btn')) {
+                        e.preventDefault();
+                        
+                        // Update active nav item
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        const targetNav = document.querySelector(`[data-section="${targetSection}"]`);
+                        if (targetNav && targetNav.classList.contains('nav-item')) {
+                            targetNav.classList.add('active');
+                        }
+
+                        // Show target section
+                        sections.forEach(section => {
+                            section.classList.remove('active');
+                            if (section.id === targetSection) {
+                                section.classList.add('active');
+                            }
+                        });
+
+                        // Scroll to top
+                        window.scrollTo(0, 0);
+                    }
+                });
+            });
+
+            // Mobile menu toggle (if needed in the future)
+            window.toggleSidebar = function() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('open');
+            };
+        });
+    </script>
+</body>
+</html>

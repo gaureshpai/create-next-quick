@@ -12,7 +12,9 @@
   "scripts": {
     "test": "npm run test:generate && mocha",
     "test:generate": "node test/generate-tests.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "docs:serve": "cd docs && python -m http.server 8080",
+    "docs:open": "open https://shubham15986.github.io/create-next-quick/"
   },
   "bin": {
     "create-next-quick": "index.js"
@@ -37,7 +39,7 @@
   "bugs": {
     "url": "https://github.com/gaureshpai/create-next-quick/issues"
   },
-  "homepage": "https://github.com/gaureshpai/create-next-quick#readme",
+  "homepage": "https://shubham15986.github.io/create-next-quick/",
   "dependencies": {
     "child_process": "^1.0.2",
     "fs": "^0.0.1-security",
