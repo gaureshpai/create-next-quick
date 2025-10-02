@@ -13,7 +13,7 @@
     "test": "npm run test:generate && mocha",
     "test:generate": "node test/generate-tests.js",
     "start": "node index.js",
-    "docs:serve": "npx http-server docs -p 8080",
+    "docs:serve": "http-server docs -p 8080 -o",
     "docs:open": "open https://gaureshpai.github.io/create-next-quick/"
   },
   "bin": {
