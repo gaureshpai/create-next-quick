@@ -8,7 +8,7 @@ import { createPages, createLayout } from './lib/templates.js';
 
 (async () => {
   const availablePackageManagers = ["npm"];
-  
+
   try {
     run("yarn --version", process.cwd(), true);
     availablePackageManagers.push("yarn");
@@ -162,7 +162,7 @@ import { createPages, createLayout } from './lib/templates.js';
   }
 
   console.log(chalk.cyan(`Installing dependencies with ${chalk.bold(packageManager)}...`));
-  
+
   try {
     run(command);
     console.log(chalk.bold.green("Dependencies installed successfully"));
@@ -192,36 +192,37 @@ import { createPages, createLayout } from './lib/templates.js';
 
   createLayout(projectPath, projectName, useTypeScript, useAppDir, useSrcDir);
 
-  const pagesPath = useAppDir 
-    ? (useSrcDir ? path.join(projectPath, "src", "app") : path.join(projectPath, "app")) 
+  const pagesPath = useAppDir
+    ? (useSrcDir ? path.join(projectPath, "src", "app") : path.join(projectPath, "app"))
     : (useSrcDir ? path.join(projectPath, "src", "pages") : path.join(projectPath, "pages"));
-  
+
   createPages(pagesPath, pages, useTypeScript, useAppDir, useSrcDir);
 
-  const faviconPathInAppOrSrc = useAppDir 
-    ? (useSrcDir ? path.join(projectPath, "src", "app", "favicon.ico") : path.join(projectPath, "app", "favicon.ico")) 
+  const faviconPathInAppOrSrc = useAppDir
+    ? (useSrcDir ? path.join(projectPath, "src", "app", "favicon.ico") : path.join(projectPath, "app", "favicon.ico"))
     : (useSrcDir ? path.join(projectPath, "src", "favicon.ico") : path.join(projectPath, "favicon.ico"));
-  
+
   if (fileExists(faviconPathInAppOrSrc)) {
     deleteFile(faviconPathInAppOrSrc);
   }
 
   let defaultPagePath;
   if (useAppDir) {
-    defaultPagePath = useSrcDir 
-      ? path.join(projectPath, "src", "app", useTypeScript ? "page.tsx" : "page.js") 
+    defaultPagePath = useSrcDir
+      ? path.join(projectPath, "src", "app", useTypeScript ? "page.tsx" : "page.js")
       : path.join(projectPath, "app", useTypeScript ? "page.tsx" : "page.js");
   } else {
-    defaultPagePath = useSrcDir 
-      ? path.join(projectPath, "src", "pages", useTypeScript ? "index.tsx" : "index.js") 
+    defaultPagePath = useSrcDir
+      ? path.join(projectPath, "src", "pages", useTypeScript ? "index.tsx" : "index.js")
       : path.join(projectPath, "pages", useTypeScript ? "index.tsx" : "index.js");
   }
 
   const emptyPageContent = `export default function Page() {
-  return (
-    <></>
-  );
-}`;
+    return (
+      <></>
+    );
+  }`;
+
   writeFile(defaultPagePath, emptyPageContent);
 
   const readmePath = path.join(projectPath, "README.md");
@@ -231,16 +232,16 @@ import { createPages, createLayout } from './lib/templates.js';
 
   if (linter === "biome") {
     console.log(chalk.blue("Setting up Biome linter..."));
-    
+
     run(`${packageManager} install --save-dev @biomejs/biome`, projectPath);
     run(`npx @biomejs/biome init`, projectPath);
-    
+
     console.log(chalk.bold.green("Biome linter configured"));
   }
 
   if (orm === "prisma") {
     console.log(chalk.blue("Setting up Prisma ORM..."));
-    
+
     run(`${packageManager} install --save-dev prisma`, projectPath);
     run(`${packageManager} install @prisma/client`, projectPath);
     run(`npx prisma init`, projectPath);
@@ -250,36 +251,36 @@ import { createPages, createLayout } from './lib/templates.js';
 
     const prismaContent = `import { PrismaClient } from '@prisma/client'
 
-declare global {
-  var prisma: PrismaClient | undefined
-}
+    declare global {
+      var prisma: PrismaClient | undefined
+    }
 
-const prisma = global.prisma || new PrismaClient()
+    const prisma = global.prisma || new PrismaClient()
 
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma
+    if (process.env.NODE_ENV !== 'production') global.prisma = prisma
 
-export default prisma;`;
+    export default prisma;`;
     writeFile(path.join(prismaLibDir, "prisma.ts"), prismaContent);
-    
+
     console.log(chalk.bold.green("Prisma ORM configured"));
   }
 
   if (orm === "drizzle") {
     console.log(chalk.blue("Setting up Drizzle ORM..."));
-    
+
     run(`${packageManager} install drizzle-orm @vercel/postgres`, projectPath);
     run(`${packageManager} install --save-dev drizzle-kit`, projectPath);
 
     const drizzleConfigContent = `import type { Config } from 'drizzle-kit';
 
-export default {
-  schema: './src/db/schema.ts',
-  out: './drizzle',
-  driver: 'pg',
-  dbCredentials: {
-    connectionString: process.env.DATABASE_URL!,
-  },
-} satisfies Config;`;
+    export default {
+      schema: './src/db/schema.ts',
+      out: './drizzle',
+      driver: 'pg',
+      dbCredentials: {
+        connectionString: process.env.DATABASE_URL!,
+      },
+    } satisfies Config;`;
     writeFile(path.join(projectPath, "drizzle.config.ts"), drizzleConfigContent);
 
     const dbDir = useSrcDir ? path.join(projectPath, "src", "db") : path.join(projectPath, "db");
@@ -287,21 +288,21 @@ export default {
 
     const schemaContent = `import { pgTable, serial, text } from 'drizzle-orm/pg-core';
 
-export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-});`;
+    export const users = pgTable('users', {
+      id: serial('id').primaryKey(),
+      name: text('name').notNull(),
+    });`;
     writeFile(path.join(dbDir, "schema.ts"), schemaContent);
-    
+
     console.log(chalk.bold.green("Drizzle ORM configured"));
   }
 
   if (useShadcn) {
     console.log(chalk.magenta("Setting up Shadcn UI..."));
-    
+
     run(`${packageManager} install --save-dev tailwindcss-animate class-variance-authority`, projectPath);
     run(`npx shadcn@latest init`, projectPath);
-    
+
     const componentsJsonPath = path.join(projectPath, "components.json");
     const componentsJsonContent = {
       "$schema": "https://ui.shadcn.com/schema.json",
@@ -310,8 +311,8 @@ export const users = pgTable('users', {
       "tsx": useTypeScript,
       "tailwind": {
         "config": useTypeScript ? "tailwind.config.ts" : "tailwind.config.js",
-        "css": useAppDir 
-          ? (useSrcDir ? "src/app/globals.css" : "app/globals.css") 
+        "css": useAppDir
+          ? (useSrcDir ? "src/app/globals.css" : "app/globals.css")
           : (useSrcDir ? "src/styles/globals.css" : "styles/globals.css"),
         "baseColor": "slate",
         "cssVariables": true
@@ -322,7 +323,7 @@ export const users = pgTable('users', {
       }
     };
     writeFile(componentsJsonPath, JSON.stringify(componentsJsonContent, null, 2));
-    
+
     console.log(chalk.bold.green("Shadcn UI configured"));
   }
 
