@@ -58,24 +58,22 @@ jobs:
           merge-multiple: true
 
       - name: Combine and post comment
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const fs = require('fs');
-            const path = require('path');
-
+            const fs = await import('fs/promises');
+            const path = await import('path');
             const testResultsDir = 'test-results';
             let commentBody = '## Test Results Summary\n\n';
             let overallStatus = '✅ All tests passed across all Node.js versions.';
             let hasFailures = false;
 
-            const files = fs.readdirSync(testResultsDir);
+            const files = await fs.readdir(testResultsDir);
             for (const file of files) {
               if (file.startsWith('test-results-') && file.endsWith('.json')) {
                 const nodeVersion = file.replace('test-results-', '').replace('.json', '');
                 const filePath = path.join(testResultsDir, file);
-                const results = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                const results = JSON.parse(await fs.readFile(filePath, 'utf8'));
 
                 commentBody += `### Node.js ${nodeVersion}\n`;
                 if (results.stats.failures > 0) {
@@ -87,7 +85,8 @@ jobs:
                 }
 
                 for (const test of results.tests) {
-                                      commentBody += `- ${test.state === 'passed' ? '✅' : (test.state === 'failed' ? '❌' : '➖')} ${test.fullTitle}\n`;                  if (test.state === 'failed' && test.err) {
+                  commentBody += `- ${test.state === 'passed' ? '✅' : (test.state === 'failed' ? '❌' : '➖')} ${test.fullTitle}\n`;
+                  if (test.state === 'failed' && test.err && test.err.message) {
                     commentBody += `  \`\`\`\n  ${test.err.message}\n  \`\`\`\n`;
                   }
                 }
@@ -97,13 +96,9 @@ jobs:
 
             commentBody = `${overallStatus}\n\n${commentBody}`;
 
-            const issue_number = context.issue.number;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-
-            github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number,
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
               body: commentBody
             });
