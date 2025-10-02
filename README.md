@@ -20,6 +20,7 @@
 - **Conditional API Route Deletion** — deletes the default `api/hello.js` route if using the `src` directory and not the `app` directory.
 - **Safe Project Creation** — checks if the current directory is empty when creating a project in the current directory (`.`) and prevents accidental overwrites.
 - **ORM Support** — choose between no ORM, Prisma, and Drizzle.
+- **Authentication Providers** — integrated support for NextAuth.js, Clerk, and Firebase Auth with automatic package installation and environment setup.
 - **Automated CI/CD Feedback** — Pull Requests now receive automated comments on test status.
 
 ## Installation
@@ -58,6 +59,8 @@ When you run `npx create-next-quick` without a project name, you will be prompte
 6.  **Enter the names of the pages you want to create (default: none)**
 7.  **Choose a linter (default: none)**
 8.  **Choose an ORM (default: none)**
+9.  **Do you want to use Shadcn UI? (default: No)**
+10. **Choose an authentication provider (default: none)** — NextAuth.js, Clerk, or Firebase Auth
 
 Example run:
 
@@ -76,13 +79,44 @@ npx create-next-quick
 ? Choose a linter (default: none): none
 ? Choose an ORM (default: none): prisma
 ? Do you want to use Shadcn UI? No
+? Choose an authentication provider (default: none): nextauth
 ```
 
 ## Commands
 
--   `npm run dev` — starts the development server.
--   `npm run build` — builds the project for production.
--   `npm start` — starts the production server.
+- `npm run dev` — starts the development server.
+- `npm run build` — builds the project for production.
+- `npm start` — starts the production server.
+
+## Authentication Providers
+
+create-next-quick supports several popular authentication providers out of the box:
+
+### NextAuth.js
+
+- **Package**: `next-auth`
+- **Setup**: Automatic package installation and environment variable configuration
+- **Environment Variables**: `NEXTAUTH_URL`, `NEXTAUTH_SECRET`
+
+### Clerk
+
+- **Package**: `@clerk/nextjs`
+- **Setup**: Automatic package installation and environment variable configuration
+- **Environment Variables**: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`
+
+### Firebase Auth
+
+- **Package**: `firebase`
+- **Setup**: Automatic package installation and environment variable configuration
+- **Environment Variables**: `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+
+When you select an authentication provider, the CLI will:
+
+1. Install the required package automatically
+2. Create a `.env` file with placeholder environment variables
+3. Leave your project ready for authentication setup
+
+**Note**: You'll need to replace the placeholder values in the `.env` file with your actual API keys and configuration from your chosen provider.
 
 ## Testing
 
@@ -115,8 +149,8 @@ Our CI/CD pipeline will automatically run tests and provide feedback directly on
 
 Before submitting, please ensure:
 
--   Your code follows project style guidelines
--   You have tested your changes locally
+- Your code follows project style guidelines
+- You have tested your changes locally
 
 ## License
 
