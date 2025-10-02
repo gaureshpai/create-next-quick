@@ -31,7 +31,7 @@ jobs:
 
       - name: Greet on New Pull Request
         uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request_target'
         with:
           script: |
             const body = `🎉 Welcome, @${{ github.actor }}!
