@@ -11,11 +11,14 @@ permissions:
   pull-requests: write
 
 jobs:
-  test-summary:
+  post-summary:
+    name: Post Test Summary
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    if: github.event.workflow_run.conclusion != 'skipped'
+    
     steps:
-      - name: Download Test Results
+      - name: Download artifacts
+        id: download
         uses: actions/github-script@v7
         with:
           script: |
@@ -25,8 +28,10 @@ jobs:
               run_id: context.payload.workflow_run.id,
             });
             
+            let hasErrors = false;
             for (const artifact of artifacts.data.artifacts) {
-              if (artifact.name.startsWith('test-results-')) {
+              try {
+                console.log(`Processing artifact: ${artifact.name}`);
                 const download = await github.rest.actions.downloadArtifact({
                   owner: context.repo.owner,
                   repo: context.repo.name,
@@ -35,86 +40,131 @@ jobs:
                 });
                 
                 require('fs').writeFileSync(`${artifact.name}.zip`, Buffer.from(download.data));
-                
                 await exec.exec('unzip', [`${artifact.name}.zip`, '-d', artifact.name]);
+              } catch (error) {
+                console.error(`Error processing artifact ${artifact.name}:`, error);
+                hasErrors = true;
               }
             }
+            
+            return { hasErrors };
 
-      - name: Generate and Post Summary
+      - name: Generate detailed summary
+        if: success()
+        id: generate-summary
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const path = require('path');
             
-            // Function to read test results from directories
-            function readTestResults(directory) {
-              const results = [];
-              const files = fs.readdirSync(directory);
+            function formatTestResults(results) {
+              const stats = {
+                passed: results.numPassedTests || 0,
+                failed: results.numFailedTests || 0,
+                skipped: results.numPendingTests || 0,
+                total: results.numTotalTests || 0,
+                duration: results.testResults?.[0]?.perfStats?.duration || 0
+              };
               
-              for (const file of files) {
-                if (file.endsWith('.json')) {
-                  const content = fs.readFileSync(path.join(directory, file), 'utf8');
-                  results.push(JSON.parse(content));
-                }
-              }
-              
-              return results;
+              return `
+                - ✅ Passed: ${stats.passed}
+                - ❌ Failed: ${stats.failed}
+                - ⚠️ Skipped: ${stats.skipped}
+                - 📊 Total: ${stats.total}
+                - ⏱️ Duration: ${(stats.duration / 1000).toFixed(2)}s
+              `;
             }
             
-            // Collect all test results
-            let allResults = [];
-            const artifacts = fs.readdirSync('.');
-            for (const artifact of artifacts) {
-              if (artifact.startsWith('test-results-')) {
-                const results = readTestResults(artifact);
-                allResults = allResults.concat(results);
-              }
-            }
+            let summary = `## 🧪 Test Results Summary\n\n`;
+            summary += `### Status: ${context.payload.workflow_run.conclusion === 'success' ? '✅ Passed' : '❌ Failed'}\n\n`;
             
-            // Generate summary markdown
-            let summary = '## 🧪 Test Summary\n\n';
-            
-            // Group results by Node.js version
-            const resultsByVersion = {};
-            for (const result of allResults) {
-              const version = result.nodeVersion || 'unknown';
-              if (!resultsByVersion[version]) {
-                resultsByVersion[version] = {
-                  passed: 0,
-                  failed: 0,
-                  skipped: 0,
-                  total: 0
-                };
-              }
-              
-              resultsByVersion[version].passed += result.numPassedTests || 0;
-              resultsByVersion[version].failed += result.numFailedTests || 0;
-              resultsByVersion[version].skipped += result.numPendingTests || 0;
-              resultsByVersion[version].total += result.numTotalTests || 0;
-            }
-            
-            // Add version-specific results
-            for (const [version, stats] of Object.entries(resultsByVersion)) {
+            // Process results for each Node version
+            for (const version of ['18.x', '20.x', '22.x']) {
               summary += `### Node.js ${version}\n`;
-              summary += `- ✅ Passed: ${stats.passed}\n`;
-              summary += `- ❌ Failed: ${stats.failed}\n`;
-              summary += `- ⚠️ Skipped: ${stats.skipped}\n`;
-              summary += `- 📊 Total: ${stats.total}\n\n`;
+              const resultsPath = `test-results-${version}/test-results-${version}.json`;
+              
+              try {
+                if (fs.existsSync(resultsPath)) {
+                  const results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
+                  summary += formatTestResults(results);
+                } else {
+                  summary += `❌ No test results found\n`;
+                }
+              } catch (error) {
+                summary += `⚠️ Error processing results: ${error.message}\n`;
+              }
+              
+              summary += '\n';
             }
             
-            // Get PR number from the workflow run
+            // Add workflow run details
+            summary += `\n### Workflow Details\n`;
+            summary += `- Run ID: ${context.payload.workflow_run.id}\n`;
+            summary += `- Triggered by: ${context.payload.workflow_run.event}\n`;
+            summary += `- Started at: ${new Date(context.payload.workflow_run.created_at).toUTCString()}\n`;
+            
+            return summary;
+
+      - name: Post comment
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const summary = `${steps.generate-summary.outputs.result}\n\n<details>
+            <summary>ℹ️ About this test summary</summary>
+            
+            This comment was automatically generated by GitHub Actions to provide visibility into test results.
+            - If you see any issues, please check the workflow logs for more details.
+            - Test results are kept for 7 days.
+            </details>`;
+            
             const pr = context.payload.workflow_run.pull_requests[0];
             if (!pr) {
-              console.log('No pull request found in the workflow run.');
+              console.log('No pull request found for this workflow run');
               return;
             }
             
-            // Post comment to PR
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.name,
+                issue_number: pr.number,
+                body: summary
+              });
+              
+              console.log('Successfully posted test summary comment');
+            } catch (error) {
+              console.error('Error posting comment:', error);
+              throw error;
+            }
+
+      - name: Handle errors
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.workflow_run.pull_requests[0];
+            if (!pr) {
+              console.log('No pull request found for this workflow run');
+              return;
+            }
+            
+            const errorMessage = `## ❌ Test Summary Generation Failed
+            
+            There was an error generating or posting the test summary.
+            Please check the [workflow logs](${context.payload.workflow_run.html_url}) for more details.
+            
+            This is likely a temporary issue. You can:
+            1. Check the workflow logs for specific errors
+            2. Re-run the workflow
+            3. Contact the repository maintainers if the issue persists
+            `;
+            
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.name,
               issue_number: pr.number,
-              body: summary
+              body: errorMessage
             });
 
