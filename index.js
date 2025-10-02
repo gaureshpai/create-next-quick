@@ -84,52 +84,52 @@ import { createPages, createLayout } from './lib/templates.js';
     {
       type: "confirm",
       name: "useTypeScript",
-      message: "Do you want to use TypeScript?",
+      message: "Do you want to use TypeScript? (default: Yes)",
       default: true
     },
     {
       type: "confirm",
       name: "useTailwind",
-      message: "Do you want to use Tailwind CSS?",
+      message: "Do you want to use Tailwind CSS? (default: Yes)",
       default: true
     },
     {
       type: "confirm",
       name: "useSrcDir",
-      message: "Do you want to use src directory?",
+      message: "Do you want to use src directory? (default: Yes)",
       default: true
     },
     {
       type: "confirm",
       name: "useAppDir",
-      message: "Do you want to use the app directory?",
+      message: "Do you want to use the app directory? (default: Yes)",
       default: true
     },
     {
       type: "input",
       name: "pages",
-      message: "Enter pages (comma-separated, default: none):",
+      message: "Enter the names of the pages you want to create (comma-separated, default: none):",
       default: "",
       filter: (input) => input.split(',').map((page) => page.trim()).filter(page => page !== '')
     },
     {
       type: "list",
       name: "linter",
-      message: "Choose a linter:",
+      message: "Choose a linter (default: none):",
       choices: ["none", "eslint", "biome"],
       default: "none"
     },
     {
       type: "list",
       name: "orm",
-      message: "Choose an ORM:",
+      message: "Choose an ORM (default: none):",
       choices: ["none", "prisma", "drizzle"],
       default: "none"
     },
     {
       type: "confirm",
       name: "useShadcn",
-      message: "Do you want to use Shadcn UI?",
+      message: "Do you want to use Shadcn UI? (default: No)",
       default: false
     }
   ]);
@@ -212,7 +212,12 @@ import { createPages, createLayout } from './lib/templates.js';
   let defaultPagePath;
   if (useAppDir) defaultPagePath = useSrcDir ? path.join(projectPath, "src", "app", useTypeScript ? "page.tsx" : "page.js") : path.join(projectPath, "app", useTypeScript ? "page.tsx" : "page.js");
   else defaultPagePath = useSrcDir ? path.join(projectPath, "src", "pages", useTypeScript ? "index.tsx" : "index.js") : path.join(projectPath, "pages", useTypeScript ? "index.tsx" : "index.js");
-  const emptyPageContent = `export default function Page() { return <></>; }`;
+  const emptyPageContent = `export default function Page() {
+  return (
+    <></>
+  );
+}
+`;
   writeFile(defaultPagePath, emptyPageContent);
 
   writeFile(path.join(projectPath, "README.md"), `# ${projectName}`);
@@ -234,11 +239,16 @@ import { createPages, createLayout } from './lib/templates.js';
 
     const prismaContent = `import { PrismaClient } from '@prisma/client'
 
-    declare global { var prisma: PrismaClient | undefined }
+declare global {
+  var prisma: PrismaClient | undefined
+}
 
-    const prisma = global.prisma || new PrismaClient()
-    if (process.env.NODE_ENV !== 'production') global.prisma = prisma
-    export default prisma;`;
+const prisma = global.prisma || new PrismaClient()
+
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma
+
+export default prisma;
+`;
     writeFile(path.join(prismaLibDir, "prisma.ts"), prismaContent);
   }
 
@@ -246,20 +256,30 @@ import { createPages, createLayout } from './lib/templates.js';
     run(`${packageManager} install drizzle-orm @vercel/postgres`, projectPath);
     run(`${packageManager} install --save-dev drizzle-kit`, projectPath);
 
-    writeFile(path.join(projectPath, "drizzle.config.ts"), `import type { Config } from 'drizzle-kit';
+    const drizzleConfigContent = `import type { Config } from 'drizzle-kit';
 
-    export default {
-    schema: './src/db/schema.ts',
-    out: './drizzle',
-    driver: 'pg',
-    dbCredentials: { connectionString: process.env.DATABASE_URL! },
-    } satisfies Config;`);
+export default {
+  schema: './src/db/schema.ts',
+  out: './drizzle',
+  driver: 'pg',
+  dbCredentials: {
+    connectionString: process.env.DATABASE_URL!,
+  },
+} satisfies Config;
+`;
+    writeFile(path.join(projectPath, "drizzle.config.ts"), drizzleConfigContent);
 
     const dbDir = useSrcDir ? path.join(projectPath, "src", "db") : path.join(projectPath, "db");
     createFolder(dbDir);
-    writeFile(path.join(dbDir, "schema.ts"), `import { pgTable, serial, text } from 'drizzle-orm/pg-core';
 
-    export const users = pgTable('users', { id: serial('id').primaryKey(), name: text('name').notNull() });`);
+    const schemaContent = `import { pgTable, serial, text } from 'drizzle-orm/pg-core';
+
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+});
+`;
+    writeFile(path.join(dbDir, "schema.ts"), schemaContent);
   }
 
   if (useShadcn) {
@@ -283,7 +303,10 @@ import { createPages, createLayout } from './lib/templates.js';
     writeFile(componentsJsonPath, JSON.stringify(componentsJsonContent, null, 2));
   }
 
-  if (orm !== "none") writeFile(path.join(projectPath, ".env"), `DATABASE_URL="your_db_url"`);
+  if (orm !== "none") {
+    const envContent = `DATABASE_URL="your_db_url"`;
+    writeFile(path.join(projectPath, ".env"), envContent);
+  }
 
   console.log();
   if (!isTest) {
