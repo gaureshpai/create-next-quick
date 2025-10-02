@@ -14,6 +14,10 @@ jobs:
       issues: write
       pull-requests: write
     steps:
+      - name: Dump GitHub context
+        uses: actions/github-script@v7
+        with:
+          script: console.log(JSON.stringify(github, null, 2))
       - name: Download all test results
         uses: actions/download-artifact@v4
         with:
