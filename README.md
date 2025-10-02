@@ -1,117 +1,144 @@
-# create-next-quick
+# create-next-quick 🚀
 
-**create-next-quick** is a CLI tool that lets you instantly create a new Next.js project with your choice of options.
+[![npm version](https://img.shields.io/npm/v/create-next-quick.svg)](https://www.npmjs.com/package/create-next-quick)
+[![license](https://img.shields.io/github/license/gaureshpai/create-next-quick.svg)](./LICENSE)
 
-## Why create-next-quick?
+A fast and interactive CLI tool to scaffold a new Next.js project with your preferred setup.  
+Choose TypeScript, Tailwind CSS, Shadcn UI, Linters, ORMs, and multiple pages in just a few prompts — no boilerplate hassle.
 
-`create-next-quick` is a lightweight and fast alternative to `create-next-app`. It provides an interactive setup process that lets you choose the options you want for your project, such as TypeScript, Tailwind CSS, and the Next.js app directory. It also lets you create multiple pages at once, which can save you a lot of time when starting a new project.
+---
 
-## Features
+## 📑 Table of Contents
 
-- **CLI Argument for Project Name** — skip the project name prompt by passing the app name as a CLI argument.
-- **Package Manager Detection** — automatically detects installed package managers (`npm`, `yarn`, `pnpm`) and only prompts with available options.
-- **Next.js App Directory** — support for the new Next.js app directory.
-- **Custom Page Generation** — create multiple pages at once.
-- **Linter Support** — choose between no linter, ESLint, and Biome.
-- **Shadcn UI** — automatically installs and configures Shadcn UI with a default style and color.
-- **Clean Project Setup** — removes default favicon and clears public folder.
-- **Empty Default Page** — overwrites the default `page.tsx` or `index.tsx` with an empty template.
-- **Dynamic Metadata** — always overwrites the `layout.tsx` or `layout.jsx` with a minimal template.
-- **Conditional API Route Deletion** — deletes the default `api/hello.js` route if using the `src` directory and not the `app` directory.
-- **Safe Project Creation** — checks if the current directory is empty when creating a project in the current directory (`.`) and prevents accidental overwrites.
-- **ORM Support** — choose between no ORM, Prisma, and Drizzle.
-- **Automated CI/CD Feedback** — Pull Requests now receive automated comments on test status.
+- [Why create-next-quick?](#-why-create-next-quick)
+- [Features](#-features)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Example Walkthrough](#-example-walkthrough)
+- [Commands](#-commands)
+- [Testing](#-testing)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Contributors](#-contributors)
 
-## Installation
+---
 
-You don’t need to install it globally — run it instantly with `npx`:
+## 💡 Why create-next-quick?
 
-```bash
-npx create-next-quick
-```
+`create-next-quick` is a lightweight and fast alternative to `create-next-app`.
 
-## 🛠 Usage
+It provides an **interactive setup process** that lets you choose project options such as:
 
-You can run `npx create-next-quick` with or without a project name.
+- TypeScript
+- Tailwind CSS
+- Next.js App Directory
+- Shadcn UI
+- Linter (ESLint / Biome / None)
+- ORM (Prisma / Drizzle / None)
 
-### With a Project Name
+This saves you time when starting a new project.
 
-```bash
-npx create-next-quick my-app
-```
+---
 
-This will skip the project name prompt and create a new directory named `my-app`.
+## ✨ Features
 
-### Without a Project Name
+- 🎯 **CLI Argument for Project Name** — skip prompts with `npx create-next-quick my-app`
+- 📦 **Package Manager Detection** — supports npm, yarn, pnpm
+- 🗂️ **Next.js App Directory** support
+- 📑 **Custom Page Generation** — create multiple pages at once
+- 🧹 **Clean Project Setup** — removes default favicon & clears public folder
+- 🎨 **Shadcn UI** auto-installation with default theme
+- 🔍 **Linter Options** — ESLint / Biome / None
+- 🛡 **Safe Project Creation** — prevents overwrites in non-empty directories
+- ⚡ **ORM Support** — Prisma / Drizzle
+- 🔄 **Automated CI/CD Feedback** on PRs
 
-```bash
-npx create-next-quick
-```
+---
 
-When you run `npx create-next-quick` without a project name, you will be prompted to:
+## 📥 Installation
 
-1.  **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory). If you use `.` the directory must be empty.
-2.  **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose.
-3.  **Choose to use TypeScript (default: Yes)**
-4.  **Choose to use Tailwind CSS (default: Yes)**
-5.  **Choose to use the app directory (default: Yes)**
-6.  **Enter the names of the pages you want to create (default: none)**
-7.  **Choose a linter (default: none)**
-8.  **Choose an ORM (default: none)**
-
-Example run:
+Clone your fork, install dependencies, and run locally:
 
 ```bash
-npx create-next-quick
-```
+git clone https://github.com/<your-username>/create-next-quick.git
+cd create-next-quick
+npm install
+node index.js      # OR npm start
+⚠️ npx create-next-quick works only with the published npm package. For your fork, use the commands above.
 
-### Example Walkthrough
+🛠 Usage
+With a Project Name
+bash
+Copy code
+node index.js my-app
+Creates a folder my-app with your chosen setup.
 
-```
+Without a Project Name
+bash
+Copy code
+node index.js
+You’ll be prompted for options:
+
+pgsql
+Copy code
+? Enter project name: my-portfolio
+? Do you want to use TypeScript? (Y/n)
+? Do you want to use Tailwind CSS? (Y/n)
+? Do you want to use the app directory? (Y/n)
+? Enter pages (comma-separated): home, about, contact
+? Choose a linter: None / ESLint / Biome
+? Choose an ORM: None / Prisma / Drizzle
+? Do you want to use Shadcn UI? (Y/n)
+▶️ Example Walkthrough
+bash
+Copy code
+node index.js
+Sample run:
+
+pgsql
+Copy code
 ? Enter project name: my-portfolio
 ? Do you want to use TypeScript? Yes
 ? Do you want to use Tailwind CSS? Yes
 ? Do you want to use the app directory? Yes
-? Enter the names of the pages you want to create (comma-separated): home, about, contact
-? Choose a linter (default: none): none
-? Choose an ORM (default: none): prisma
+? Enter pages: home, about, contact
+? Choose a linter: none
+? Choose an ORM: prisma
 ? Do you want to use Shadcn UI? No
-```
+Done! 🎉 Run your project:
 
-## Commands
+bash
+Copy code
+cd my-portfolio
+npm run dev
+🔧 Commands
+npm run dev → Start development server
 
--   `npm run dev` — starts the development server.
--   `npm run build` — builds the project for production.
--   `npm start` — starts the production server.
+npm run build → Build for production
 
-## Testing
+npm start → Run production server
 
-The test suite for `create-next-quick` is designed to be dynamic and data-driven. Test cases are automatically generated based on the available options in `index.js`, ensuring comprehensive coverage as the CLI evolves.
+🧪 Testing
+Generate test cases:
 
-To run the tests:
+bash
+Copy code
+npm run test:generate
+Run tests:
 
-1.  **Generate Test Cases:** First, generate the test cases by running:
-    ```bash
-    npm run test:generate
-    ```
-    This script parses `index.js` and creates `test/generated-test-cases.js`.
-2.  **Run Tests:** Then, execute the test suite:
-    ```bash
-    npm test
-    ```
-    This will run all generated test cases using Mocha.
+bash
+Copy code
+npm test
+🤝 Contributing
+Fork & clone repo
 
-## Contributing
+Create a branch: git checkout -b feature-name
 
-We welcome contributions! Follow these steps:
+Commit changes: git commit -m "Added feature"
 
-1.  Fork the repository
-2.  Create a new branch: `git checkout -b feature-name`
-3.  Commit your changes: `git commit -m "Added new feature"`
-4.  Push to your branch: `git push origin feature-name`
-5.  Open a Pull Request
+Push & open a PR 🎯
 
-Our CI/CD pipeline will automatically run tests and provide feedback directly on your Pull Request.
+CI/CD will automatically run tests and comment on your PR.
 
 Before submitting, please ensure:
 
@@ -126,6 +153,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 <div align="center">
 <a href="https://github.com/gaureshpai/create-next-quick/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=gaureshpai/create-next-quick" /> 
+  <img src="https://contrib.rocks/image?repo=gaureshpai/create-next-quick" />
 </a>
 </div>
+```
