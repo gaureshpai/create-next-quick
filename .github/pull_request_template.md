@@ -1,39 +1,43 @@
 ## Description
 
-Improved the README.md to make it more developer-friendly and in sync with the latest CLI prompts.
-
-- Added clearer installation and usage instructions
-- Added developer-friendly example walkthrough with CLI prompts
-- Structured sections with headings for easier navigation
-- Added badges and contributors section
+<!-- Describe your changes in detail -->
 
 ## Related Issue
 
-Fixes #33
+<!-- Please link to the issue here -->
+
+Fixes #
 
 ## Type of Change
+
+<!-- Please delete options that are not relevant -->
 
 - [ ] Bug fix (non-breaking change addressing an issue)
 - [ ] New feature (non-breaking change adding functionality)
 - [ ] Breaking change (fix or feature causing existing functionality to break)
-- [x] Documentation update
+- [ ] Documentation update
 
 ## Testing
 
-- [x] Ran `npx create-next-quick` locally to verify README matches prompts
-- [x] Checked formatting and readability of README on GitHub preview
+<!-- Please describe how you tested your changes -->
+
+- [ ] Test A
+- [ ] Test B
 
 ## Checklist
 
-- [x] My code follows the project's style guidelines
-- [x] I have performed a self-review of my code
-- [x] I have made corresponding changes to the documentation
-- [x] My changes generate no new warnings
+- [ ] My code follows the project's style guidelines
+- [ ] I have performed a self-review of my code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
 
 ## Screenshots
 
-<!-- Not applicable for README updates -->
+<!-- If applicable, add screenshots to help explain your changes -->
 
 ## Additional Notes
 
-This update ensures that the README reflects the current behavior of `create-next-quick` and improves usability for developers trying to scaffold a new project quickly.
+<!-- Add any other context about the PR here -->
