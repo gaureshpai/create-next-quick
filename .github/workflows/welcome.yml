@@ -3,7 +3,7 @@ name: Welcome New Contributors
 on:
   issues:
     types: [opened]
-  pull_request_target:
+  pull_request:
     types: [opened]
 
 jobs:
@@ -16,7 +16,6 @@ jobs:
       - name: Greet First-Time Contributors
         uses: actions/first-interaction@v3
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
           issue_message: |
             👋 Hello @${{ github.actor }}!
 
