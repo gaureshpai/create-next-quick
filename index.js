@@ -39,7 +39,6 @@ import { createPages, createLayout } from './lib/templates.js';
   const appName = process.argv[2];
   const answers = {};
 
-  // Display welcome banner
   console.log();
   console.log(chalk.bold.cyan("╔═══════════════════════════════════════════╗"));
   console.log(chalk.bold.cyan("║") + chalk.bold.white("    🚀 Create Next Quick CLI Tool         ") + chalk.bold.cyan(" ║"));
@@ -60,7 +59,7 @@ import { createPages, createLayout } from './lib/templates.js';
       {
         type: "input",
         name: "projectName",
-        message: chalk.bold.hex("bbd676")("Enter project name:"),
+        message: "Enter project name:",
         filter: (input) => input.trim() === '' ? '.' : input.trim(),
         validate: validateProjectName
       }
@@ -72,59 +71,59 @@ import { createPages, createLayout } from './lib/templates.js';
     {
       type: "list",
       name: "packageManager",
-      message: chalk.bold.hex("bbd676")("Choose a package manager:"),
+      message: "Choose a package manager:",
       choices: availablePackageManagers,
       default: "pnpm"
     },
     {
       type: "confirm",
       name: "useTypeScript",
-      message: chalk.bold.hex("bbd676")("Do you want to use TypeScript?"),
+      message: "Do you want to use TypeScript?",
       default: true
     },
     {
       type: "confirm",
       name: "useTailwind",
-      message: chalk.bold.hex("bbd676")("Do you want to use Tailwind CSS?"),
+      message: "Do you want to use Tailwind CSS?",
       default: true
     },
     {
       type: "confirm",
       name: "useSrcDir",
-      message: chalk.bold.hex("bbd676")("Do you want to use src directory?"),
+      message: "Do you want to use src directory?",
       default: true
     },
     {
       type: "confirm",
       name: "useAppDir",
-      message: chalk.bold.hex("bbd676")("Do you want to use the app directory?"),
+      message: "Do you want to use the app directory?",
       default: true
     },
     {
       type: "input",
       name: "pages",
-      message: chalk.bold.hex("bbd676")("Enter pages (comma-separated, default: none):"),
+      message: "Enter pages (comma-separated, default: none):",
       default: "",
       filter: (input) => input.split(',').map((page) => page.trim()).filter(page => page !== '')
     },
     {
       type: "list",
       name: "linter",
-      message: chalk.bold.hex("bbd676")("Choose a linter:"),
+      message: "Choose a linter:",
       choices: ["none", "eslint", "biome"],
       default: "none"
     },
     {
       type: "list",
       name: "orm",
-      message: chalk.bold.hex("bbd676")("Choose an ORM:"),
+      message: "Choose an ORM:",
       choices: ["none", "prisma", "drizzle"],
       default: "none"
     },
     {
       type: "confirm",
       name: "useShadcn",
-      message: chalk.bold.hex("bbd676")("Do you want to use Shadcn UI?"),
+      message: "Do you want to use Shadcn UI?",
       default: false
     }
   ]);
