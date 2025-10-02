@@ -48,6 +48,6 @@
   },
   "devDependencies": {
     "inquirer-test": "^2.0.1",
-    "mocha": "^11.7.3"
+    "mocha": "^11.7.4"
   }
 }
