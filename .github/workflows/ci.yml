@@ -6,30 +6,103 @@ on:
   push:
     branches: [ main ]
 
+env:
+  NODE_OPTIONS: --max-old-space-size=4096
+
 jobs:
   test:
+    name: Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false  # Continue with other versions even if one fails
       matrix:
         node-version: [18.x, 20.x, 22.x]
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Fetch more history for better testing
       
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'  # Enable npm caching
           
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "Installing dependencies with Node.js ${{ matrix.node-version }}"
+          npm ci --prefer-offline
         
       - name: Run tests
-        run: npm test -- --json --outputFile=test-results.json
+        id: run-tests
+        continue-on-error: true  # Don't fail the whole workflow if tests fail
+        run: |
+          echo "Running tests with Node.js ${{ matrix.node-version }}"
+          mkdir -p test-results
+          npm test -- --json --outputFile=./test-results/test-results-${{ matrix.node-version }}.json || touch ./test-results/test-failed
+        
+      - name: Process test results
+        id: process-results
+        run: |
+          echo "Processing test results for Node.js ${{ matrix.node-version }}"
+          if [ -f "./test-results/test-failed" ]; then
+            echo "::warning::Tests failed for Node.js ${{ matrix.node-version }}"
+            echo "failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "failed=false" >> $GITHUB_OUTPUT
+          fi
         
       - name: Upload test results
         uses: actions/upload-artifact@v3
-        if: always()
+        if: always()  # Upload results even if previous steps failed
         with:
           name: test-results-${{ matrix.node-version }}
-          path: test-results.json
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Check test status
+        if: steps.process-results.outputs.failed == 'true'
+        run: exit 1
+
+  # Job to collect and analyze all test results
+  analyze-results:
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()  # Run even if test jobs fail
+    
+    steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v3
+        with:
+          path: all-test-results
+          
+      - name: Generate test summary
+        id: summary
+        run: |
+          echo "Analyzing test results from all Node.js versions"
+          
+          # Initialize summary
+          echo "## Test Results Summary" > summary.md
+          echo "" >> summary.md
+          
+          # Process each version's results
+          for version in "18.x" "20.x" "22.x"; do
+            echo "### Node.js ${version}" >> summary.md
+            if [ -f "all-test-results/test-results-${version}/test-failed" ]; then
+              echo "❌ Tests failed" >> summary.md
+            else
+              echo "✅ Tests passed" >> summary.md
+            fi
+            echo "" >> summary.md
+          done
+          
+          cat summary.md
+          
+      - name: Upload summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-summary
+          path: summary.md
