@@ -1,0 +1,120 @@
+```yaml
+name: Test Summary Comment
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types:
+      - completed
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  test-summary:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Download Test Results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              run_id: context.payload.workflow_run.id,
+            });
+            
+            for (const artifact of artifacts.data.artifacts) {
+              if (artifact.name.startsWith('test-results-')) {
+                const download = await github.rest.actions.downloadArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.name,
+                  artifact_id: artifact.id,
+                  archive_format: 'zip',
+                });
+                
+                require('fs').writeFileSync(`${artifact.name}.zip`, Buffer.from(download.data));
+                
+                await exec.exec('unzip', [`${artifact.name}.zip`, '-d', artifact.name]);
+              }
+            }
+
+      - name: Generate and Post Summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Function to read test results from directories
+            function readTestResults(directory) {
+              const results = [];
+              const files = fs.readdirSync(directory);
+              
+              for (const file of files) {
+                if (file.endsWith('.json')) {
+                  const content = fs.readFileSync(path.join(directory, file), 'utf8');
+                  results.push(JSON.parse(content));
+                }
+              }
+              
+              return results;
+            }
+            
+            // Collect all test results
+            let allResults = [];
+            const artifacts = fs.readdirSync('.');
+            for (const artifact of artifacts) {
+              if (artifact.startsWith('test-results-')) {
+                const results = readTestResults(artifact);
+                allResults = allResults.concat(results);
+              }
+            }
+            
+            // Generate summary markdown
+            let summary = '## 🧪 Test Summary\n\n';
+            
+            // Group results by Node.js version
+            const resultsByVersion = {};
+            for (const result of allResults) {
+              const version = result.nodeVersion || 'unknown';
+              if (!resultsByVersion[version]) {
+                resultsByVersion[version] = {
+                  passed: 0,
+                  failed: 0,
+                  skipped: 0,
+                  total: 0
+                };
+              }
+              
+              resultsByVersion[version].passed += result.numPassedTests || 0;
+              resultsByVersion[version].failed += result.numFailedTests || 0;
+              resultsByVersion[version].skipped += result.numPendingTests || 0;
+              resultsByVersion[version].total += result.numTotalTests || 0;
+            }
+            
+            // Add version-specific results
+            for (const [version, stats] of Object.entries(resultsByVersion)) {
+              summary += `### Node.js ${version}\n`;
+              summary += `- ✅ Passed: ${stats.passed}\n`;
+              summary += `- ❌ Failed: ${stats.failed}\n`;
+              summary += `- ⚠️ Skipped: ${stats.skipped}\n`;
+              summary += `- 📊 Total: ${stats.total}\n\n`;
+            }
+            
+            // Get PR number from the workflow run
+            const pr = context.payload.workflow_run.pull_requests[0];
+            if (!pr) {
+              console.log('No pull request found in the workflow run.');
+              return;
+            }
+            
+            // Post comment to PR
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              issue_number: pr.number,
+              body: summary
+            });
+```
