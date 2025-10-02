@@ -67,9 +67,20 @@ npx create-next-quick
 
 ### Example Walkthrough
 
+```
+? Enter project name: my-portfolio
+? Do you want to use TypeScript? Yes
+? Do you want to use Tailwind CSS? Yes
+? Do you want to use the app directory? Yes
+? Enter the names of the pages you want to create (comma-separated): home, about, contact
+? Choose a linter (default: none): none
+? Choose an ORM (default: none): prisma
+? Do you want to use Shadcn UI? No
+```
+
 ## CLI Demo
 
-<video src="https://github.com/user-attachments/assets/ea7d6d99-8ebb-4d43-b33f-efbfb806fbc3" controls width="600"></video>
+<video src="https://github.com/user-attachments/assets/8ca75dbc-3c8e-42f4-980d-b41eb3bb3dc7" controls width="600"></video>
 
 ## Commands
 
