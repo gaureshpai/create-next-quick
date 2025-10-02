@@ -177,13 +177,11 @@ import { createPages, createLayout } from './lib/templates.js';
     : (useSrcDir ? path.join(projectPath, "src", "pages") : path.join(projectPath, "pages"));
   createPages(pagesPath, pages, useTypeScript, useAppDir, useSrcDir);
 
-  // Delete default favicon
   const faviconPath = useAppDir
     ? (useSrcDir ? path.join(projectPath, "src", "app", "favicon.ico") : path.join(projectPath, "app", "favicon.ico"))
     : (useSrcDir ? path.join(projectPath, "src", "favicon.ico") : path.join(projectPath, "favicon.ico"));
   if (fileExists(faviconPath)) deleteFile(faviconPath);
 
-  // Default empty page
   let defaultPagePath;
   if (useAppDir) defaultPagePath = useSrcDir ? path.join(projectPath, "src", "app", useTypeScript ? "page.tsx" : "page.js") : path.join(projectPath, "app", useTypeScript ? "page.tsx" : "page.js");
   else defaultPagePath = useSrcDir ? path.join(projectPath, "src", "pages", useTypeScript ? "index.tsx" : "index.js") : path.join(projectPath, "pages", useTypeScript ? "index.tsx" : "index.js");
@@ -208,13 +206,13 @@ import { createPages, createLayout } from './lib/templates.js';
 
     const prismaContent = `import { PrismaClient } from '@prisma/client'
 
-declare global { var prisma: PrismaClient | undefined }
+    declare global { var prisma: PrismaClient | undefined }
 
-const prisma = global.prisma || new PrismaClient()
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma
-export default prisma;`;
-    writeFile(path.join(prismaLibDir, "prisma.ts"), prismaContent);
-  }
+    const prisma = global.prisma || new PrismaClient()
+    if (process.env.NODE_ENV !== 'production') global.prisma = prisma
+    export default prisma;`;
+        writeFile(path.join(prismaLibDir, "prisma.ts"), prismaContent);
+    }
 
   if (orm === "drizzle") {
     run(`${packageManager} install drizzle-orm @vercel/postgres`, projectPath);
@@ -222,19 +220,19 @@ export default prisma;`;
 
     writeFile(path.join(projectPath, "drizzle.config.ts"), `import type { Config } from 'drizzle-kit';
 
-export default {
-  schema: './src/db/schema.ts',
-  out: './drizzle',
-  driver: 'pg',
-  dbCredentials: { connectionString: process.env.DATABASE_URL! },
-} satisfies Config;`);
+    export default {
+    schema: './src/db/schema.ts',
+    out: './drizzle',
+    driver: 'pg',
+    dbCredentials: { connectionString: process.env.DATABASE_URL! },
+    } satisfies Config;`);
 
     const dbDir = useSrcDir ? path.join(projectPath, "src", "db") : path.join(projectPath, "db");
     createFolder(dbDir);
     writeFile(path.join(dbDir, "schema.ts"), `import { pgTable, serial, text } from 'drizzle-orm/pg-core';
 
-export const users = pgTable('users', { id: serial('id').primaryKey(), name: text('name').notNull() });`);
-  }
+    export const users = pgTable('users', { id: serial('id').primaryKey(), name: text('name').notNull() });`);
+    }
 
   if (useShadcn) {
     run(`${packageManager} install --save-dev tailwindcss-animate class-variance-authority`, projectPath);
