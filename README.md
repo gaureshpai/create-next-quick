@@ -127,16 +127,19 @@ To run the tests:
 To work with the documentation locally:
 
 ```bash
-```bash
 # Install dependencies first
 npm install
 
-# Serve documentation locally (uses http-server)
-npm run docs:serve
-
-# Open documentation in browser
+# Open documentation in browser (from GitHub Pages)
 npm run docs:open
-```
+
+# Or serve locally using Python (if available)
+python3 -m http.server 8080 --directory docs
+# Then open http://localhost:8080 in your browser
+
+# Or use any other static server like:
+# npx serve docs
+# npx live-server docs
 ```
 
 The documentation is automatically deployed to GitHub Pages when changes are pushed to the main branch.
