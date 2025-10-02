@@ -10,6 +10,8 @@
 
 - **CLI Argument for Project Name** — skip the project name prompt by passing the app name as a CLI argument.
 - **Package Manager Detection** — automatically detects installed package managers (`npm`, `yarn`, `pnpm`) and only prompts with available options.
+- **Robust Error Handling** — graceful handling of package installation failures with retry mechanisms and helpful error messages.
+- **Compatibility Validation** — warns about package compatibility issues (e.g., Shadcn UI requires Tailwind CSS).
 - **Next.js App Directory** — support for the new Next.js app directory.
 - **Custom Page Generation** — create multiple pages at once.
 - **Linter Support** — choose between no linter, ESLint, and Biome.
