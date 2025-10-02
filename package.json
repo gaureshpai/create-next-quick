@@ -13,7 +13,7 @@
     "test": "npm run test:generate && mocha",
     "test:generate": "node test/generate-tests.js",
     "start": "node index.js",
-    "docs:serve": "cd docs && python -m http.server 8080",
+    "docs:serve": "npx http-server docs -p 8080",
     "docs:open": "open https://gaureshpai.github.io/create-next-quick/"
   },
   "bin": {
@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "inquirer-test": "^2.0.1",
-    "mocha": "^11.7.3"
+    "mocha": "^11.7.3",
+    "http-server": "^14.1.1"
   }
 }
