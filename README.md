@@ -2,7 +2,7 @@
 
 **create-next-quick** is a CLI tool that lets you instantly create a new Next.js project with your choice of options.
 
-📖 **[View Documentation](https://shubham15986.github.io/create-next-quick/)** | 🚀 **[Quick Start](#installation)**
+📖 **[View Documentation](https://gaureshpai.github.io/create-next-quick/)** | 🚀 **[Quick Start](#installation)**
 
 ## Why create-next-quick?
 
@@ -84,7 +84,7 @@ npx create-next-quick
 
 For comprehensive documentation, examples, templates, and API reference, visit:
 
-**[https://shubham15986.github.io/create-next-quick/](https://shubham15986.github.io/create-next-quick/)**
+**[https://gaureshpai.github.io/create-next-quick/](https://gaureshpai.github.io/create-next-quick/)**
 
 The documentation includes:
 - Detailed usage examples and configurations
