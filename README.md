@@ -80,7 +80,7 @@ npx create-next-quick
 
 ## CLI Demo
 
-<video src="https://github.com/user-attachments/assets/8ca75dbc-3c8e-42f4-980d-b41eb3bb3dc7" controls width="600"></video>
+<video src="https://github.com/user-attachments/assets/8cab7a03-a0bc-47a2-89b9-a931bcffac86" controls width="600"></video>
 
 ## Commands
 
