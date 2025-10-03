@@ -1,26 +1,34 @@
 # create-next-quick
 
-**create-next-quick** is a CLI tool that lets you instantly create a new Next.js project with your choice of options.
+⚡ **Fast Next.js project scaffolding with interactive setup**
 
-## Why create-next-quick?
+A lightweight CLI tool that creates Next.js projects with your preferred configuration - TypeScript, Tailwind CSS, ORMs, linters, and more.
 
-`create-next-quick` is a lightweight and fast alternative to `create-next-app`. It provides an interactive setup process that lets you choose the options you want for your project, such as TypeScript, Tailwind CSS, and the Next.js app directory. It also lets you create multiple pages at once, which can save you a lot of time when starting a new project.
+📖 **[View Documentation](https://gaureshpai.github.io/create-next-quick/)** | 🚀 **[Quick Start](#installation)**
 
-## Features
+---
 
-- **CLI Argument for Project Name** — skip the project name prompt by passing the app name as a CLI argument.
-- **Package Manager Detection** — automatically detects installed package managers (`npm`, `yarn`, `pnpm`) and only prompts with available options.
-- **Next.js App Directory** — support for the new Next.js app directory.
-- **Custom Page Generation** — create multiple pages at once.
-- **Linter Support** — choose between no linter, ESLint, and Biome.
-- **Shadcn UI** — automatically installs and configures Shadcn UI with a default style and color.
-- **Clean Project Setup** — removes default favicon and clears public folder.
-- **Empty Default Page** — overwrites the default `page.tsx` or `index.tsx` with an empty template.
-- **Dynamic Metadata** — always overwrites the `layout.tsx` or `layout.jsx` with a minimal template.
-- **Conditional API Route Deletion** — deletes the default `api/hello.js` route if using the `src` directory and not the `app` directory.
-- **Safe Project Creation** — checks if the current directory is empty when creating a project in the current directory (`.`) and prevents accidental overwrites.
-- **ORM Support** — choose between no ORM, Prisma, and Drizzle.
-- **Automated CI/CD Feedback** — Pull Requests now receive automated comments on test status.
+## ✨ Why choose create-next-quick?
+
+- **🚀 Faster setup** - Skip repetitive configuration steps
+- **🎯 Interactive prompts** - Choose exactly what you need
+- **📄 Multiple pages** - Generate several pages at once
+- **🔧 Modern tools** - Built-in support for TypeScript, Tailwind, ORMs
+- **🧹 Clean output** - No unnecessary boilerplate files
+
+## 🎯 Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Smart Project Names** | Pass project name as argument to skip prompts |
+| **Package Manager Detection** | Auto-detects npm, yarn, pnpm |
+| **Modern Next.js** | App directory, TypeScript, Tailwind CSS |
+| **Multiple Pages** | Generate several pages in one go |
+| **Linting Options** | ESLint, Biome, or none |
+| **Database Ready** | Prisma, Drizzle ORM integration |
+| **UI Components** | Shadcn UI with auto-configuration |
+| **Clean Setup** | No unnecessary files or boilerplate |
+| **Safe Creation** | Prevents accidental overwrites |
 
 ## Installation
 
@@ -78,6 +86,19 @@ npx create-next-quick
 ? Do you want to use Shadcn UI? No
 ```
 
+## Documentation
+
+For comprehensive documentation, examples, templates, and API reference, visit:
+
+**[https://gaureshpai.github.io/create-next-quick/](https://gaureshpai.github.io/create-next-quick/)**
+
+The documentation includes:
+- Detailed usage examples and configurations
+- Template references and code samples
+- Advanced features and customization options
+- Contributing guidelines and development setup
+- Complete API reference and troubleshooting
+
 ## Commands
 
 -   `npm run dev` — starts the development server.
@@ -101,6 +122,28 @@ To run the tests:
     ```
     This will run all generated test cases using Mocha.
 
+## Documentation Development
+
+To work with the documentation locally:
+
+```bash
+# Install dependencies first
+npm install
+
+# Open documentation in browser (from GitHub Pages)
+npm run docs:open
+
+# Or serve locally using Python (if available)
+python3 -m http.server 8080 --directory docs
+# Then open http://localhost:8080 in your browser
+
+# Or use any other static server like:
+# npx serve docs
+# npx live-server docs
+```
+
+The documentation is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+
 ## Contributing
 
 We welcome contributions! Follow these steps:
@@ -117,6 +160,7 @@ Before submitting, please ensure:
 
 -   Your code follows project style guidelines
 -   You have tested your changes locally
+-   Update documentation if adding new features
 
 ## License
 
