@@ -1,5 +1,8 @@
 # create-next-quick
 
+[![npm version](https://badge.fury.io/js/create-next-quick.svg)](https://badge.fury.io/js/create-next-quick)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **create-next-quick** is a CLI tool that lets you instantly create a new Next.js project with your choice of options.
 
 ## Why create-next-quick?
@@ -11,6 +14,7 @@
 - **CLI Argument for Project Name** — skip the project name prompt by passing the app name as a CLI argument.
 - **Package Manager Detection** — automatically detects installed package managers (`npm`, `yarn`, `pnpm`) and only prompts with available options.
 - **Next.js App Directory** — support for the new Next.js app directory.
+- **src Directory Support** — option to use the `src` directory structure.
 - **Custom Page Generation** — create multiple pages at once.
 - **Linter Support** — choose between no linter, ESLint, and Biome.
 - **Shadcn UI** — automatically installs and configures Shadcn UI with a default style and color.
@@ -29,6 +33,30 @@ You don’t need to install it globally — run it instantly with `npx`:
 ```bash
 npx create-next-quick
 ```
+
+## Prerequisites
+
+- Node.js (version 18 or higher recommended)
+- A package manager: `npm`, `yarn`, or `pnpm`
+
+## Quick Start
+
+1. Run the CLI:
+   ```bash
+   npx create-next-quick my-awesome-app
+   ```
+
+2. Answer the prompts or use defaults.
+
+3. Navigate to your project:
+   ```bash
+   cd my-awesome-app
+   ```
+
+4. Start developing:
+   ```bash
+   npm run dev
+   ```
 
 ## 🛠 Usage
 
@@ -50,39 +78,56 @@ npx create-next-quick
 
 When you run `npx create-next-quick` without a project name, you will be prompted to:
 
-1.  **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory). If you use `.` the directory must be empty.
-2.  **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose.
-3.  **Choose to use TypeScript (default: Yes)**
-4.  **Choose to use Tailwind CSS (default: Yes)**
-5.  **Choose to use the app directory (default: Yes)**
-6.  **Enter the names of the pages you want to create (default: none)**
-7.  **Choose a linter (default: none)**
-8.  **Choose an ORM (default: none)**
-
-Example run:
-
-```bash
-npx create-next-quick
-```
+1. **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory). If you use `.` the directory must be empty.
+2. **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose.
+3. **Choose to use TypeScript** (default: Yes)
+4. **Choose to use Tailwind CSS** (default: Yes)
+5. **Choose to use src directory** (default: No)
+6. **Choose to use the app directory** (default: Yes)
+7. **Enter the names of the pages you want to create** (comma-separated, default: none)
+8. **Choose a linter** (default: none)
+9. **Choose an ORM** (default: none)
+10. **Do you want to use Shadcn UI?** (default: No)
 
 ### Example Walkthrough
 
 ```
 ? Enter project name: my-portfolio
+? Choose a package manager: npm
 ? Do you want to use TypeScript? Yes
 ? Do you want to use Tailwind CSS? Yes
+? Do you want to use src directory? No
 ? Do you want to use the app directory? Yes
 ? Enter the names of the pages you want to create (comma-separated): home, about, contact
-? Choose a linter (default: none): none
-? Choose an ORM (default: none): prisma
+? Choose a linter: none
+? Choose an ORM: prisma
 ? Do you want to use Shadcn UI? No
+```
+
+## Generated Project Structure
+
+After running the CLI, your project will have a structure like this (depending on your choices):
+
+```
+my-app/
+├── app/ (or pages/ if not using app directory)
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── ... (your custom pages)
+├── components/
+├── lib/
+├── public/
+├── package.json
+└── ...
 ```
 
 ## Commands
 
--   `npm run dev` — starts the development server.
--   `npm run build` — builds the project for production.
--   `npm start` — starts the production server.
+Once your project is created, you can use these commands:
+
+- `npm run dev` — starts the development server.
+- `npm run build` — builds the project for production.
+- `npm start` — starts the production server.
 
 ## Testing
 
@@ -90,33 +135,34 @@ The test suite for `create-next-quick` is designed to be dynamic and data-driven
 
 To run the tests:
 
-1.  **Generate Test Cases:** First, generate the test cases by running:
-    ```bash
-    npm run test:generate
-    ```
-    This script parses `index.js` and creates `test/generated-test-cases.js`.
-2.  **Run Tests:** Then, execute the test suite:
-    ```bash
-    npm test
-    ```
-    This will run all generated test cases using Mocha.
+1. **Generate Test Cases:** First, generate the test cases by running:
+   ```bash
+   npm run test:generate
+   ```
+   This script parses `index.js` and creates `test/generated-test-cases.js`.
+
+2. **Run Tests:** Then, execute the test suite:
+   ```bash
+   npm test
+   ```
+   This will run all generated test cases using Mocha.
 
 ## Contributing
 
 We welcome contributions! Follow these steps:
 
-1.  Fork the repository
-2.  Create a new branch: `git checkout -b feature-name`
-3.  Commit your changes: `git commit -m "Added new feature"`
-4.  Push to your branch: `git push origin feature-name`
-5.  Open a Pull Request
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature-name`
+3. Commit your changes: `git commit -m "Added new feature"`
+4. Push to your branch: `git push origin feature-name`
+5. Open a Pull Request
 
 Our CI/CD pipeline will automatically run tests and provide feedback directly on your Pull Request.
 
 Before submitting, please ensure:
 
--   Your code follows project style guidelines
--   You have tested your changes locally
+- Your code follows project style guidelines
+- You have tested your changes locally
 
 ## License
 
