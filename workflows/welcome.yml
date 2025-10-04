@@ -1,0 +1,46 @@
+name: Welcome Contributors
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  greet-contributors:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Greet on New Issue
+        uses: actions/github-script@v7
+        if: github.event_name == 'issues'
+        with:
+          script: |
+            const body = `👋 Hello @${{ github.actor }}!
+
+            Thank you for opening an issue. We appreciate your contribution and will review it as soon as possible.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Greet on New Pull Request
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request_target'
+        with:
+          script: |
+            const body = `🎉 Welcome, @${{ github.actor }}!
+
+            Thank you for submitting a Pull Request! We're thrilled to see your contribution. Our team will review it shortly.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
