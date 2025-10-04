@@ -20,6 +20,7 @@
 - **Conditional API Route Deletion** — deletes the default `api/hello.js` route if using the `src` directory and not the `app` directory.
 - **Safe Project Creation** — checks if the current directory is empty when creating a project in the current directory (`.`) and prevents accidental overwrites.
 - **ORM Support** — choose between no ORM, Prisma, and Drizzle.
+- **Optional Auth Scaffolding** — supports NextAuth.js, Clerk, or Firebase
 - **Automated CI/CD Feedback** — Pull Requests now receive automated comments on test status.
 
 ## Installation
@@ -58,6 +59,7 @@ When you run `npx create-next-quick` without a project name, you will be prompte
 6.  **Enter the names of the pages you want to create (default: none)**
 7.  **Choose a linter (default: none)**
 8.  **Choose an ORM (default: none)**
+9.  **Do you want to use Shadcn UI? (default: Yes)**
 
 Example run:
 
@@ -76,6 +78,7 @@ npx create-next-quick
 ? Choose a linter (default: none): none
 ? Choose an ORM (default: none): prisma
 ? Do you want to use Shadcn UI? No
+? Choose an authentication provider (default: none): nextauth
 ```
 
 ## CLI Demo

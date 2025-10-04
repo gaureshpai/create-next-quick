@@ -1,36 +1,49 @@
 #!/usr/bin/env node
-import inquirer from "inquirer";
-import path from "path";
-import fs from "fs";
-import chalk from "chalk";
-import { run, deleteFolder, createFolder, deleteFile, fileExists, writeFile } from './lib/utils.js';
+import inquirer from 'inquirer';
+import path from 'path';
+import fs from 'fs';
+import chalk from 'chalk';
+import {
+  run,
+  deleteFolder,
+  createFolder,
+  deleteFile,
+  fileExists,
+  writeFile,
+} from './lib/utils.js';
 import { createPages, createLayout } from './lib/templates.js';
 
 (async () => {
-  const availablePackageManagers = ["npm"];
+  const availablePackageManagers = ['npm'];
 
   try {
-    run("yarn --version", process.cwd(), true);
-    availablePackageManagers.push("yarn");
-  } catch (error) { }
+    run('yarn --version', process.cwd(), true);
+    availablePackageManagers.push('yarn');
+  } catch (error) {}
 
   try {
-    run("pnpm --version", process.cwd(), true);
-    availablePackageManagers.push("pnpm");
-  } catch (error) { }
+    run('pnpm --version', process.cwd(), true);
+    availablePackageManagers.push('pnpm');
+  } catch (error) {}
 
   const validateProjectName = (input) => {
     if (input !== input.toLowerCase()) {
-      return chalk.red.bold("Project name must be in lowercase.");
+      return chalk.red.bold('Project name must be in lowercase.');
     }
-    if (input === ".") {
+    if (input === '.') {
       const files = fs.readdirSync(process.cwd());
       if (files.length > 0) {
-        return chalk.red.bold("The current directory is not empty. Please use a different project name.");
+        return chalk.red.bold(
+          'The current directory is not empty. Please use a different project name.'
+        );
       }
     } else {
       if (fs.existsSync(input)) {
-        return chalk.red.bold(`A directory named "${chalk.white(input)}" already exists. Please use a different project name.`);
+        return chalk.red.bold(
+          `A directory named "${chalk.white(
+            input
+          )}" already exists. Please use a different project name.`
+        );
       }
     }
     return true;
@@ -40,9 +53,13 @@ import { createPages, createLayout } from './lib/templates.js';
   const answers = {};
 
   console.log();
-  console.log(chalk.bold.cyan("╔═══════════════════════════════════════════╗"));
-  console.log(chalk.bold.cyan("║") + chalk.bold.white("    🚀 Create Next Quick CLI Tool         ") + chalk.bold.cyan(" ║"));
-  console.log(chalk.bold.cyan("╚═══════════════════════════════════════════╝"));
+  console.log(chalk.bold.cyan('╔═══════════════════════════════════════════╗'));
+  console.log(
+    chalk.bold.cyan('║') +
+      chalk.bold.white('    🚀 Create Next Quick CLI Tool         ') +
+      chalk.bold.cyan(' ║')
+  );
+  console.log(chalk.bold.cyan('╚═══════════════════════════════════════════╝'));
   console.log();
 
   if (appName) {
@@ -57,150 +74,189 @@ import { createPages, createLayout } from './lib/templates.js';
   if (!answers.projectName) {
     const appNameAnswers = await inquirer.prompt([
       {
-        type: "input",
-        name: "projectName",
-        message: "Enter project name:",
-        filter: (input) => input.trim() === '' ? '.' : input.trim(),
-        validate: validateProjectName
-      }
+        type: 'input',
+        name: 'projectName',
+        message: 'Enter project name:',
+        filter: (input) => (input.trim() === '' ? '.' : input.trim()),
+        validate: validateProjectName,
+      },
     ]);
     answers.projectName = appNameAnswers.projectName;
   }
 
   const otherAnswers = await inquirer.prompt([
     {
-      type: "list",
-      name: "packageManager",
-      message: "Choose a package manager:",
+      type: 'list',
+      name: 'packageManager',
+      message: 'Choose a package manager:',
       choices: availablePackageManagers,
-      default: "pnpm"
+      default: 'pnpm',
     },
     {
-      type: "confirm",
-      name: "useTypeScript",
-      message: "Do you want to use TypeScript?",
-      default: true
+      type: 'confirm',
+      name: 'useTypeScript',
+      message: 'Do you want to use TypeScript?',
+      default: true,
     },
     {
-      type: "confirm",
-      name: "useTailwind",
-      message: "Do you want to use Tailwind CSS?",
-      default: true
+      type: 'confirm',
+      name: 'useTailwind',
+      message: 'Do you want to use Tailwind CSS?',
+      default: true,
     },
     {
-      type: "confirm",
-      name: "useSrcDir",
-      message: "Do you want to use src directory?",
-      default: true
+      type: 'confirm',
+      name: 'useSrcDir',
+      message: 'Do you want to use src directory?',
+      default: true,
     },
     {
-      type: "confirm",
-      name: "useAppDir",
-      message: "Do you want to use the app directory?",
-      default: true
+      type: 'confirm',
+      name: 'useAppDir',
+      message: 'Do you want to use the app directory?',
+      default: true,
     },
     {
-      type: "input",
-      name: "pages",
-      message: "Enter pages (comma-separated, default: none):",
-      default: "",
-      filter: (input) => input.split(',').map((page) => page.trim()).filter(page => page !== '')
+      type: 'input',
+      name: 'pages',
+      message: 'Enter pages (comma-separated, default: none):',
+      default: '',
+      filter: (input) =>
+        input
+          .split(',')
+          .map((page) => page.trim())
+          .filter((page) => page !== ''),
     },
     {
-      type: "list",
-      name: "linter",
-      message: "Choose a linter:",
-      choices: ["none", "eslint", "biome"],
-      default: "none"
+      type: 'list',
+      name: 'linter',
+      message: 'Choose a linter:',
+      choices: ['none', 'eslint', 'biome'],
+      default: 'none',
     },
     {
-      type: "list",
-      name: "orm",
-      message: "Choose an ORM:",
-      choices: ["none", "prisma", "drizzle"],
-      default: "none"
+      type: 'list',
+      name: 'orm',
+      message: 'Choose an ORM:',
+      choices: ['none', 'prisma', 'drizzle'],
+      default: 'none',
     },
     {
-      type: "confirm",
-      name: "useShadcn",
-      message: "Do you want to use Shadcn UI?",
-      default: false
-    }
+      type: 'confirm',
+      name: 'useShadcn',
+      message: 'Do you want to use Shadcn UI?',
+      default: false,
+    },
+    {
+      type: 'list',
+      name: 'auth',
+      message: 'Choose an authentication provider:',
+      choices: ['none', 'nextauth', 'clerk', 'firebase'],
+      default: 'none',
+    },
   ]);
 
   Object.assign(answers, otherAnswers);
 
-  const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn } = answers;
+  const {
+    projectName,
+    packageManager,
+    useTypeScript,
+    useTailwind,
+    useAppDir,
+    useSrcDir,
+    pages,
+    linter,
+    orm,
+    useShadcn,
+    auth,
+  } = answers;
   const projectPath = path.join(process.cwd(), projectName);
 
   console.log();
-  console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
-  console.log(chalk.bold.white(`  Creating project: ${chalk.cyan(projectName)}`));
-  console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
+  console.log(
+    chalk.bold.hex('#23f0bcff')('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  );
+  console.log(
+    chalk.bold.white(`  Creating project: ${chalk.cyan(projectName)}`)
+  );
+  console.log(
+    chalk.bold.hex('#23f0bcff')('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  );
   console.log();
 
   let command = `npx --yes create-next-app@latest ${projectName} --use-${packageManager} --yes`;
   if (useTypeScript) {
-    command += " --ts";
+    command += ' --ts';
   } else {
-    command += " --js";
+    command += ' --js';
   }
   if (useTailwind) {
-    command += " --tailwind";
+    command += ' --tailwind';
   }
   if (useSrcDir) {
-    command += " --src-dir";
+    command += ' --src-dir';
   }
   if (useAppDir) {
-    command += " --app";
+    command += ' --app';
   } else {
-    command += " --no-app";
+    command += ' --no-app';
   }
 
-  if (linter === "none") {
-    command += " --no-eslint";
+  if (linter === 'none') {
+    command += ' --no-eslint';
   }
 
-  console.log(chalk.cyan(`Installing dependencies with ${chalk.bold(packageManager)}...`));
+  console.log(
+    chalk.cyan(`Installing dependencies with ${chalk.bold(packageManager)}...`)
+  );
 
   try {
     run(command);
-    console.log(chalk.bold.green("Dependencies installed successfully"));
+    console.log(chalk.bold.green('Dependencies installed successfully'));
   } catch (err) {
-    console.log(chalk.bold.red("Failed to install dependencies"));
+    console.log(chalk.bold.red('Failed to install dependencies'));
     process.exit(1);
   }
 
-  console.log(chalk.yellow("Cleaning up default files..."));
+  console.log(chalk.yellow('Cleaning up default files...'));
 
   if (!useAppDir) {
     const apiHelloPath = useSrcDir
-      ? path.join(projectPath, "src", "pages", "api", "hello.js")
-      : path.join(projectPath, "pages", "api", "hello.js");
+      ? path.join(projectPath, 'src', 'pages', 'api', 'hello.js')
+      : path.join(projectPath, 'pages', 'api', 'hello.js');
     if (fileExists(apiHelloPath)) {
       deleteFile(apiHelloPath);
     }
   }
 
-  const publicPath = path.join(projectPath, "public");
+  const publicPath = path.join(projectPath, 'public');
   deleteFolder(publicPath);
   createFolder(publicPath);
 
-  console.log(chalk.bold.green("Cleanup complete"));
+  console.log(chalk.bold.green('Cleanup complete'));
 
-  console.log(chalk.magenta("Creating layout files..."));
+  console.log(chalk.magenta('Creating layout files...'));
 
   createLayout(projectPath, projectName, useTypeScript, useAppDir, useSrcDir);
 
   const pagesPath = useAppDir
-    ? (useSrcDir ? path.join(projectPath, "src", "app") : path.join(projectPath, "app"))
-    : (useSrcDir ? path.join(projectPath, "src", "pages") : path.join(projectPath, "pages"));
+    ? useSrcDir
+      ? path.join(projectPath, 'src', 'app')
+      : path.join(projectPath, 'app')
+    : useSrcDir
+    ? path.join(projectPath, 'src', 'pages')
+    : path.join(projectPath, 'pages');
 
   createPages(pagesPath, pages, useTypeScript, useAppDir, useSrcDir);
 
   const faviconPathInAppOrSrc = useAppDir
-    ? (useSrcDir ? path.join(projectPath, "src", "app", "favicon.ico") : path.join(projectPath, "app", "favicon.ico"))
-    : (useSrcDir ? path.join(projectPath, "src", "favicon.ico") : path.join(projectPath, "favicon.ico"));
+    ? useSrcDir
+      ? path.join(projectPath, 'src', 'app', 'favicon.ico')
+      : path.join(projectPath, 'app', 'favicon.ico')
+    : useSrcDir
+    ? path.join(projectPath, 'src', 'favicon.ico')
+    : path.join(projectPath, 'favicon.ico');
 
   if (fileExists(faviconPathInAppOrSrc)) {
     deleteFile(faviconPathInAppOrSrc);
@@ -209,12 +265,26 @@ import { createPages, createLayout } from './lib/templates.js';
   let defaultPagePath;
   if (useAppDir) {
     defaultPagePath = useSrcDir
-      ? path.join(projectPath, "src", "app", useTypeScript ? "page.tsx" : "page.js")
-      : path.join(projectPath, "app", useTypeScript ? "page.tsx" : "page.js");
+      ? path.join(
+          projectPath,
+          'src',
+          'app',
+          useTypeScript ? 'page.tsx' : 'page.js'
+        )
+      : path.join(projectPath, 'app', useTypeScript ? 'page.tsx' : 'page.js');
   } else {
     defaultPagePath = useSrcDir
-      ? path.join(projectPath, "src", "pages", useTypeScript ? "index.tsx" : "index.js")
-      : path.join(projectPath, "pages", useTypeScript ? "index.tsx" : "index.js");
+      ? path.join(
+          projectPath,
+          'src',
+          'pages',
+          useTypeScript ? 'index.tsx' : 'index.js'
+        )
+      : path.join(
+          projectPath,
+          'pages',
+          useTypeScript ? 'index.tsx' : 'index.js'
+        );
   }
 
   const emptyPageContent = `export default function Page() {
@@ -225,28 +295,30 @@ import { createPages, createLayout } from './lib/templates.js';
 
   writeFile(defaultPagePath, emptyPageContent);
 
-  const readmePath = path.join(projectPath, "README.md");
+  const readmePath = path.join(projectPath, 'README.md');
   writeFile(readmePath, `# ${projectName}`);
 
-  console.log(chalk.bold.green("Layout and pages created"));
+  console.log(chalk.bold.green('Layout and pages created'));
 
-  if (linter === "biome") {
-    console.log(chalk.blue("Setting up Biome linter..."));
+  if (linter === 'biome') {
+    console.log(chalk.blue('Setting up Biome linter...'));
 
     run(`${packageManager} install --save-dev @biomejs/biome`, projectPath);
     run(`npx @biomejs/biome init`, projectPath);
 
-    console.log(chalk.bold.green("Biome linter configured"));
+    console.log(chalk.bold.green('Biome linter configured'));
   }
 
-  if (orm === "prisma") {
-    console.log(chalk.blue("Setting up Prisma ORM..."));
+  if (orm === 'prisma') {
+    console.log(chalk.blue('Setting up Prisma ORM...'));
 
     run(`${packageManager} install --save-dev prisma`, projectPath);
     run(`${packageManager} install @prisma/client`, projectPath);
     run(`npx prisma init`, projectPath);
 
-    const prismaLibDir = useSrcDir ? path.join(projectPath, "src", "lib") : path.join(projectPath, "lib");
+    const prismaLibDir = useSrcDir
+      ? path.join(projectPath, 'src', 'lib')
+      : path.join(projectPath, 'lib');
     createFolder(prismaLibDir);
 
     const prismaContent = `import { PrismaClient } from '@prisma/client'
@@ -260,13 +332,13 @@ import { createPages, createLayout } from './lib/templates.js';
     if (process.env.NODE_ENV !== 'production') global.prisma = prisma
 
     export default prisma;`;
-    writeFile(path.join(prismaLibDir, "prisma.ts"), prismaContent);
+    writeFile(path.join(prismaLibDir, 'prisma.ts'), prismaContent);
 
-    console.log(chalk.bold.green("Prisma ORM configured"));
+    console.log(chalk.bold.green('Prisma ORM configured'));
   }
 
-  if (orm === "drizzle") {
-    console.log(chalk.blue("Setting up Drizzle ORM..."));
+  if (orm === 'drizzle') {
+    console.log(chalk.blue('Setting up Drizzle ORM...'));
 
     run(`${packageManager} install drizzle-orm @vercel/postgres`, projectPath);
     run(`${packageManager} install --save-dev drizzle-kit`, projectPath);
@@ -281,9 +353,14 @@ import { createPages, createLayout } from './lib/templates.js';
         connectionString: process.env.DATABASE_URL!,
       },
     } satisfies Config;`;
-    writeFile(path.join(projectPath, "drizzle.config.ts"), drizzleConfigContent);
+    writeFile(
+      path.join(projectPath, 'drizzle.config.ts'),
+      drizzleConfigContent
+    );
 
-    const dbDir = useSrcDir ? path.join(projectPath, "src", "db") : path.join(projectPath, "db");
+    const dbDir = useSrcDir
+      ? path.join(projectPath, 'src', 'db')
+      : path.join(projectPath, 'db');
     createFolder(dbDir);
 
     const schemaContent = `import { pgTable, serial, text } from 'drizzle-orm/pg-core';
@@ -292,52 +369,97 @@ import { createPages, createLayout } from './lib/templates.js';
       id: serial('id').primaryKey(),
       name: text('name').notNull(),
     });`;
-    writeFile(path.join(dbDir, "schema.ts"), schemaContent);
+    writeFile(path.join(dbDir, 'schema.ts'), schemaContent);
 
-    console.log(chalk.bold.green("Drizzle ORM configured"));
+    console.log(chalk.bold.green('Drizzle ORM configured'));
   }
 
   if (useShadcn) {
-    console.log(chalk.magenta("Setting up Shadcn UI..."));
+    console.log(chalk.magenta('Setting up Shadcn UI...'));
 
-    run(`${packageManager} install --save-dev tailwindcss-animate class-variance-authority`, projectPath);
+    run(
+      `${packageManager} install --save-dev tailwindcss-animate class-variance-authority`,
+      projectPath
+    );
     run(`npx shadcn@latest init`, projectPath);
 
-    const componentsJsonPath = path.join(projectPath, "components.json");
+    const componentsJsonPath = path.join(projectPath, 'components.json');
     const componentsJsonContent = {
-      "$schema": "https://ui.shadcn.com/schema.json",
-      "style": "default",
-      "rsc": useAppDir,
-      "tsx": useTypeScript,
-      "tailwind": {
-        "config": useTypeScript ? "tailwind.config.ts" : "tailwind.config.js",
-        "css": useAppDir
-          ? (useSrcDir ? "src/app/globals.css" : "app/globals.css")
-          : (useSrcDir ? "src/styles/globals.css" : "styles/globals.css"),
-        "baseColor": "slate",
-        "cssVariables": true
+      $schema: 'https://ui.shadcn.com/schema.json',
+      style: 'default',
+      rsc: useAppDir,
+      tsx: useTypeScript,
+      tailwind: {
+        config: useTypeScript ? 'tailwind.config.ts' : 'tailwind.config.js',
+        css: useAppDir
+          ? useSrcDir
+            ? 'src/app/globals.css'
+            : 'app/globals.css'
+          : useSrcDir
+          ? 'src/styles/globals.css'
+          : 'styles/globals.css',
+        baseColor: 'slate',
+        cssVariables: true,
       },
-      "aliases": {
-        "components": "@/components",
-        "utils": "@/lib/utils"
-      }
+      aliases: {
+        components: '@/components',
+        utils: '@/lib/utils',
+      },
     };
-    writeFile(componentsJsonPath, JSON.stringify(componentsJsonContent, null, 2));
+    writeFile(
+      componentsJsonPath,
+      JSON.stringify(componentsJsonContent, null, 2)
+    );
 
-    console.log(chalk.bold.green("Shadcn UI configured"));
+    console.log(chalk.bold.green('Shadcn UI configured'));
   }
 
-  if (orm !== "none") {
-    const envContent = `DATABASE_URL="your_db_url"`;
-    writeFile(path.join(projectPath, ".env"), envContent);
+  if (auth !== 'none') {
+    console.log(chalk.blue(`Setting up ${auth} authentication...`));
+
+    if (auth === 'nextauth') {
+      run(`${packageManager} install next-auth`, projectPath);
+    } else if (auth === 'clerk') {
+      run(`${packageManager} install @clerk/nextjs`, projectPath);
+    } else if (auth === 'firebase') {
+      run(`${packageManager} install firebase`, projectPath);
+    }
+
+    console.log(chalk.bold.green(`${auth} authentication configured`));
+  }
+
+  // .env file for ORM or Auth
+  if (orm !== 'none' || auth !== 'none') {
+    let envContent = '';
+
+    if (orm !== 'none') {
+      envContent += `DATABASE_URL="your_db_url"\n`;
+    }
+
+    if (auth === 'nextauth') {
+      envContent += `NEXTAUTH_URL="http://localhost:3000"\nNEXTAUTH_SECRET="your_secret_here"\n`;
+    } else if (auth === 'clerk') {
+      envContent += `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your_key_here"\nCLERK_SECRET_KEY="your_secret_here"\n`;
+    } else if (auth === 'firebase') {
+      envContent += `NEXT_PUBLIC_FIREBASE_API_KEY="your_api_key_here"\nNEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your_domain_here"\n`;
+    }
+
+    if (envContent) {
+      console.log(chalk.yellow('Creating .env file...'));
+      writeFile(path.join(projectPath, '.env'), envContent);
+    }
   }
 
   console.log();
-  console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
-  console.log(chalk.bold.white("  Setup complete!"));
-  console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
+  console.log(
+    chalk.bold.hex('#23f0bcff')('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  );
+  console.log(chalk.bold.white('  Setup complete!'));
+  console.log(
+    chalk.bold.hex('#23f0bcff')('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+  );
   console.log();
-  console.log(chalk.bold.white("-> Next steps:"));
+  console.log(chalk.bold.white('-> Next steps:'));
   console.log(chalk.cyan(`  cd ${chalk.bold.white(projectName)}`));
   console.log(chalk.cyan(`  ${packageManager} ${chalk.bold.white(`run dev`)}`));
   console.log();
