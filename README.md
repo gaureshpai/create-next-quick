@@ -78,11 +78,15 @@ npx create-next-quick
 ? Do you want to use Shadcn UI? No
 ```
 
+## CLI Demo
+
+<video src="https://github.com/user-attachments/assets/8cab7a03-a0bc-47a2-89b9-a931bcffac86" controls width="600"></video>
+
 ## Commands
 
--   `npm run dev` — starts the development server.
--   `npm run build` — builds the project for production.
--   `npm start` — starts the production server.
+- `npm run dev` — starts the development server.
+- `npm run build` — builds the project for production.
+- `npm start` — starts the production server.
 
 ## Testing
 
@@ -115,8 +119,8 @@ Our CI/CD pipeline will automatically run tests and provide feedback directly on
 
 Before submitting, please ensure:
 
--   Your code follows project style guidelines
--   You have tested your changes locally
+- Your code follows project style guidelines
+- You have tested your changes locally
 
 ## License
 
