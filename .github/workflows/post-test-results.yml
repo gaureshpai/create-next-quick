@@ -1,4 +1,3 @@
-
 name: Post Test Results
 
 on:
@@ -28,6 +27,7 @@ jobs:
           path: artifacts
       
       - name: Generate and post comment
+        id: post_comment
         uses: actions/github-script@v7
         with:
           script: |
@@ -70,6 +70,7 @@ jobs:
                     });
                   } catch (error) {
                     console.error(`Error parsing ${resultPath}:`, error);
+                    return;
                   }
                 }
               }
@@ -109,6 +110,7 @@ jobs:
                       if (test.failureMessages && test.failureMessages.length > 0) {
                         // Truncate long error messages
                         const errorMsg = test.failureMessages[0].split('\n')[0];
+                        const errorMsg = test.failureMessages[
                         comment += `  > ${errorMsg.substring(0, 200)}${errorMsg.length > 200 ? '...' : ''}\n`;
                       }
                     }
