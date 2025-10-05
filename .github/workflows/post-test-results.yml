@@ -51,14 +51,17 @@ jobs:
             }
 
             const log = fs.readFileSync(logFile, 'utf8');
-            const passed = (log.match(/✓/g) || []).length;
-            const failed = (log.match(/✗/g) || []).length;
-            const status = failed === 0 ? '✅ Passed' : '❌ Failed';
+            let status;
+            if (log.includes("Tests passed successfully")) {
+              status = '✅ Passed';
+            } else if (log.includes("Tests failed")) {
+              status = '❌ Failed';
+            } else {
+              status = '❓ Unknown';
+            }
 
             summaries.push({
               nodeVersion: path.basename(dir),
-              passes: passed,
-              failures: failed,
               status
             });
           }
@@ -80,11 +83,7 @@ jobs:
             const summaries = JSON.parse(require('fs').readFileSync(summaryPath, 'utf8'));
             let commentBody = '### 📝 CI/CD Test Summary for Node.js matrix:\n\n';
             summaries.forEach(s => {
-              if (s.passes !== undefined) {
-                commentBody += `**Node ${s.nodeVersion}**: ${s.status} (Passes: ${s.passes}, Failures: ${s.failures})\n`;
-              } else {
-                commentBody += `**Node ${s.nodeVersion}**: ${s.status}\n`;
-              }
+              commentBody += `**Node ${s.nodeVersion}**: ${s.status}\n`;
             });
 
             const prNumber = github.event.workflow_run.pull_requests[0]?.number;
