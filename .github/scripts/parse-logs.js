@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 const artifactsDir = "./artifacts";
 const summaries = [];
@@ -39,4 +39,5 @@ fs.writeFileSync(
   "./artifacts/parsed-summary.json",
   JSON.stringify(summaries, null, 2)
 );
+
 console.log("✅ Parsed summary ready");
