@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   comment-on-pr:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # Run regardless of success or failure
     runs-on: ubuntu-latest
 
     steps:
@@ -25,43 +25,142 @@ jobs:
         with:
           node-version: 20
 
-      - name: Download artifacts from all Node versions
+      - name: Download artifacts from triggering workflow
         uses: actions/download-artifact@v4
         with:
           path: ./artifacts
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
 
-      - name: Parse test logs
+      - name: Get job results from workflow run
+        id: get-jobs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            // Get all jobs from the triggering workflow run
+            const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: ${{ github.event.workflow_run.id }}
+            });
+            
+            // Extract job results for each node version
+            const results = jobs.jobs
+              .filter(job => job.name.includes('build-and-test'))
+              .map(job => {
+                const match = job.name.match(/\((\d+\.x)\)/);
+                const nodeVersion = match ? match[1] : 'unknown';
+                
+                let status;
+                if (job.conclusion === 'success') {
+                  status = '✅ Passed';
+                } else if (job.conclusion === 'failure') {
+                  status = '❌ Failed';
+                } else if (job.conclusion === 'cancelled') {
+                  status = '⚠️ Cancelled';
+                } else if (job.conclusion === 'skipped') {
+                  status = '⏭️ Skipped';
+                } else {
+                  status = '❓ Unknown';
+                }
+                
+                return {
+                  nodeVersion,
+                  status,
+                  conclusion: job.conclusion,
+                  htmlUrl: job.html_url
+                };
+              });
+            
+            // Save results to file
+            fs.mkdirSync('./job-results', { recursive: true });
+            fs.writeFileSync(
+              './job-results/results.json',
+              JSON.stringify(results, null, 2)
+            );
+            
+            console.log('Job results:', JSON.stringify(results, null, 2));
+            return results;
+
+      - name: Parse test logs (supplementary)
         id: parse-logs
         run: node .github/scripts/parse-logs.js
+        continue-on-error: true
 
       - name: Post comment on Pull Request
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const summaryPath = './artifacts/parsed-summary.json';
-            if (!require('fs').existsSync(summaryPath)) {
-              console.log('No summary to post');
-              return;
-            }
-
-            const summaries = JSON.parse(require('fs').readFileSync(summaryPath, 'utf8'));
-            let commentBody = '### 📝 CI/CD Test Summary for Node.js matrix:\n\n';
-            summaries.forEach(s => {
-              commentBody += `**Node ${s.nodeVersion}**: ${s.status}\n`;
-            });
-
-            const prNumber = github.event.workflow_run.pull_requests[0]?.number;
+            const fs = require('fs');
+            
+            // Get PR number
+            const prNumber = context.payload.workflow_run.pull_requests[0]?.number;
             if (!prNumber) {
               console.log('No pull request associated with this run.');
               return;
             }
-
-            await github.rest.issues.createComment({
+            
+            // Read job results
+            const resultsPath = './job-results/results.json';
+            if (!fs.existsSync(resultsPath)) {
+              console.log('No job results found');
+              return;
+            }
+            
+            const results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
+            
+            // Build comment body
+            const overallStatus = context.payload.workflow_run.conclusion;
+            const statusEmoji = overallStatus === 'success' ? '✅' : '❌';
+            
+            let commentBody = `### ${statusEmoji} CI/CD Test Results\n\n`;
+            commentBody += `**Overall Status**: ${overallStatus}\n\n`;
+            commentBody += `#### Node.js Version Results:\n\n`;
+            
+            results.forEach(result => {
+              commentBody += `- **Node ${result.nodeVersion}**: ${result.status}`;
+              if (result.htmlUrl) {
+                commentBody += ` ([View logs](${result.htmlUrl}))`;
+              }
+              commentBody += '\n';
+            });
+            
+            commentBody += `\n---\n`;
+            commentBody += `[View full workflow run](${context.payload.workflow_run.html_url})`;
+            
+            // Check if we already commented on this PR
+            const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: prNumber,
-              body: commentBody
+              issue_number: prNumber
             });
-
-            console.log('Comment posted to PR #' + prNumber);
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('CI/CD Test Results')
+            );
+            
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+              console.log('Updated existing comment on PR #' + prNumber);
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: commentBody
+              });
+              console.log('Created new comment on PR #' + prNumber);
+            }
