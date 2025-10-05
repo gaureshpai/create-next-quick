@@ -15,10 +15,9 @@ jobs:
   comment:
     name: Post Test Results Comment
     runs-on: ubuntu-latest
-    # keep the same guard you had (only run for workflow_runs triggered by PRs and successful)
     if: >
       github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success'
+      github.event.workflow_run.conclusion != 'cancelled'
 
     steps:
       - name: Download artifacts
@@ -37,169 +36,80 @@ jobs:
 
             async function findPrNumber() {
               const workflowRun = context.payload.workflow_run || {};
+              const prs = workflowRun.pull_requests || [];
+              if (prs.length > 0) return prs[0].number;
 
-              // 1) Try PRs from payload (most direct)
-              const prsFromPayload = workflowRun.pull_requests || [];
-              if (prsFromPayload.length > 0) {
-                console.log('Found PR in workflow_run.pull_requests');
-                return prsFromPayload[0].number;
+              const sha = workflowRun.head_sha;
+              if (sha) {
+                const q = `${sha} repo:${context.repo.owner}/${context.repo.repo} is:pr`;
+                const search = await github.rest.search.issuesAndPullRequests({ q });
+                if (search.data.items.length > 0) return search.data.items[0].number;
               }
-
-              // 2) Log payload for debugging
-              console.log('workflow_run payload:', JSON.stringify(workflowRun, null, 2));
-
-              // 3) Try to find PR by head SHA using search
-              const headSha = workflowRun.head_sha;
-              if (headSha) {
-                console.log(`Searching for PR by head SHA: ${headSha}`);
-                const q = `${headSha} repo:${context.repo.owner}/${context.repo.repo} is:pr`;
-                try {
-                  const search = await github.rest.search.issuesAndPullRequests({ q });
-                  if (search.data && search.data.total_count > 0) {
-                    console.log('Found PR via search by SHA');
-                    return search.data.items[0].number;
-                  }
-                } catch (err) {
-                  console.warn('Search by SHA failed:', err.message || err);
-                }
-              }
-
-              // 4) Try to find PR by head branch
-              const headBranch = workflowRun.head_branch;
-              if (headBranch) {
-                console.log(`Listing PRs by head branch: ${headBranch}`);
-                try {
-                  const prs = await github.rest.pulls.list({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    state: 'all',
-                    head: `${context.repo.owner}:${headBranch}`
-                  });
-                  if (prs.data && prs.data.length > 0) {
-                    console.log('Found PR via head branch');
-                    return prs.data[0].number;
-                  }
-                } catch (err) {
-                  console.warn('List PRs by head branch failed:', err.message || err);
-                }
-              }
-
               return null;
             }
 
             const prNumber = await findPrNumber();
-
             if (!prNumber) {
-              console.log('No pull request found for this workflow run after fallbacks');
+              console.log('No pull request found for this workflow run.');
               return;
             }
 
-            console.log(`Processing PR #${prNumber}`);
-
-            // Read all test result artifacts
-            const artifactsDir = './artifacts';
+            const resultsDir = './artifacts';
+            const artifactFolders = fs.readdirSync(resultsDir);
             const testResults = [];
 
-            if (!fs.existsSync(artifactsDir)) {
-              console.log('No artifacts directory found');
-              return;
-            }
-
-            const artifactFolders = fs.readdirSync(artifactsDir);
-
             for (const folder of artifactFolders) {
-              // If artifact folder is named like "test-results-18.x" we treat that as nodeVersion,
-              // otherwise we keep folder name as nodeVersion (covers multiple artifact layouts).
-              const nodeVersion = folder.startsWith('test-results-') ? folder.replace('test-results-', '') : folder;
+              const filePath = path.join(resultsDir, folder, 'test-results.json');
+              if (!fs.existsSync(filePath)) continue;
 
-              // Candidate paths where the JSON might live inside the artifact
-              const candidatePaths = [
-                path.join(artifactsDir, folder, 'test-results.json'),
-                path.join(artifactsDir, folder) // sometimes the artifact is the file itself at this path
-              ];
-
-              for (const p of candidatePaths) {
-                try {
-                  if (!fs.existsSync(p)) continue;
-
-                  // If p is a directory, try to find a json file inside it
-                  if (fs.lstatSync(p).isDirectory()) {
-                    const files = fs.readdirSync(p).filter(f => f.endsWith('.json'));
-                    // prefer a file named test-results.json if present
-                    const preferred = files.find(f => f === 'test-results.json') || files[0];
-                    if (!preferred) continue;
-                    const filePath = path.join(p, preferred);
-                    const content = fs.readFileSync(filePath, 'utf8');
-                    const result = JSON.parse(content);
-                    testResults.push({ nodeVersion, result });
-                    break;
-                  } else if (fs.lstatSync(p).isFile()) {
-                    const content = fs.readFileSync(p, 'utf8');
-                    const result = JSON.parse(content);
-                    testResults.push({ nodeVersion, result });
-                    break;
-                  }
-                } catch (error) {
-                  console.error(`Error reading/parsing candidate path ${p}:`, error.message || error);
-                }
+              try {
+                const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                testResults.push({ nodeVersion: folder.replace('test-results-', ''), data });
+              } catch (err) {
+                console.error(`Error parsing ${filePath}:`, err);
               }
             }
 
             if (testResults.length === 0) {
-              console.log('No test results found');
+              console.log('No test result JSON found.');
               return;
             }
 
-            // Build the markdown comment
-            let comment = '## 🧪 Test Results Summary\n\n';
+            let comment = '## 🧪 Mocha Test Results Summary\n\n';
             comment += `**Workflow Run:** [#${context.payload.workflow_run.run_number}](${context.payload.workflow_run.html_url})\n\n`;
 
-            let allPassed = true;
+            for (const { nodeVersion, data } of testResults) {
+              const total = data.stats.tests || 0;
+              const passes = data.stats.passes || 0;
+              const failures = data.stats.failures || 0;
+              const duration = (data.stats.duration / 1000).toFixed(2);
+              const status = failures === 0 ? '✅ PASSED' : '❌ FAILED';
 
-            for (const { nodeVersion, result } of testResults) {
-              const passed = (result.numFailedTests === 0);
-              allPassed = allPassed && passed;
+              comment += `### Node.js ${nodeVersion} — ${status}\n`;
+              comment += `- **Total Tests:** ${total}\n`;
+              comment += `- **Passed:** ${passes}\n`;
+              comment += `- **Failed:** ${failures}\n`;
+              comment += `- **Duration:** ${duration}s\n\n`;
 
-              const icon = passed ? '✅' : '❌';
-              const status = passed ? 'PASSED' : 'FAILED';
-
-              comment += `### ${icon} Node.js ${nodeVersion} - ${status}\n\n`;
-              comment += `- **Total Tests:** ${result.numTotalTests ?? 'N/A'}\n`;
-              comment += `- **Passed:** ${result.numPassedTests ?? 'N/A'}\n`;
-              comment += `- **Failed:** ${result.numFailedTests ?? 'N/A'}\n`;
-              comment += `- **Duration:** ${(result.testResults?.[0]?.perfStats?.runtime / 1000 || 0).toFixed(2)}s\n\n`;
-
-              if ((result.numFailedTests || 0) > 0) {
+              if (failures > 0 && Array.isArray(data.failures)) {
                 comment += '**Failed Tests:**\n';
-                for (const testFile of result.testResults || []) {
-                  for (const test of testFile.assertionResults || []) {
-                    if (test.status === 'failed') {
-                      comment += `- \`${test.fullName}\`\n`;
-                      if (test.failureMessages && test.failureMessages.length > 0) {
-                        const errorMsg = test.failureMessages[0].split('\n')[0];
-                        comment += `  > ${errorMsg.substring(0, 200)}${errorMsg.length > 200 ? '...' : ''}\n`;
-                      }
-                    }
+                for (const f of data.failures) {
+                  comment += `- \`${f.fullTitle}\`\n`;
+                  if (f.err && f.err.message) {
+                    comment += `  > ${f.err.message.substring(0, 200)}\n`;
                   }
                 }
                 comment += '\n';
               }
             }
 
-            comment += allPassed
-              ? '---\n\n✨ **All tests passed across all Node.js versions!**\n'
-              : '---\n\n⚠️ **Some tests failed. Please review the failures above.**\n';
+            comment += testResults.every(r => r.data.stats.failures === 0)
+              ? '---\n✨ **All Mocha tests passed successfully!**'
+              : '---\n⚠️ **Some tests failed. Please review the failures above.**';
 
-            // Post the comment
-            try {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                body: comment
-              });
-              console.log(`Comment posted successfully to PR #${prNumber}`);
-            } catch (error) {
-              console.error('Error posting comment:', error);
-              throw error;
-            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment
+            });
