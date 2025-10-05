@@ -26,7 +26,7 @@ console.log(`Found ${dirs.length} artifact directories`);
 for (const dir of dirs) {
   const dirName = path.basename(dir);
   console.log(`Processing: ${dirName}`);
-  
+
   const logFile = path.join(dir, "log.txt");
   if (!fs.existsSync(logFile)) {
     console.warn(`⚠️  Log file missing in ${dirName}`);
