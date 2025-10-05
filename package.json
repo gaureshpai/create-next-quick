@@ -12,7 +12,6 @@
   "scripts": {
     "test": "mocha",
     "test:generate": "node test/generate-tests.js",
-    "test:json": "npm run test:generate && mocha --reporter json > test-results.json",
     "start": "node index.js"
   },
   "bin": {

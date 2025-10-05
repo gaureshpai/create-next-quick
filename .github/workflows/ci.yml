@@ -29,13 +29,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests (Mocha JSON reporter)
-        run: npm run test:json
-
-      - name: Upload test results
+      - name: Run tests and save logs
+        run: |
+          mkdir -p test-logs
+          npm test -- --reporter spec > test-logs/log.txt 2>&1
+      - name: Upload test logs
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results-${{ matrix.node-version }}
-          path: test-results.json
+          name: test-logs-${{ matrix.node-version }}
+          path: test-logs/log.txt
           retention-days: 5
