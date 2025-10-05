@@ -10,7 +10,7 @@
   ],
   "type": "module",
   "scripts": {
-    "test": "npm run test:generate && mocha",
+    "test": "mocha && echo \"Tests passed successfully\" || (echo \"Tests failed\" && exit 1)",
     "test:generate": "node test/generate-tests.js",
     "start": "node index.js"
   },

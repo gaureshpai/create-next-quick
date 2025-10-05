@@ -7,6 +7,7 @@
 <!-- Please link to the issue here -->
 
 Fixes #
+Closes #
 
 ## Type of Change
 

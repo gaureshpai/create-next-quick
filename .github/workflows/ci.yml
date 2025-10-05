@@ -29,5 +29,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests and generate JSON report
-        run: npm test -- --reporter json --reporter-options output=test-results-${{ matrix.node-version }}.json
+      - name: Run tests and save logs
+        run: |
+          mkdir -p test-logs
+          npm test > test-logs/log.txt 2>&1
+
+      - name: Verify test success
+        run: grep "Tests passed successfully" test-logs/log.txt
+
+      - name: Upload test logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-logs-${{ matrix.node-version }}
+          path: test-logs/log.txt
+          retention-days: 5
