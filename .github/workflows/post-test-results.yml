@@ -30,9 +30,11 @@ jobs:
         with:
           path: ./artifacts
 
-      - name: Parse test logs
-        id: parse-logs
-        run: node .github/scripts/parse-logs.js
+      - name: List artifact contents
+        id: list-artifacts
+        run: |
+          echo "Listing contents of ./artifacts"
+          ls -R artifacts
 
       - name: Post comment on Pull Request
         uses: actions/github-script@v7
