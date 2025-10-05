@@ -1,0 +1,140 @@
+
+name: Post Test Results
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types: [completed]
+
+permissions:
+  issues: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  comment:
+    name: Post Test Results Comment
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts
+      
+      - name: Generate and post comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Get PR number from the workflow run
+            const prNumber = context.payload.workflow_run.pull_requests[0]?.number;
+            
+            if (!prNumber) {
+              console.log('No pull request found for this workflow run');
+              return;
+            }
+            
+            console.log(`Processing PR #${prNumber}`);
+            
+            // Read all test result artifacts
+            const artifactsDir = './artifacts';
+            const testResults = [];
+            
+            if (!fs.existsSync(artifactsDir)) {
+              console.log('No artifacts directory found');
+              return;
+            }
+            
+            const artifactFolders = fs.readdirSync(artifactsDir);
+            
+            for (const folder of artifactFolders) {
+              if (folder.startsWith('test-results-')) {
+                const nodeVersion = folder.replace('test-results-', '');
+                const resultPath = path.join(artifactsDir, folder, 'test-results.json');
+                
+                if (fs.existsSync(resultPath)) {
+                  try {
+                    const content = fs.readFileSync(resultPath, 'utf8');
+                    const result = JSON.parse(content);
+                    testResults.push({
+                      nodeVersion,
+                      result
+                    });
+                  } catch (error) {
+                    console.error(`Error parsing ${resultPath}:`, error);
+                  }
+                }
+              }
+            }
+            
+            if (testResults.length === 0) {
+              console.log('No test results found');
+              return;
+            }
+            
+            // Generate markdown comment
+            let comment = '## 🧪 Test Results Summary\n\n';
+            comment += `**Workflow Run:** [#${context.payload.workflow_run.run_number}](${context.payload.workflow_run.html_url})\n\n`;
+            
+            let allPassed = true;
+            
+            for (const { nodeVersion, result } of testResults) {
+              const passed = result.numFailedTests === 0;
+              allPassed = allPassed && passed;
+              
+              const icon = passed ? '✅' : '❌';
+              const status = passed ? 'PASSED' : 'FAILED';
+              
+              comment += `### ${icon} Node.js ${nodeVersion} - ${status}\n\n`;
+              comment += `- **Total Tests:** ${result.numTotalTests}\n`;
+              comment += `- **Passed:** ${result.numPassedTests}\n`;
+              comment += `- **Failed:** ${result.numFailedTests}\n`;
+              comment += `- **Duration:** ${(result.testResults?.[0]?.perfStats?.runtime / 1000 || 0).toFixed(2)}s\n\n`;
+              
+              // Show failed tests if any
+              if (result.numFailedTests > 0) {
+                comment += '**Failed Tests:**\n';
+                for (const testFile of result.testResults || []) {
+                  for (const test of testFile.assertionResults || []) {
+                    if (test.status === 'failed') {
+                      comment += `- \`${test.fullName}\`\n`;
+                      if (test.failureMessages && test.failureMessages.length > 0) {
+                        // Truncate long error messages
+                        const errorMsg = test.failureMessages[0].split('\n')[0];
+                        comment += `  > ${errorMsg.substring(0, 200)}${errorMsg.length > 200 ? '...' : ''}\n`;
+                      }
+                    }
+                  }
+                }
+                comment += '\n';
+              }
+            }
+            
+            // Overall status
+            if (allPassed) {
+              comment += '---\n\n✨ **All tests passed across all Node.js versions!**\n';
+            } else {
+              comment += '---\n\n⚠️ **Some tests failed. Please review the failures above.**\n';
+            }
+            
+            // Post the comment
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: comment
+              });
+              console.log(`Comment posted successfully to PR #${prNumber}`);
+            } catch (error) {
+              console.error('Error posting comment:', error);
+              throw error;
+            }
