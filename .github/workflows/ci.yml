@@ -30,11 +30,7 @@ jobs:
         run: npm ci
 
       - name: Run tests (Mocha JSON reporter)
-        run: |
-          echo "Running tests for Node.js ${{ matrix.node-version }}"
-          # Run mocha with the JSON reporter and save results to test-results.json
-          npm run test:generate || true
-          npx mocha --reporter json > test-results.json || true
+        run: npm run test:json
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

@@ -12,104 +12,107 @@ permissions:
   actions: read
 
 jobs:
-  comment:
-    name: Post Test Results Comment
+  comment-on-pr:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    if: >
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion != 'cancelled'
 
     steps:
-      - name: Download artifacts
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Download artifacts from all Node versions
         uses: actions/download-artifact@v4
         with:
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path: artifacts
+          path: ./artifacts
 
-      - name: Generate and post comment
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
+      - name: Parse test results
+        id: parse-results
+        run: |
+          node -e "
+            import fs from 'fs';
+            import path from 'path';
 
-            async function findPrNumber() {
-              const workflowRun = context.payload.workflow_run || {};
-              const prs = workflowRun.pull_requests || [];
-              if (prs.length > 0) return prs[0].number;
+            const artifactsDir = './artifacts';
+            const summaries = [];
 
-              const sha = workflowRun.head_sha;
-              if (sha) {
-                const q = `${sha} repo:${context.repo.owner}/${context.repo.repo} is:pr`;
-                const search = await github.rest.search.issuesAndPullRequests({ q });
-                if (search.data.items.length > 0) return search.data.items[0].number;
+            const dirs = fs.readdirSync(artifactsDir, { withFileTypes: true })
+              .filter(d => d.isDirectory())
+              .map(d => path.join(artifactsDir, d.name));
+
+            for (const dir of dirs) {
+              const filePath = path.join(dir, 'test-results.json');
+              if (!fs.existsSync(filePath)) {
+                summaries.push({
+                  nodeVersion: path.basename(dir),
+                  status: '❌ Artifact missing'
+                });
+                continue;
               }
-              return null;
-            }
 
-            const prNumber = await findPrNumber();
-            if (!prNumber) {
-              console.log('No pull request found for this workflow run.');
-              return;
-            }
-
-            const resultsDir = './artifacts';
-            const artifactFolders = fs.readdirSync(resultsDir);
-            const testResults = [];
-
-            for (const folder of artifactFolders) {
-              const filePath = path.join(resultsDir, folder, 'test-results.json');
-              if (!fs.existsSync(filePath)) continue;
+              let raw = fs.readFileSync(filePath, 'utf8').trim();
+              const firstBrace = raw.indexOf('{');
+              if (firstBrace > 0) raw = raw.slice(firstBrace);
 
               try {
-                const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-                testResults.push({ nodeVersion: folder.replace('test-results-', ''), data });
+                const data = JSON.parse(raw);
+                const failures = data.failures?.length || 0;
+                const passes = data.passes?.length || 0;
+                summaries.push({
+                  nodeVersion: path.basename(dir),
+                  passes,
+                  failures,
+                  status: failures === 0 ? '✅ Passed' : '❌ Failed'
+                });
               } catch (err) {
-                console.error(`Error parsing ${filePath}:`, err);
+                summaries.push({
+                  nodeVersion: path.basename(dir),
+                  status: `❌ JSON parse error: ${err.message}`
+                });
               }
             }
 
-            if (testResults.length === 0) {
-              console.log('No test result JSON found.');
+            fs.writeFileSync('./artifacts/parsed-summary.json', JSON.stringify(summaries, null, 2));
+            console.log('✅ Parsed summary ready');
+          "
+
+      - name: Post comment on Pull Request
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const summaryPath = './artifacts/parsed-summary.json';
+            if (!require('fs').existsSync(summaryPath)) {
+              console.log('No summary to post');
               return;
             }
 
-            let comment = '## 🧪 Mocha Test Results Summary\n\n';
-            comment += `**Workflow Run:** [#${context.payload.workflow_run.run_number}](${context.payload.workflow_run.html_url})\n\n`;
-
-            for (const { nodeVersion, data } of testResults) {
-              const total = data.stats.tests || 0;
-              const passes = data.stats.passes || 0;
-              const failures = data.stats.failures || 0;
-              const duration = (data.stats.duration / 1000).toFixed(2);
-              const status = failures === 0 ? '✅ PASSED' : '❌ FAILED';
-
-              comment += `### Node.js ${nodeVersion} — ${status}\n`;
-              comment += `- **Total Tests:** ${total}\n`;
-              comment += `- **Passed:** ${passes}\n`;
-              comment += `- **Failed:** ${failures}\n`;
-              comment += `- **Duration:** ${duration}s\n\n`;
-
-              if (failures > 0 && Array.isArray(data.failures)) {
-                comment += '**Failed Tests:**\n';
-                for (const f of data.failures) {
-                  comment += `- \`${f.fullTitle}\`\n`;
-                  if (f.err && f.err.message) {
-                    comment += `  > ${f.err.message.substring(0, 200)}\n`;
-                  }
-                }
-                comment += '\n';
+            const summaries = JSON.parse(require('fs').readFileSync(summaryPath, 'utf8'));
+            let commentBody = '### 📝 CI/CD Test Summary for Node.js matrix:\n\n';
+            summaries.forEach(s => {
+              if (s.passes !== undefined) {
+                commentBody += `**Node ${s.nodeVersion}**: ${s.status} (Passes: ${s.passes}, Failures: ${s.failures})\n`;
+              } else {
+                commentBody += `**Node ${s.nodeVersion}**: ${s.status}\n`;
               }
-            }
+            });
 
-            comment += testResults.every(r => r.data.stats.failures === 0)
-              ? '---\n✨ **All Mocha tests passed successfully!**'
-              : '---\n⚠️ **Some tests failed. Please review the failures above.**';
+            // Only comment on the pull request that triggered the workflow
+            const prNumber = github.event.workflow_run.pull_requests[0]?.number;
+            if (!prNumber) {
+              console.log('No pull request associated with this run.');
+              return;
+            }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body: comment
+              body: commentBody
             });
+
+            console.log('✅ Comment posted to PR #' + prNumber);
