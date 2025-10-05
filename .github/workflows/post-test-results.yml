@@ -34,8 +34,8 @@ jobs:
             const fs = require('fs');
             const path = require('path');
             
-            // Get PR number from the workflow run
-            const prNumber = context.payload.workflow_run.pull_requests[0]?.number;
+            const { workflow_run } = context.payload;
+            const prNumber = workflow_run.pull_requests[0]?.number;
             
             if (!prNumber) {
               console.log('No pull request found for this workflow run');
