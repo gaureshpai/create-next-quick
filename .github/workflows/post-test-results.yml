@@ -64,4 +64,4 @@ jobs:
               body: commentBody
             });
 
-            console.log('✅ Comment posted to PR #' + prNumber);
+            console.log('Comment posted to PR #' + prNumber);
