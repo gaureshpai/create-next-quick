@@ -78,6 +78,10 @@ npx create-next-quick
 ? Do you want to use Shadcn UI? No
 ```
 
+## CLI Demo
+
+<video src="https://github.com/user-attachments/assets/8cab7a03-a0bc-47a2-89b9-a931bcffac86" controls width="600"></video>
+
 ## Commands
 
 -   `npm run dev` — starts the development server.

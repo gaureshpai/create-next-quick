@@ -72,4 +72,4 @@ describe('create-next-quick', function () {
       runTest(answers, assertions, done);
     });
   });
-});
+
