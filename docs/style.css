@@ -199,11 +199,24 @@ body {
     font-weight: 700;
 }
 
+table,
+th,
+td {
+    border: 1px solid black;
+}
+
 .subtitle {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.5;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.contributors-section {
+    text-align: center;
+}
+
+.contributors-section img {
+    max-width: 100%;
+    height: auto;
 }
 
 h2 {
