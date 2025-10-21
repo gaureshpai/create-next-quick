@@ -6,7 +6,18 @@ import chalk from "chalk";
 import { run, deleteFolder, createFolder, deleteFile, fileExists, writeFile } from './lib/utils.js';
 import { createPages, createLayout } from './lib/templates.js';
 
+const MIN_NODE_VERSION = 20;
+const currentNodeVersion = process.versions.node;
+
+if (parseInt(currentNodeVersion.split('.')[0]) < MIN_NODE_VERSION) {
+  console.error(chalk.red.bold(`\nError: create-next-quick requires Node.js version ${MIN_NODE_VERSION} or higher.`));
+  console.error(chalk.red.bold(`You are currently using Node.js ${currentNodeVersion}.`));
+  console.error(chalk.red.bold(`Please upgrade your Node.js version to proceed.`));
+  process.exit(1);
+}
+
 (async () => {
+  let projectPath = null;
   const availablePackageManagers = ["npm"];
 
   try {
@@ -133,7 +144,7 @@ import { createPages, createLayout } from './lib/templates.js';
   const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn } = answers;
 
   const displayName = projectName === '.' ? path.basename(process.cwd()) : projectName;
-  const projectPath = projectName === '.' ? process.cwd() : path.join(process.cwd(), projectName);
+  projectPath = projectName === '.' ? process.cwd() : path.join(process.cwd(), projectName);
 
   console.log();
   console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
