@@ -73,30 +73,30 @@ import { createPages, createLayout } from './lib/templates.js';
       name: "packageManager",
       message: "Choose a package manager:",
       choices: availablePackageManagers,
-      default: "pnpm"
+      default: "pnpm" || "npm" || "yarn",
     },
     {
       type: "confirm",
       name: "useTypeScript",
-      message: "Do you want to use TypeScript?",
+      message: "Do you want to use TypeScript? (default: Yes)",
       default: true
     },
     {
       type: "confirm",
       name: "useTailwind",
-      message: "Do you want to use Tailwind CSS?",
+      message: "Do you want to use Tailwind CSS? (default: Yes)",
       default: true
     },
     {
       type: "confirm",
       name: "useSrcDir",
-      message: "Do you want to use src directory?",
+      message: "Do you want to use src directory? (default: Yes)",
       default: true
     },
     {
       type: "confirm",
       name: "useAppDir",
-      message: "Do you want to use the app directory?",
+      message: "Do you want to use the app directory? (default: Yes)",
       default: true
     },
     {
@@ -123,8 +123,8 @@ import { createPages, createLayout } from './lib/templates.js';
     {
       type: "confirm",
       name: "useShadcn",
-      message: "Do you want to use Shadcn UI?",
-      default: false
+      message: "Do you want to use Shadcn UI? (default: Yes)",
+      default: true
     }
   ]);
 
@@ -218,10 +218,10 @@ import { createPages, createLayout } from './lib/templates.js';
   }
 
   const emptyPageContent = `export default function Page() {
-    return (
-      <></>
-    );
-  }`;
+  return (
+    <></>
+  );
+}`;
 
   writeFile(defaultPagePath, emptyPageContent);
 
@@ -301,11 +301,15 @@ import { createPages, createLayout } from './lib/templates.js';
     console.log(chalk.magenta("Setting up Shadcn UI..."));
 
     run(`${packageManager} install --save-dev tailwindcss-animate class-variance-authority`, projectPath);
-    run(`npx shadcn@latest init`, projectPath);
+    run(`cmd /C "echo y | npx shadcn@latest init --yes"`, projectPath);
 
     const componentsJsonPath = path.join(projectPath, "components.json");
-    const componentsJsonContent = {
-      "$schema": "https://ui.shadcn.com/schema.json",
+    let existingComponentsJson = {};
+    if (fs.existsSync(componentsJsonPath)) {
+      existingComponentsJson = JSON.parse(fs.readFileSync(componentsJsonPath, "utf8"));
+    }
+
+    const customComponentsJsonContent = {
       "style": "default",
       "rsc": useAppDir,
       "tsx": useTypeScript,
@@ -322,7 +326,9 @@ import { createPages, createLayout } from './lib/templates.js';
         "utils": "@/lib/utils"
       }
     };
-    writeFile(componentsJsonPath, JSON.stringify(componentsJsonContent, null, 2));
+
+    const mergedComponentsJsonContent = Object.assign({}, existingComponentsJson, customComponentsJsonContent);
+    writeFile(componentsJsonPath, JSON.stringify(mergedComponentsJsonContent, null, 2));
 
     console.log(chalk.bold.green("Shadcn UI configured"));
   }
@@ -341,6 +347,6 @@ import { createPages, createLayout } from './lib/templates.js';
   console.log(chalk.cyan(`  cd ${chalk.bold.white(projectName)}`));
   console.log(chalk.cyan(`  ${packageManager} ${chalk.bold.white(`run dev`)}`));
   console.log();
-  console.log(chalk.white.bold(`Thank you for using create-next-quick!✨`));
+  console.log(chalk.white.bold(`Thank you for using create-next-quick!`));
   console.log();
 })();
