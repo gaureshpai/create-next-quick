@@ -9,6 +9,11 @@ import { createPages, createLayout } from './lib/templates.js';
 const MIN_NODE_VERSION = 20;
 const currentNodeVersion = process.versions.node;
 
+console.log(`[DEBUG] Current Node.js version: ${currentNodeVersion}`);
+console.log(`[DEBUG] Minimum Node.js version: ${MIN_NODE_VERSION}`);
+console.log(`[DEBUG] Parsed current major version: ${parseInt(currentNodeVersion.split('.')[0])}`);
+console.log(`[DEBUG] Comparison result (parsedCurrentMajor < MIN_NODE_VERSION): ${parseInt(currentNodeVersion.split('.')[0]) < MIN_NODE_VERSION}`);
+
 if (parseInt(currentNodeVersion.split('.')[0]) <= MIN_NODE_VERSION) {
   console.error(chalk.red.bold(`\nError: create-next-quick requires Node.js version ${MIN_NODE_VERSION} or higher.`));
   console.error(chalk.red.bold(`You are currently using Node.js ${currentNodeVersion}.`));
