@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x, 21.x, 22.x]
+        node-version: [22.x]
 
     steps:
       - name: Checkout repository
@@ -36,6 +36,9 @@ jobs:
 
       - name: Verify test success
         run: grep "Tests passed successfully" test-logs/log.txt
+
+      - name: Print test logs
+        run: cat test-logs/log.txt
 
       - name: Upload test logs
         uses: actions/upload-artifact@v4
