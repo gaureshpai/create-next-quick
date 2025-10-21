@@ -6,6 +6,16 @@ import chalk from "chalk";
 import { run, deleteFolder, createFolder, deleteFile, fileExists, writeFile } from './lib/utils.js';
 import { createPages, createLayout } from './lib/templates.js';
 
+const MIN_NODE_VERSION = 20;
+const currentNodeVersion = process.versions.node;
+
+if (parseInt(currentNodeVersion.split('.')[0]) <= MIN_NODE_VERSION) {
+  console.error(chalk.red.bold(`\nError: create-next-quick requires Node.js version ${MIN_NODE_VERSION} or higher.`));
+  console.error(chalk.red.bold(`You are currently using Node.js ${currentNodeVersion}.`));
+  console.error(chalk.red.bold(`Please upgrade your Node.js version to proceed.`));
+  process.exit(1);
+}
+
 (async () => {
   const availablePackageManagers = ["npm"];
 
@@ -131,7 +141,7 @@ import { createPages, createLayout } from './lib/templates.js';
   Object.assign(answers, otherAnswers);
 
   const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn } = answers;
-  
+
   const displayName = projectName === '.' ? path.basename(process.cwd()) : projectName;
   const projectPath = projectName === '.' ? process.cwd() : path.join(process.cwd(), projectName);
 
@@ -165,13 +175,22 @@ import { createPages, createLayout } from './lib/templates.js';
 
   console.log(chalk.cyan(`Installing dependencies with ${chalk.bold(packageManager)}...`));
 
-  try {
-    run(command);
-    console.log(chalk.bold.green("Dependencies installed successfully"));
-  } catch (err) {
-    console.log(chalk.bold.red("Failed to install dependencies"));
-    process.exit(1);
+  const installResult = run(command, process.cwd(), false, 3, 2000); // 3 retries, 2-second delay
+
+  if (!installResult.success) {
+    console.error(chalk.bold.red("Failed to install dependencies."));
+    if (installResult.stderr) {
+      console.error(chalk.red("Error details:"));
+      console.error(chalk.red(installResult.stderr));
+    }
+    console.error(chalk.yellow("Troubleshooting tips:"));
+    console.error(chalk.yellow("  - Check your internet connection."));
+    console.error(chalk.yellow("  - Ensure your package manager (npm, yarn, or pnpm) is installed and up to date."));
+    console.error(chalk.yellow("  - Try running the command again."));
+    throw new Error("Dependency installation failed."); // Throw to trigger cleanup
   }
+
+  console.log(chalk.bold.green("Dependencies installed successfully"));
 
   console.log(chalk.yellow("Cleaning up default files..."));
 
@@ -230,13 +249,42 @@ import { createPages, createLayout } from './lib/templates.js';
   const readmePath = path.join(projectPath, "README.md");
   writeFile(readmePath, `# ${displayName}`);
 
+  if (useTypeScript) {
+    let globalCssPath;
+    if (useAppDir) {
+      globalCssPath = useSrcDir ? path.join(projectPath, "src", "app") : path.join(projectPath, "app");
+    } else {
+      globalCssPath = useSrcDir ? path.join(projectPath, "src", "styles") : path.join(projectPath, "styles");
+    }
+    const globalDtsPath = path.join(globalCssPath, "global.d.ts");
+    const globalDtsContent = `declare module '*.css' {\r\n  interface CSSModule {\r\n    [className: string]: string\r\n  }\r\n  const cssModule: CSSModule\r\n  export default cssModule\r\n}`;
+    writeFile(globalDtsPath, globalDtsContent);
+  }
+
   console.log(chalk.bold.green("Layout and pages created"));
 
   if (linter === "biome") {
     console.log(chalk.blue("Setting up Biome linter..."));
 
-    run(`${packageManager} install --save-dev @biomejs/biome`, projectPath);
-    run(`npx @biomejs/biome init`, projectPath);
+    const biomeInstallResult = run(`${packageManager} install --save-dev @biomejs/biome`, projectPath, false, 3, 2000);
+    if (!biomeInstallResult.success) {
+      console.error(chalk.bold.red("Failed to install Biome dependencies."));
+      if (biomeInstallResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(biomeInstallResult.stderr));
+      }
+      throw new Error("Biome installation failed.");
+    }
+
+    const biomeInitResult = run(`npx @biomejs/biome init`, projectPath, false, 3, 2000);
+    if (!biomeInitResult.success) {
+      console.error(chalk.bold.red("Failed to initialize Biome."));
+      if (biomeInitResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(biomeInitResult.stderr));
+      }
+      throw new Error("Biome initialization failed.");
+    }
 
     console.log(chalk.bold.green("Biome linter configured"));
   }
@@ -244,24 +292,40 @@ import { createPages, createLayout } from './lib/templates.js';
   if (orm === "prisma") {
     console.log(chalk.blue("Setting up Prisma ORM..."));
 
-    run(`${packageManager} install --save-dev prisma`, projectPath);
-    run(`${packageManager} install @prisma/client`, projectPath);
-    run(`npx prisma init`, projectPath);
+    const prismaInstallDevResult = run(`${packageManager} install --save-dev prisma`, projectPath, false, 3, 2000);
+    if (!prismaInstallDevResult.success) {
+      console.error(chalk.bold.red("Failed to install Prisma dev dependencies."));
+      if (prismaInstallDevResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(prismaInstallDevResult.stderr));
+      }
+      throw new Error("Prisma dev dependency installation failed.");
+    }
+
+    const prismaInstallClientResult = run(`${packageManager} install @prisma/client`, projectPath, false, 3, 2000);
+    if (!prismaInstallClientResult.success) {
+      console.error(chalk.bold.red("Failed to install Prisma client dependencies."));
+      if (prismaInstallClientResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(prismaInstallClientResult.stderr));
+      }
+      throw new Error("Prisma client dependency installation failed.");
+    }
+
+    const prismaInitResult = run(`npx prisma init`, projectPath, false, 3, 2000);
+    if (!prismaInitResult.success) {
+      console.error(chalk.bold.red("Failed to initialize Prisma."));
+      if (prismaInitResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(prismaInitResult.stderr));
+      }
+      throw new Error("Prisma initialization failed.");
+    }
 
     const prismaLibDir = useSrcDir ? path.join(projectPath, "src", "lib") : path.join(projectPath, "lib");
     createFolder(prismaLibDir);
 
-    const prismaContent = `import { PrismaClient } from '@prisma/client'
-
-    declare global {
-      var prisma: PrismaClient | undefined
-    }
-
-    const prisma = global.prisma || new PrismaClient()
-
-    if (process.env.NODE_ENV !== 'production') global.prisma = prisma
-
-    export default prisma;`;
+    const prismaContent = `import { PrismaClient } from '@prisma/client'\n\n    declare global {\n      var prisma: PrismaClient | undefined\n    }\n\n    const prisma = global.prisma || new PrismaClient()\n\n    if (process.env.NODE_ENV !== 'production') global.prisma = prisma\n\n    export default prisma;`;
     writeFile(path.join(prismaLibDir, "prisma.ts"), prismaContent);
 
     console.log(chalk.bold.green("Prisma ORM configured"));
@@ -270,8 +334,24 @@ import { createPages, createLayout } from './lib/templates.js';
   if (orm === "drizzle") {
     console.log(chalk.blue("Setting up Drizzle ORM..."));
 
-    run(`${packageManager} install drizzle-orm @vercel/postgres`, projectPath);
-    run(`${packageManager} install --save-dev drizzle-kit`, projectPath);
+    const drizzleInstallResult = run(`${packageManager} install drizzle-orm @vercel/postgres`, projectPath, false, 3, 2000);
+    if (!drizzleInstallResult.success) {
+      console.error(chalk.bold.red("Failed to install Drizzle ORM dependencies."));
+      if (drizzleInstallResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(drizzleInstallResult.stderr));
+      }
+      throw new Error("Drizzle ORM dependency installation failed.");
+    }
+    const drizzleKitInstallResult = run(`${packageManager} install --save-dev drizzle-kit`, projectPath, false, 3, 2000);
+    if (!drizzleKitInstallResult.success) {
+      console.error(chalk.bold.red("Failed to install Drizzle Kit dev dependencies."));
+      if (drizzleKitInstallResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(drizzleKitInstallResult.stderr));
+      }
+      throw new Error("Drizzle Kit dev dependency installation failed.");
+    }
 
     const drizzleConfigContent = `import type { Config } from 'drizzle-kit';
 
@@ -302,8 +382,25 @@ import { createPages, createLayout } from './lib/templates.js';
   if (useShadcn) {
     console.log(chalk.magenta("Setting up Shadcn UI..."));
 
-    run(`${packageManager} install --save-dev tailwindcss-animate class-variance-authority`, projectPath);
-    run(`cmd /C "echo y | npx shadcn@latest init --yes"`, projectPath);
+    const shadcnInstallResult = run(`${packageManager} install --save-dev tailwindcss-animate class-variance-authority`, projectPath, false, 3, 2000);
+    if (!shadcnInstallResult.success) {
+      console.error(chalk.bold.red("Failed to install Shadcn UI dependencies."));
+      if (shadcnInstallResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(shadcnInstallResult.stderr));
+      }
+      throw new Error("Shadcn UI dependency installation failed.");
+    }
+
+    const shadcnInitResult = run(`cmd /C "echo y | npx shadcn@latest init --yes"`, projectPath, false, 3, 2000);
+    if (!shadcnInitResult.success) {
+      console.error(chalk.bold.red("Failed to initialize Shadcn UI."));
+      if (shadcnInitResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(shadcnInitResult.stderr));
+      }
+      throw new Error("Shadcn UI initialization failed.");
+    }
 
     const componentsJsonPath = path.join(projectPath, "components.json");
     let existingComponentsJson = {};
@@ -353,4 +450,11 @@ import { createPages, createLayout } from './lib/templates.js';
   console.log();
   console.log(chalk.white.bold(`Thank you for using create-next-quick!`));
   console.log();
-})();
+})().catch((error) => {
+  console.error(chalk.bold.red(`\nAn unexpected error occurred: ${error.message}`));
+  if (projectPath && fs.existsSync(projectPath)) {
+    console.error(chalk.yellow(`Cleaning up incomplete project directory: ${projectPath}`));
+    deleteFolder(projectPath);
+  }
+  process.exit(1);
+});

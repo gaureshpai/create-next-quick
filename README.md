@@ -13,14 +13,20 @@
 - **Next.js App Directory** — support for the new Next.js app directory.
 - **Custom Page Generation** — create multiple pages at once.
 - **Linter Support** — choose between no linter, ESLint, and Biome.
+- **ORM Support** — choose between no ORM, Prisma, and Drizzle.
 - **Shadcn UI** — automatically installs and configures Shadcn UI with a default style and color, **non-interactively**.
+- **Robust Error Handling** — includes automatic retries for failed package installations, intelligent cleanup of incomplete projects, and clear, actionable troubleshooting tips for a smoother setup experience.
+- **TypeScript CSS Module Support** — automatically generates a `global.d.ts` file to provide type declarations for CSS imports, resolving common TypeScript errors in Next.js projects.
 - **Clean Project Setup** — removes default favicon and clears public folder.
 - **Empty Default Page** — overwrites the default `page.tsx` or `index.tsx` with an empty template.
 - **Dynamic Metadata** — always overwrites the `layout.tsx` or `layout.jsx` with a minimal template.
 - **Conditional API Route Deletion** — deletes the default `api/hello.js` route if using the `src` directory and not the `app` directory.
 - **Safe Project Creation** — checks if the current directory is empty when creating a project in the current directory (`.`) and prevents accidental overwrites.
-- **ORM Support** — choose between no ORM, Prisma, and Drizzle.
 - **Automated CI/CD Feedback** — Pull Requests now receive automated comments on test status.
+
+## Prerequisites
+
+- **Node.js 18+** — `create-next-quick` requires Node.js version 18 or higher. Please ensure your Node.js environment meets this requirement.
 
 ## Installation
 
@@ -56,7 +62,7 @@ When you run `npx create-next-quick` without a project name, you will be prompte
 4.  **Choose to use Tailwind CSS (default: Yes, logged to console)**
 5.  **Choose to use src directory (default: Yes, logged to console)**
 6.  **Choose to use the app directory (default: Yes, logged to console)**
-7.  **Enter the names of the pages you want to create (default: none, logged to console)**
+7.  **Enter the names of the pages you want to create (comma-separated, default: none, logged to console)**
 8.  **Choose a linter (default: none, logged to console)**
 9.  **Choose an ORM (default: none, logged to console)**
 10. **Choose to use Shadcn UI (default: Yes, logged to console)****
