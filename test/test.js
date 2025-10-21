@@ -18,15 +18,12 @@ describe('create-next-quick', function () {
   const projectName = 'test-project';
   const projectPath = path.join(process.cwd(), projectName);
 
-  beforeEach(() => {
-    deleteFolder(projectPath);
-  });
-
   afterEach(() => {
     deleteFolder(projectPath);
   });
 
   const runTest = (answers, assertions, done) => {
+    deleteFolder(projectPath); // Add this line for cleanup before each test run
     const child = spawn('node', [cliPath]);
     let output = '';
 

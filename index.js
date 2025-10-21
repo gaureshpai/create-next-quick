@@ -9,7 +9,7 @@ import { createPages, createLayout } from './lib/templates.js';
 const MIN_NODE_VERSION = 18;
 const currentNodeVersion = process.versions.node;
 
-if (parseInt(currentNodeVersion.split('.')[0]) < MIN_NODE_VERSION) {
+if (parseInt(currentNodeVersion.split('.')[0]) <= MIN_NODE_VERSION) {
   console.error(chalk.red.bold(`\nError: create-next-quick requires Node.js version ${MIN_NODE_VERSION} or higher.`));
   console.error(chalk.red.bold(`You are currently using Node.js ${currentNodeVersion}.`));
   console.error(chalk.red.bold(`Please upgrade your Node.js version to proceed.`));
