@@ -1,4 +1,4 @@
-name: Welcome Contributors
+name: Welcome New Contributors
 
 on:
   issues:
@@ -7,40 +7,24 @@ on:
     types: [opened]
 
 jobs:
-  greet-contributors:
+  greeting:
+    name: Greet First-Time Contributors
     runs-on: ubuntu-latest
     permissions:
       issues: write
       pull-requests: write
+    if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]' }}
     steps:
-      - name: Greet on New Issue
-        uses: actions/github-script@v7
-        if: github.event_name == 'issues'
+      - uses: actions/first-interaction@v1
         with:
-          script: |
-            const body = `👋 Hello @${{ github.actor }}!
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            👋 Hi @${{ github.actor }}!
 
-            Thank you for opening an issue. We appreciate your contribution and will review it as soon as possible.`;
+            Thanks for opening your first issue here 🎉  
+            We appreciate your contribution and will review it as soon as possible.
+          pr-message: |
+            🎉 Hi @${{ github.actor }}!
 
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
-
-      - name: Greet on New Pull Request
-        uses: actions/github-script@v7
-        if: github.event_name == 'pull_request_target'
-        with:
-          script: |
-            const body = `🎉 Welcome, @${{ github.actor }}!
-
-            Thank you for submitting a Pull Request! We're thrilled to see your contribution. Our team will review it shortly.`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
+            Thanks for submitting your first Pull Request!  
+            We’re thrilled to have your contribution and will review it shortly.
