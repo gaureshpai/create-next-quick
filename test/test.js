@@ -18,6 +18,10 @@ describe('create-next-quick', function () {
   const projectName = 'test-project';
   const projectPath = path.join(process.cwd(), projectName);
 
+  beforeEach(() => {
+    deleteFolder(projectPath);
+  });
+
   afterEach(() => {
     deleteFolder(projectPath);
   });

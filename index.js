@@ -141,7 +141,7 @@ if (parseInt(currentNodeVersion.split('.')[0]) < MIN_NODE_VERSION) {
   Object.assign(answers, otherAnswers);
 
   const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn } = answers;
-  
+
   const displayName = projectName === '.' ? path.basename(process.cwd()) : projectName;
   const projectPath = projectName === '.' ? process.cwd() : path.join(process.cwd(), projectName);
 
