@@ -131,7 +131,9 @@ import { createPages, createLayout } from './lib/templates.js';
   Object.assign(answers, otherAnswers);
 
   const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn } = answers;
-  const projectPath = path.join(process.cwd(), projectName);
+  
+  const displayName = projectName === '.' ? path.basename(process.cwd()) : projectName;
+  const projectPath = projectName === '.' ? process.cwd() : path.join(process.cwd(), projectName);
 
   console.log();
   console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
@@ -190,7 +192,7 @@ import { createPages, createLayout } from './lib/templates.js';
 
   console.log(chalk.magenta("Creating layout files..."));
 
-  createLayout(projectPath, projectName, useTypeScript, useAppDir, useSrcDir);
+  createLayout(projectPath, displayName, useTypeScript, useAppDir, useSrcDir);
 
   const pagesPath = useAppDir
     ? (useSrcDir ? path.join(projectPath, "src", "app") : path.join(projectPath, "app"))
@@ -226,7 +228,7 @@ import { createPages, createLayout } from './lib/templates.js';
   writeFile(defaultPagePath, emptyPageContent);
 
   const readmePath = path.join(projectPath, "README.md");
-  writeFile(readmePath, `# ${projectName}`);
+  writeFile(readmePath, `# ${displayName}`);
 
   console.log(chalk.bold.green("Layout and pages created"));
 
@@ -344,7 +346,9 @@ import { createPages, createLayout } from './lib/templates.js';
   console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
   console.log();
   console.log(chalk.bold.white("-> Next steps:"));
-  console.log(chalk.cyan(`  cd ${chalk.bold.white(projectName)}`));
+  if (projectName !== '.') {
+    console.log(chalk.cyan(`  cd ${chalk.bold.white(projectName)}`));
+  }
   console.log(chalk.cyan(`  ${packageManager} ${chalk.bold.white(`run dev`)}`));
   console.log();
   console.log(chalk.white.bold(`Thank you for using create-next-quick!`));

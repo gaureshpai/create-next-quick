@@ -40,7 +40,7 @@ describe('create-next-quick', function () {
         clearInterval(interval);
         child.stdin.end();
       }
-    }, 1000);
+    }, 3000);
 
     child.on('close', (code) => {
       assert.strictEqual(code, 0, 'CLI should exit with code 0');
@@ -61,7 +61,7 @@ describe('create-next-quick', function () {
         testCase.options.pages + '\n',
         testCase.options.linter + '\n',
         testCase.options.orm + '\n',
-        testCase.options.useShadcn ? 'y\n' : '\n',
+        testCase.options.useShadcn ? '\n' : 'n\n',
       ];
 
       const assertions = () => {
