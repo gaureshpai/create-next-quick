@@ -30,11 +30,17 @@ describe('create-next-quick', function () {
   const runTest = (answers, assertions, done) => {
     deleteFolder(currentProjectPath); // Add this line for cleanup before each test run
     const child = spawn('node', [cliPath]);
-    let output = '';
+    let stdout = '';
+    let stderr = '';
 
     child.stdout.on('data', (data) => {
       console.log(data.toString());
-      output += data.toString();
+      stdout += data.toString();
+    });
+
+    child.stderr.on('data', (data) => {
+      console.error(data.toString());
+      stderr += data.toString();
     });
 
     let i = 0;
