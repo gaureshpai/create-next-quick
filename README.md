@@ -13,7 +13,7 @@
 - **Next.js App Directory** — support for the new Next.js app directory.
 - **Custom Page Generation** — create multiple pages at once.
 - **Linter Support** — choose between no linter, ESLint, and Biome.
-- **Shadcn UI** — automatically installs and configures Shadcn UI with a default style and color.
+- **Shadcn UI** — automatically installs and configures Shadcn UI with a default style and color, **non-interactively**.
 - **Clean Project Setup** — removes default favicon and clears public folder.
 - **Empty Default Page** — overwrites the default `page.tsx` or `index.tsx` with an empty template.
 - **Dynamic Metadata** — always overwrites the `layout.tsx` or `layout.jsx` with a minimal template.
@@ -51,13 +51,15 @@ npx create-next-quick
 When you run `npx create-next-quick` without a project name, you will be prompted to:
 
 1.  **Enter Project Name** — e.g., `my-app` (or `.` to create in the current directory). If you use `.` the directory must be empty.
-2.  **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose.
-3.  **Choose to use TypeScript (default: Yes)**
-4.  **Choose to use Tailwind CSS (default: Yes)**
-5.  **Choose to use the app directory (default: Yes)**
-6.  **Enter the names of the pages you want to create (default: none)**
-7.  **Choose a linter (default: none)**
-8.  **Choose an ORM (default: none)**
+2.  **Choose a package manager** — detects installed package managers (`npm`, `yarn`, `pnpm`) and prompts you to choose. **(Default: pnpm, logged to console)**
+3.  **Choose to use TypeScript (default: Yes, logged to console)**
+4.  **Choose to use Tailwind CSS (default: Yes, logged to console)**
+5.  **Choose to use src directory (default: Yes, logged to console)**
+6.  **Choose to use the app directory (default: Yes, logged to console)**
+7.  **Enter the names of the pages you want to create (default: none, logged to console)**
+8.  **Choose a linter (default: none, logged to console)**
+9.  **Choose an ORM (default: none, logged to console)**
+10. **Choose to use Shadcn UI (default: Yes, logged to console)****
 
 Example run:
 
@@ -69,13 +71,15 @@ npx create-next-quick
 
 ```
 ? Enter project name: my-portfolio
-? Do you want to use TypeScript? Yes
-? Do you want to use Tailwind CSS? Yes
-? Do you want to use the app directory? Yes
+Using default for package manager: pnpm
+Using default for TypeScript: Yes
+Using default for Tailwind CSS: Yes
+Using default for src directory: Yes
+Using default for app directory: Yes
 ? Enter the names of the pages you want to create (comma-separated): home, about, contact
-? Choose a linter (default: none): none
-? Choose an ORM (default: none): prisma
-? Do you want to use Shadcn UI? No
+Using default for linter: none
+Using default for ORM: none
+Using default for Shadcn UI: Yes
 ```
 
 ## CLI Demo
