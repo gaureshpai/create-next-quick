@@ -15,15 +15,20 @@ import { testCases } from './test-cases.js';
 describe('create-next-quick', function () {
   this.timeout(0);
 
-  const projectName = 'test-project';
-  const projectPath = path.join(process.cwd(), projectName);
+  let currentProjectName;
+  let currentProjectPath;
+
+  beforeEach(() => {
+    currentProjectName = `test-project-${Date.now()}`;
+    currentProjectPath = path.join(process.cwd(), currentProjectName);
+  });
 
   afterEach(() => {
-    deleteFolder(projectPath);
+    deleteFolder(currentProjectPath);
   });
 
   const runTest = (answers, assertions, done) => {
-    deleteFolder(projectPath); // Add this line for cleanup before each test run
+    deleteFolder(currentProjectPath); // Add this line for cleanup before each test run
     const child = spawn('node', [cliPath]);
     let output = '';
 
@@ -53,7 +58,7 @@ describe('create-next-quick', function () {
   testCases.forEach((testCase) => {
     it(testCase.description, (done) => {
       const answers = [
-        projectName,
+        currentProjectName,
         '\n', // packageManager (use default)
         testCase.options.useTypeScript ? '\n' : 'n\n',
         testCase.options.useTailwind ? '\n' : 'n\n',
@@ -66,8 +71,8 @@ describe('create-next-quick', function () {
       ];
 
       const assertions = () => {
-        assert.ok(fs.existsSync(projectPath), 'Project directory should exist');
-        testCase.assertions(projectPath);
+        assert.ok(fs.existsSync(currentProjectPath), 'Project directory should exist');
+        testCase.assertions(currentProjectPath);
       };
 
       runTest(answers, assertions, done);
