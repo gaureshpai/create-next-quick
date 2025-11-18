@@ -21,8 +21,6 @@ As maintainers and contributors of the **Create Next Quick** npm package, we ple
 
 We pledge to prioritize the needs of our package users while maintaining a **welcoming, diverse, inclusive, and professional** development community.
 
----
-
 ## **Our Standards**
 
 Examples of behavior that contribute to a positive package community:
@@ -42,8 +40,6 @@ Examples of unacceptable behavior include:
 - **Sharing private** communication without consent
 - **Malicious code** contributions
 
----
-
 ## **Enforcement Responsibilities**
 
 **Create Next Quick package maintainers** are responsible for:
@@ -53,8 +49,6 @@ Examples of unacceptable behavior include:
 - **Addressing** conduct violations
 - **Managing** the npm package repository
 - **Communicating** changes and decisions
-
----
 
 ## **Scope**
 
@@ -66,8 +60,6 @@ This Code of Conduct applies to all official **Create Next Quick** spaces, inclu
 
 It also applies when individuals are representing **Create Next Quick** in any capacity.
 
----
-
 ## **Enforcement**
 
 Violations may be reported by contacting the organizing team. All reports will be:
@@ -75,8 +67,6 @@ Violations may be reported by contacting the organizing team. All reports will b
 - **Reviewed and investigated** promptly
 - Kept **confidential**, where possible
 - Addressed fairly and consistently
-
----
 
 ## **Enforcement Guidelines**
 
@@ -97,8 +87,6 @@ Community leaders will follow these guidelines when determining consequences:
 ### 4. **Permanent Ban**
 - **Impact:** Severe or repeated violations (e.g., harassment)  
 - **Consequence:** Permanent ban from all **Create Next Quick** activities and spaces  
-
----
 
 ## **Attribution**
 

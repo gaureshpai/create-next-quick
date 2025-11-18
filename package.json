@@ -1,6 +1,6 @@
 {
   "name": "create-next-quick",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A CLI tool to quickly scaffold a Next.js project",
   "main": "index.js",
   "files": [
@@ -47,6 +47,6 @@
   },
   "devDependencies": {
     "inquirer-test": "^2.0.1",
-    "mocha": "^11.7.3"
+    "mocha": "^11.0.0"
   }
 }

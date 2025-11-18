@@ -6,14 +6,12 @@ const indexJsContent = fs.readFileSync(indexJsPath, 'utf-8');
 
 const extractedPrompts = [];
 
-// Regex to find inquirer.prompt calls and extract the array of prompt objects
 const inquirerPromptRegex = /inquirer\.prompt\(\[([\s\S]*?)\]\)/g;
 let promptArrayMatch;
 
 while ((promptArrayMatch = inquirerPromptRegex.exec(indexJsContent)) !== null) {
   const promptArrayString = promptArrayMatch[1];
 
-  // Regex to extract individual prompt objects from the array string
   const promptObjectRegex = /{\s*type:\s*"(.*?)",\s*name:\s*"(.*?)",\s*message:\s*"(.*?)"(?:,\s*choices:\s*\[([\s\S]*?)\])?(?:,\s*default:\s*(.*?))?[\s\S]*?}/g;
   let promptMatch;
 
@@ -26,12 +24,10 @@ while ((promptArrayMatch = inquirerPromptRegex.exec(indexJsContent)) !== null) {
       default: undefined,
     };
 
-    // Extract choices if available
     if (promptMatch[4]) {
       prompt.choices = promptMatch[4].split(',').map(c => c.trim().replace(/['"]/g, '')).filter(c => c !== '');
     }
 
-    // Extract default value if available
     if (promptMatch[5]) {
       const defaultValue = promptMatch[5].trim();
       if (defaultValue === 'true') {
@@ -40,7 +36,7 @@ while ((promptArrayMatch = inquirerPromptRegex.exec(indexJsContent)) !== null) {
         prompt.default = false;
       } else if (defaultValue === '' || defaultValue === '""') {
         prompt.default = '';
-      } else if (!isNaN(defaultValue)) { // Check if it's a number
+      } else if (!isNaN(defaultValue)) {
         prompt.default = Number(defaultValue);
       } else {
         prompt.default = defaultValue.replace(/['"]/g, '');
@@ -52,24 +48,17 @@ while ((promptArrayMatch = inquirerPromptRegex.exec(indexJsContent)) !== null) {
 
 const testCases = [];
 
-// Generate test cases based on extracted prompts
-// This is a simplified approach to avoid combinatorial explosion.
-// For each option, we create a test case that enables/selects that option,
-// while others remain at their default or a sensible fallback.
-
 for (const prompt of extractedPrompts) {
-  // Skip projectName as it's handled separately in tests
   if (prompt.name === 'projectName') continue;
 
   if (prompt.type === 'confirm') {
-    // Test case for enabling the option
     const enableTestCase = {
       description: `should create a project with ${prompt.name} enabled`,
       options: {},
-      expectedFiles: [], // Placeholder for expected files
-      assertions: () => { /* TODO: Add specific assertions for this case */ },
+      expectedFiles: [],
+      assertions: () => { },
     };
-    // Set all defaults first
+
     extractedPrompts.forEach(p => {
       if (p.name !== 'projectName') {
         enableTestCase.options[p.name] = p.default !== undefined ? p.default : (p.type === 'confirm' ? false : '');
@@ -78,13 +67,12 @@ for (const prompt of extractedPrompts) {
     enableTestCase.options[prompt.name] = true;
     testCases.push(enableTestCase);
 
-    // Test case for disabling the option (if default is true or not explicitly false)
     if (prompt.default !== false) {
       const disableTestCase = {
         description: `should create a project with ${prompt.name} disabled`,
         options: {},
-        expectedFiles: [], // Placeholder for expected files
-        assertions: () => { /* TODO: Add specific assertions for this case */ },
+        expectedFiles: [],
+        assertions: () => { },
       };
       extractedPrompts.forEach(p => {
         if (p.name !== 'projectName') {
@@ -99,8 +87,8 @@ for (const prompt of extractedPrompts) {
       const listTestCase = {
         description: `should create a project with ${prompt.name} set to ${choice}`,
         options: {},
-        expectedFiles: [], // Placeholder for expected files
-        assertions: () => { /* TODO: Add specific assertions for this case */ },
+        expectedFiles: [],
+        assertions: () => { },
       };
       extractedPrompts.forEach(p => {
         if (p.name !== 'projectName') {
@@ -111,19 +99,17 @@ for (const prompt of extractedPrompts) {
       testCases.push(listTestCase);
     });
   } else if (prompt.type === 'input') {
-    // For input types, we'll generate a test case with a default or a simple value
     const inputTestCase = {
       description: `should create a project with custom ${prompt.name}`,
       options: {},
-      expectedFiles: [], // Placeholder for expected files
-      assertions: () => { /* TODO: Add specific assertions for this case */ },
+      expectedFiles: [],
+      assertions: () => { },
     };
     extractedPrompts.forEach(p => {
       if (p.name !== 'projectName') {
         inputTestCase.options[p.name] = p.default !== undefined ? p.default : (p.type === 'confirm' ? false : '');
       }
     });
-    // Use a specific value for input prompts, or its default
     inputTestCase.options[prompt.name] = prompt.default || (prompt.name === 'pages' ? 'testpage' : 'custom');
     testCases.push(inputTestCase);
   }
