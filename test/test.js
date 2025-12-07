@@ -28,7 +28,7 @@ describe('create-next-quick', function () {
   });
 
   const runTest = (answers, assertions, done) => {
-    deleteFolder(currentProjectPath); // Add this line for cleanup before each test run
+    deleteFolder(currentProjectPath);
     const child = spawn('node', [cliPath]);
     let stdout = '';
     let stderr = '';
@@ -65,7 +65,7 @@ describe('create-next-quick', function () {
     it(testCase.description, (done) => {
       const answers = [
         currentProjectName,
-        '\n', // packageManager (use default)
+        '\n',
         testCase.options.useTypeScript ? '\n' : 'n\n',
         testCase.options.useTailwind ? '\n' : 'n\n',
         testCase.options.useSrcDir ? '\n' : 'n\n',

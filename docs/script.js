@@ -3,13 +3,11 @@ const mainNav = document.getElementById("main-nav")
 const sidebar = document.getElementById("sidebar")
 const copyButtons = document.querySelectorAll(".copy-btn")
 
-// Toggle hamburger menu and navigation
 hamburgerMenu.addEventListener("click", () => {
     hamburgerMenu.classList.toggle("active")
     mainNav.classList.toggle("active")
 })
 
-// Close menu when a nav link is clicked
 document.querySelectorAll("#main-nav a").forEach((link) => {
     link.addEventListener("click", () => {
         hamburgerMenu.classList.remove("active")
@@ -17,12 +15,10 @@ document.querySelectorAll("#main-nav a").forEach((link) => {
     })
 })
 
-// Toggle sidebar on mobile
 hamburgerMenu.addEventListener("click", () => {
     sidebar.classList.toggle("active")
 })
 
-// Close sidebar when a sidebar link is clicked
 document.querySelectorAll(".sidebar a").forEach((link) => {
     link.addEventListener("click", () => {
         if (window.innerWidth <= 768) {
@@ -35,7 +31,7 @@ document.querySelectorAll(".sidebar a").forEach((link) => {
 copyButtons.forEach((button) => {
     button.addEventListener("click", () => {
         const textToCopy = button.getAttribute("data-code")
-        const originalText = button.innerHTML // Declare originalText variable here
+        const originalText = button.innerHTML
 
         navigator.clipboard
             .writeText(textToCopy)
@@ -57,7 +53,6 @@ copyButtons.forEach((button) => {
     })
 })
 
-// Close mobile menu when clicking outside
 document.addEventListener("click", (e) => {
     if (!e.target.closest("header")) {
         hamburgerMenu.classList.remove("active")

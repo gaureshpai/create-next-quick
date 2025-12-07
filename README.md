@@ -19,9 +19,24 @@ No global installation is needed. Run it instantly with `npx`:
 
 ```bash
 npx create-next-quick [project-name]
-````
+```
 
 If you omit `[project-name]`, the tool will prompt you for it. Use `.` to create in the current directory (must be empty).
+
+### Interactive Mode (for existing projects)
+
+Already have a Next.js project? Use the `-i` or `--interactive` flag to run `create-next-quick` on your existing project and add new features without starting from scratch.
+
+```bash
+npx create-next-quick -i
+```
+
+When you run in interactive mode, the tool will:
+1.  **Detect Your Project's Setup**: It automatically detects if you're using TypeScript, the `src` directory, the `app` directory, and Tailwind CSS.
+2.  **Skip Project Creation**: It will not run `create-next-app` or remove any existing files.
+3.  **Prompt for Additions**: It will only ask you what you want to *add* to your project, such as new pages, a linter, an ORM, or Shadcn UI.
+
+This is perfect for when you want to add a new feature to your project and want to use the same streamlined setup process.
 
 ### Interactive Prompts
 

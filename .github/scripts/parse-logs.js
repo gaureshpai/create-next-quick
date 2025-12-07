@@ -4,7 +4,6 @@ import path from "path";
 const artifactsDir = "./artifacts";
 const summaries = [];
 
-// Check if artifacts directory exists
 if (!fs.existsSync(artifactsDir)) {
   console.error(`❌ Artifacts directory not found: ${artifactsDir}`);
   console.log("Creating empty summary...");
