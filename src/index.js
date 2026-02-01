@@ -129,6 +129,26 @@ let createdProjectDir = false;
         name: "useShadcn",
         message: "Do you want to add Shadcn UI?",
         default: false
+      },
+      {
+        type: "list",
+        name: "testing",
+        message: "Choose a testing framework:",
+        choices: ["none", "vitest", "jest"],
+        default: "none"
+      },
+      {
+        type: "list",
+        name: "auth",
+        message: "Choose an authentication solution:",
+        choices: ["none", "next-auth", "clerk", "lucia"],
+        default: "none"
+      },
+      {
+        type: "confirm",
+        name: "docker",
+        message: "Do you want to add Docker support?",
+        default: false
       }
     ]);
     Object.assign(answers, interactiveAnswers);
@@ -215,13 +235,33 @@ let createdProjectDir = false;
         name: "useShadcn",
         message: "Do you want to use Shadcn UI? (default: Yes)",
         default: true
+      },
+      {
+        type: "list",
+        name: "testing",
+        message: "Choose a testing framework:",
+        choices: ["none", "vitest", "jest"],
+        default: "none"
+      },
+      {
+        type: "list",
+        name: "auth",
+        message: "Choose an authentication solution:",
+        choices: ["none", "next-auth", "clerk", "lucia"],
+        default: "none"
+      },
+      {
+        type: "confirm",
+        name: "docker",
+        message: "Do you want to add Docker support?",
+        default: false
       }
     ]);
 
     Object.assign(answers, otherAnswers);
   }
 
-  const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn } = answers;
+  const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn, testing, auth, docker } = answers;
 
   const displayName = projectName === '.' ? path.basename(process.cwd()) : projectName;
   createdProjectDir = false;
@@ -621,6 +661,267 @@ export const users = pgTable('users', {
     } else {
       writeFile(envPath, dbUrlLine);
     }
+  }
+
+  // Docker Setup
+  if (docker) {
+    console.log(chalk.blue("Setting up Docker..."));
+    const dockerfileContent = `# Base image
+FROM node:20-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install dependencies based on the preferred package manager
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+RUN \\
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \\
+  elif [ -f package-lock.json ]; then npm ci; \\
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \\
+  else echo "Lockfile not found." && exit 1; \\
+  fi
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Next.js collects completely anonymous telemetry data about general usage.
+# Learn more here: https://nextjs.org/telemetry
+# Uncomment the following line in case you want to disable telemetry during the build.
+# ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN \\
+  if [ -f yarn.lock ]; then yarn run build; \\
+  elif [ -f package-lock.json ]; then npm run build; \\
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \\
+  else echo "Lockfile not found." && exit 1; \\
+  fi
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+# Uncomment the following line in case you want to disable telemetry during runtime.
+# ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
+CMD ["node", "server.js"]
+`;
+    writeFile(path.join(projectPath, "Dockerfile"), dockerfileContent);
+
+    const dockerIgnoreContent = `Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+`;
+    writeFile(path.join(projectPath, ".dockerignore"), dockerIgnoreContent);
+
+    // Update next.config.mjs to enable standalone output
+    const nextConfigPath = path.join(projectPath, "next.config.mjs");
+    if (fileExists(nextConfigPath)) {
+      let nextConfig = fs.readFileSync(nextConfigPath, "utf8");
+      if (!nextConfig.includes("output: \"standalone\"")) {
+        if (nextConfig.includes("nextConfig = {")) {
+          nextConfig = nextConfig.replace("nextConfig = {", "nextConfig = {\n  output: \"standalone\",");
+        } else {
+          // Fallback for simple configs, though create-next-app usually gives the above
+          console.warn(chalk.yellow("Could not automatically update next.config.mjs for standalone output. Please add 'output: \"standalone\"' manually."));
+        }
+        writeFile(nextConfigPath, nextConfig);
+      }
+    }
+    console.log(chalk.bold.green("Docker configured"));
+  }
+
+  // Testing Setup
+  if (testing === "vitest") {
+    console.log(chalk.blue("Setting up Vitest..."));
+    const deps = ["vitest", "@vitejs/plugin-react", "jsdom", "@testing-library/react", "@testing-library/dom"];
+    const installCmd = `${packageManager} install --save-dev ${deps.join(" ")}`;
+    run(installCmd, projectPath, false);
+
+    const vitestConfigContent = `import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
+ 
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './vitest.setup.${useTypeScript ? 'ts' : 'js'}',
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src')
+    },
+  },
+})`;
+    writeFile(path.join(projectPath, useTypeScript ? "vitest.config.ts" : "vitest.config.js"), vitestConfigContent);
+    writeFile(path.join(projectPath, useTypeScript ? "vitest.setup.ts" : "vitest.setup.js"), "import '@testing-library/jest-dom'");
+
+    // Update package.json scripts
+    const pkgPath = path.join(projectPath, "package.json");
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+    pkg.scripts.test = "vitest";
+    writeFile(pkgPath, JSON.stringify(pkg, null, 2));
+
+    console.log(chalk.bold.green("Vitest configured"));
+  } else if (testing === "jest") {
+    console.log(chalk.blue("Setting up Jest..."));
+    const deps = ["jest", "jest-environment-jsdom", "@testing-library/react", "@testing-library/jest-dom"];
+    if (useTypeScript) {
+      deps.push("@types/jest", "ts-node");
+    }
+    run(`${packageManager} install --save-dev ${deps.join(" ")}`, projectPath, false);
+
+    // Skip interactive init, write config manually
+    const jestConfig = `const nextJest = require('next/jest')
+
+const createJestConfig = nextJest({
+  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
+  dir: './',
+})
+ 
+// Add any custom config to be passed to Jest
+const customJestConfig = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  testEnvironment: 'jest-environment-jsdom',
+}
+ 
+// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
+module.exports = createJestConfig(customJestConfig)`;
+
+    writeFile(path.join(projectPath, "jest.config.js"), jestConfig);
+    writeFile(path.join(projectPath, "jest.setup.js"), "import '@testing-library/jest-dom'");
+
+    const pkgPath = path.join(projectPath, "package.json");
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+    pkg.scripts.test = "jest";
+    writeFile(pkgPath, JSON.stringify(pkg, null, 2));
+
+    console.log(chalk.bold.green("Jest configured"));
+  }
+
+  // Auth Setup
+  if (auth !== "none") {
+    console.log(chalk.blue(`Setting up Authentication (${auth})...`));
+    if (auth === "next-auth") {
+      run(`${packageManager} install next-auth@beta`, projectPath, false);
+      const authContent = `import NextAuth from "next-auth"
+import Credentials from "next-auth/providers/credentials"
+ 
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [
+    Credentials({
+      credentials: {
+        email: {},
+        password: {},
+      },
+      authorize: async (credentials) => {
+        let user = null
+ 
+        // logic to verify if user exists
+        user = {
+            id: '1',
+            name: 'John Doe',
+            email: 'john@example.com'
+        }
+ 
+        if (!user) {
+          // No user found, so this is their first attempt to login
+          // return null - this is where you could throw an error
+          throw new Error("Invalid credentials.")
+        }
+ 
+        // return user object with their profile data
+        return user
+      },
+    }),
+  ],
+})`;
+      const libDir = useSrcDir ? path.join(projectPath, "src", "lib") : path.join(projectPath, "lib");
+      if (!fs.existsSync(libDir)) createFolder(libDir);
+      writeFile(path.join(libDir, useTypeScript ? "auth.ts" : "auth.js"), authContent);
+
+      const middlewareContent = `import { auth } from "@/lib/auth"
+ 
+export default auth((req) => {
+  // req.auth
+})
+ 
+// Optionally, don't invoke Middleware on some paths
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+}`;
+      const middlewarePath = useSrcDir ? path.join(projectPath, "src", useTypeScript ? "middleware.ts" : "middleware.js") : path.join(projectPath, useTypeScript ? "middleware.ts" : "middleware.js");
+      writeFile(middlewarePath, middlewareContent);
+
+      const routePath = useSrcDir ? path.join(projectPath, "src", "app", "api", "auth", "[...nextauth]") : path.join(projectPath, "app", "api", "auth", "[...nextauth]");
+      createFolder(routePath);
+
+      const routeContent = `import { handlers } from "@/lib/auth"
+export const { GET, POST } = handlers`;
+      writeFile(path.join(routePath, useTypeScript ? "route.ts" : "route.js"), routeContent);
+
+    } else if (auth === "clerk") {
+      run(`${packageManager} install @clerk/nextjs`, projectPath, false);
+
+      const middlewareContent = `import { clerkMiddleware } from "@clerk/nextjs/server";
+
+export default clerkMiddleware();
+
+export const config = {
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
+};`;
+      const middlewarePath = useSrcDir ? path.join(projectPath, "src", useTypeScript ? "middleware.ts" : "middleware.js") : path.join(projectPath, useTypeScript ? "middleware.ts" : "middleware.js");
+      writeFile(middlewarePath, middlewareContent);
+
+      console.log(chalk.yellow("\n⚠️  Action Required for Clerk:"));
+      console.log(chalk.white("1. Creates an account at https://clerk.com"));
+      console.log(chalk.white("2. Add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY to your .env"));
+      console.log(chalk.white("3. Wrap your root layout with <ClerkProvider>"));
+
+    } else if (auth === "lucia") {
+      console.log(chalk.yellow("Lucia Auth requires a database adapter. Installing core package..."));
+      run(`${packageManager} install lucia`, projectPath, false);
+      console.log(chalk.yellow("Please follow the docs to set up your specific adapter: https://lucia-auth.com/getting-started/"));
+    }
+    console.log(chalk.bold.green("Auth dependencies installed"));
   }
 
   console.log();

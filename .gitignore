@@ -7,4 +7,3 @@ test-interactive-project*
 temp-test-project
 my-app
 package-lock.json
-pnpm-lock.yaml

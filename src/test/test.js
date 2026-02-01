@@ -74,6 +74,9 @@ describe('create-next-quick', function () {
         (testCase.options.linter === 'none' ? '' : (testCase.options.linter === 'eslint' ? '\u001b[B' : '\u001b[B\u001b[B')), // Linter: none (default), eslint (1 down), biome (2 down)
         (testCase.options.orm === 'none' ? '' : (testCase.options.orm === 'prisma' ? '\u001b[B' : '\u001b[B\u001b[B')), // ORM: none (default), prisma (1 down), drizzle (2 down)
         testCase.options.useShadcn ? '' : 'n',
+        testCase.options.testing === 'none' ? '' : (testCase.options.testing === 'vitest' ? '\u001b[B' : '\u001b[B\u001b[B'), // testing
+        testCase.options.auth === 'none' ? '' : (testCase.options.auth === 'next-auth' ? '\u001b[B' : (testCase.options.auth === 'clerk' ? '\u001b[B\u001b[B' : '\u001b[B\u001b[B\u001b[B')), // auth
+        testCase.options.docker ? 'y' : '', // docker (default false, so enter is false. but to be safe, explicit? No, confirm default false means Enter -> false.)
       ];
 
       const assertions = () => {

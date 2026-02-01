@@ -15,6 +15,9 @@ export const testCases = [
       linter: 'none',
       orm: 'none',
       useShadcn: false,
+      testing: 'none',
+      auth: 'none',
+      docker: false,
     },
     assertions: (projectPath) => {
       assert.ok(fs.existsSync(path.join(projectPath, 'package.json')), 'package.json should exist');
@@ -31,6 +34,9 @@ export const testCases = [
       linter: 'none',
       orm: 'none',
       useShadcn: false,
+      testing: 'none',
+      auth: 'none',
+      docker: false,
     },
     assertions: (projectPath) => {
       assert.ok(fs.existsSync(path.join(projectPath, 'jsconfig.json')), 'jsconfig.json should exist');
@@ -47,6 +53,9 @@ export const testCases = [
       linter: 'none',
       orm: 'none',
       useShadcn: false,
+      testing: 'none',
+      auth: 'none',
+      docker: false,
     },
     assertions: (projectPath) => {
       assert.ok(fs.existsSync(path.join(projectPath, 'src', 'app', 'about', 'page.tsx')), 'about page should exist');
