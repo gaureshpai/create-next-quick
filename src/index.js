@@ -920,7 +920,15 @@ README.md
       "@testing-library/dom",
     ];
     const installCmd = `${packageManager} install --save-dev ${deps.join(" ")}`;
-    await run(installCmd, projectPath, false);
+    const vitestInstallResult = await run(installCmd, projectPath, false, 3, 2000);
+    if (!vitestInstallResult.success) {
+      console.error(chalk.bold.red("Failed to install Vitest dependencies."));
+      if (vitestInstallResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(vitestInstallResult.stderr));
+      }
+      throw new Error("Vitest dependency installation failed.");
+    }
 
     const vitestConfigContent = `import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'

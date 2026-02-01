@@ -331,9 +331,22 @@ pnpm add -g pnpm@latest
 
 #### Permission Errors
 
+If you encounter permission errors, **avoid using `sudo`** as it can cause npm cache permission issues and create root-owned files in user directories. Instead, try these safer alternatives:
+
 ```bash
-# On macOS/Linux, you might need to use sudo
-sudo npx create-next-quick my-app
+# Option 1: Use a Node version manager (recommended)
+# Install nvm (https://github.com/nvm-sh/nvm) or fnm (https://github.com/Schniz/fnm)
+# Then reinstall Node.js through the version manager
+
+# Option 2: Fix npm permissions by setting a user-local prefix
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+# Add to your ~/.bashrc or ~/.zshrc:
+# export PATH=~/.npm-global/bin:$PATH
+
+# Option 3: Ensure you're creating the project in a user-owned directory
+cd ~/projects  # or any directory you own
+npx create-next-quick my-app
 ```
 
 #### TypeScript Errors After Setup
