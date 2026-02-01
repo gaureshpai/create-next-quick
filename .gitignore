@@ -1,6 +1,8 @@
 *node_modules
 *generated-test-cases.js
 *test-project
-*tgz
+*.tgz
 test-*
 my-app
+package-lock.json
+pnpm-lock.yaml

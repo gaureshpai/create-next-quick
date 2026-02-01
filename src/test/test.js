@@ -65,14 +65,13 @@ describe('create-next-quick', function () {
     it(testCase.description, (done) => {
       const answers = [
         currentProjectName,
-        '\n',
         testCase.options.useTypeScript ? '\n' : 'n\n',
         testCase.options.useTailwind ? '\n' : 'n\n',
         testCase.options.useSrcDir ? '\n' : 'n\n',
         testCase.options.useAppDir ? '\n' : 'n\n',
         testCase.options.pages + '\n',
-        testCase.options.linter + '\n',
-        testCase.options.orm + '\n',
+        (testCase.options.linter === 'none' ? '1' : (testCase.options.linter === 'eslint' ? '2' : '3')) + '\n',
+        (testCase.options.orm === 'none' ? '1' : (testCase.options.orm === 'prisma' ? '2' : '3')) + '\n',
         testCase.options.useShadcn ? '\n' : 'n\n',
       ];
 
