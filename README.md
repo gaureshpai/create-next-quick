@@ -38,6 +38,7 @@
 - [Testing](#-testing)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
+- [Show Your Support](#-show-your-support)
 - [License](#-license)
 
 ---
@@ -213,24 +214,24 @@ $ npx create-next-quick my-portfolio
 
 #### NextAuth.js (v5 Beta)
 
-```bash
-# Automatically sets up:
+```text
+Automatically sets up:
 - src/lib/auth.ts (or .js) with credentials provider
 - src/app/api/auth/[...nextauth]/route.ts (or .js)
 ```
 
 #### Clerk
 
-```bash
-# Automatically sets up:
+```text
+Automatically sets up:
 - middleware.ts (or .js) with Clerk middleware
 - .env with NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY placeholders
 ```
 
 #### Lucia
 
-```bash
-# Installs core package
+```text
+Installs core package
 - Provides instructions for adapter setup
 ```
 
@@ -238,8 +239,8 @@ $ npx create-next-quick my-portfolio
 
 #### Vitest
 
-```bash
-# Automatically configures:
+```text
+Automatically configures:
 - vitest.config.ts (or .js) with React plugin
 - vitest.setup.ts (or .js) with jest-dom
 - package.json test script
@@ -248,8 +249,8 @@ $ npx create-next-quick my-portfolio
 
 #### Jest
 
-```bash
-# Automatically configures:
+```text
+Automatically configures:
 - jest.config.js with Next.js integration
 - jest.setup.js with jest-dom
 - package.json test script
