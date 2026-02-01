@@ -38,6 +38,7 @@
 - [Testing](#-testing)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
+- [Show Your Support](#-show-your-support)
 - [License](#-license)
 
 ---
