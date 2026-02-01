@@ -18,32 +18,32 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Why create-next-quick?](#-why-create-next-quick)
-- [Features](#-features)
-- [Quick Start](#-quick-start)
-- [Usage](#-usage)
+- [Why create-next-quick?](#why-create-next-quick)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
   - [Basic Usage](#basic-usage)
   - [Interactive Mode](#interactive-mode-for-existing-projects)
   - [Interactive Prompts](#interactive-prompts)
   - [Example Walkthrough](#example-walkthrough)
 - [Configuration Options](#configuration-options)
-- [Advanced Features](#-advanced-features)
+- [Advanced Features](#advanced-features)
   - [Authentication Setup](#authentication-setup)
   - [Testing Frameworks](#testing-frameworks)
   - [Docker Support](#docker-support)
-- [Prerequisites](#-prerequisites)
-- [Available Scripts](#-available-scripts)
-- [Testing](#-testing)
-- [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
-- [Show Your Support](#-show-your-support)
-- [License](#-license)
+- [Prerequisites](#prerequisites)
+- [Available Scripts](#available-scripts)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [Show Your Support](#show-your-support)
+- [License](#license)
 
 ---
 
-## 🚀 Why create-next-quick?
+## Why create-next-quick?
 
 `create-next-quick` is a powerful, lightweight alternative to `create-next-app`, designed for developers who want **more control and speed** right from the start.
 
@@ -65,9 +65,9 @@
 
 ---
 
-## ✨ Features
+## Features
 
-### 🏗️ Project Scaffolding
+### Project Scaffolding
 
 - **CLI Argument for Project Name**: Skip the project name prompt by passing it as an argument
 - **Custom Page Generation**: Create multiple pages at once from the CLI
@@ -75,7 +75,7 @@
 - **Safe Project Creation**: Prevents accidental overwrites by checking if the target directory is empty
 - **Conditional API Route Deletion**: Removes the default `hello.js` API route when not needed
 
-### 🛠️ Tooling & Integrations
+### Tooling & Integrations
 
 - **Package Manager Detection**: Auto-detects `npm`, `yarn`, and `pnpm`
 - **Linter Support**: Choose between ESLint, Biome, or no linter
@@ -86,7 +86,7 @@
 - **Testing**: Ready-to-use configuration for **Vitest** or **Jest** with React Testing Library
 - **Docker**: Auto-generated `Dockerfile` and `.dockerignore` for containerized deployments
 
-### 💎 Developer Experience
+### Developer Experience
 
 - **Robust Error Handling**: Automatic retries for failed installs, intelligent cleanup of incomplete projects, and actionable troubleshooting tips
 - **Automated CI/CD Feedback**: Get automated comments on the test status of your Pull Requests
@@ -95,7 +95,7 @@
 
 ---
 
-## 🎯 Quick Start
+## Quick Start
 
 No global installation needed. Run it instantly with `npx`:
 
@@ -107,7 +107,7 @@ pnpm run dev
 
 ---
 
-## 📖 Usage
+## Usage
 
 ### Basic Usage
 
@@ -173,7 +173,7 @@ $ npx create-next-quick my-portfolio
 
 ---
 
-## ⚙️ Configuration Options
+## Configuration Options
 
 ### Linters
 
@@ -208,7 +208,7 @@ $ npx create-next-quick my-portfolio
 
 ---
 
-## 🔐 Advanced Features
+## Advanced Features
 
 ### Authentication Setup
 
@@ -267,7 +267,7 @@ Generates production-ready Docker configuration:
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 - **Node.js**: `v20.0.0` or higher
 
@@ -279,7 +279,7 @@ node --version
 
 ---
 
-## 📜 Available Scripts
+## Available Scripts
 
 Once your project is created, you can use the following commands:
 
@@ -293,7 +293,7 @@ Once your project is created, you can use the following commands:
 
 ---
 
-## 🧪 Testing
+## Testing
 
 The test suite is dynamically generated to ensure comprehensive coverage.
 
@@ -317,7 +317,7 @@ npm run test:interactive
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -378,7 +378,7 @@ taskkill /PID <PID> /F
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these steps:
 
@@ -421,7 +421,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ---
 
-## 💖 Show Your Support
+## Show Your Support
 
 Give a ⭐️ if this project helped you!
 
@@ -429,13 +429,13 @@ Give a ⭐️ if this project helped you!
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for details.
 
 ---
 
-## 👥 Contributors
+## Contributors
 
 <div align="center">
   <a href="https://github.com/gaureshpai/create-next-quick/graphs/contributors">
