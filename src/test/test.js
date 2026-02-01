@@ -65,7 +65,6 @@ describe('create-next-quick', function () {
     it(testCase.description, (done) => {
       const answers = [
         currentProjectName,
-        '\n',
         testCase.options.useTypeScript ? '\n' : 'n\n',
         testCase.options.useTailwind ? '\n' : 'n\n',
         testCase.options.useSrcDir ? '\n' : 'n\n',

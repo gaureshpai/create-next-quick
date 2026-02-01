@@ -55,7 +55,7 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(interval);
         child.stdin.end();
       }
-    }, 5000);
+    }, 8000);
 
     child.on('close', (code) => {
       assert.strictEqual(code, 0, 'CLI should exit with code 0');
@@ -86,7 +86,7 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(interval);
         child.stdin.end();
       }
-    }, 5000);
+    }, 8000);
 
     child.on('close', (code) => {
       assert.strictEqual(code, 0, 'CLI should exit with code 0');
@@ -118,7 +118,7 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(interval);
         child.stdin.end();
       }
-    }, 5000);
+    }, 8000);
 
     child.on('close', (code) => {
       assert.strictEqual(code, 0, 'CLI should exit with code 0');
@@ -151,7 +151,7 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(interval);
         child.stdin.end();
       }
-    }, 5000);
+    }, 8000);
 
     child.on('close', (code) => {
       assert.strictEqual(code, 0, 'CLI should exit with code 0');
@@ -184,7 +184,7 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(firstInterval);
         firstRun.stdin.end();
       }
-    }, 5000);
+    }, 8000);
 
     firstRun.on('close', (code) => {
       assert.strictEqual(code, 0, 'First run should exit with code 0');
@@ -212,7 +212,7 @@ describe('create-next-quick interactive mode', function () {
           clearInterval(secondInterval);
           secondRun.stdin.end();
         }
-      }, 5000);
+      }, 8000);
 
       secondRun.on('close', (secondCode) => {
         assert.strictEqual(secondCode, 0, 'Second run should exit with code 0');

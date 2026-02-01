@@ -47,6 +47,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-logs-${{ matrix.node-version }}
+          name: test-logs-${{ matrix.node-version }}-${{ matrix.package-manager }}
           path: test-logs/log.txt
           retention-days: 5

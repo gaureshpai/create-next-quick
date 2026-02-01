@@ -36,7 +36,7 @@ while ((promptArrayMatch = inquirerPromptRegex.exec(indexJsContent)) !== null) {
         prompt.default = false;
       } else if (defaultValue === '' || defaultValue === '""') {
         prompt.default = '';
-      } else if (!isNaN(defaultValue)) {
+      } else if (defaultValue !== '' && !isNaN(defaultValue)) {
         prompt.default = Number(defaultValue);
       } else {
         prompt.default = defaultValue.replace(/['"]/g, '');
@@ -56,7 +56,7 @@ for (const prompt of extractedPrompts) {
       description: `should create a project with ${prompt.name} enabled`,
       options: {},
       expectedFiles: [],
-      assertions: () => { },
+      assertions: "assert.ok(fs.existsSync(projectPath), 'Project directory should exist');",
     };
 
     extractedPrompts.forEach(p => {
@@ -72,7 +72,7 @@ for (const prompt of extractedPrompts) {
         description: `should create a project with ${prompt.name} disabled`,
         options: {},
         expectedFiles: [],
-        assertions: () => { },
+        assertions: "assert.ok(fs.existsSync(projectPath), 'Project directory should exist');",
       };
       extractedPrompts.forEach(p => {
         if (p.name !== 'projectName') {
@@ -88,7 +88,7 @@ for (const prompt of extractedPrompts) {
         description: `should create a project with ${prompt.name} set to ${choice}`,
         options: {},
         expectedFiles: [],
-        assertions: () => { },
+        assertions: "assert.ok(fs.existsSync(projectPath), 'Project directory should exist');",
       };
       extractedPrompts.forEach(p => {
         if (p.name !== 'projectName') {
@@ -103,7 +103,7 @@ for (const prompt of extractedPrompts) {
       description: `should create a project with custom ${prompt.name}`,
       options: {},
       expectedFiles: [],
-      assertions: () => { },
+      assertions: "assert.ok(fs.existsSync(projectPath), 'Project directory should exist');",
     };
     extractedPrompts.forEach(p => {
       if (p.name !== 'projectName') {
@@ -123,7 +123,10 @@ import { strict as assert } from 'assert';
 import fs from 'fs';
 import path from 'path';
 
-export const testCases = ${JSON.stringify(testCases, null, 2)};
+export const testCases = ${JSON.stringify(testCases, null, 2)}.map(tc => ({
+  ...tc,
+  assertions: (projectPath) => { eval(tc.assertions) }
+}));
 `;
 fs.writeFileSync(generatedTestCasesPath, fileContent);
 

@@ -35,13 +35,13 @@ const createBuilder = (currentStyles = []) => {
     // standard chalk applies formatting: start + string + end
     // actually, we just need to wrap the string.
     for (let i = currentStyles.length - 1; i >= 0; i--) {
-        const styleName = currentStyles[i];
-        const open = codes[styleName];
-        // naive reset generally works, but we can be better if needed.
-        // for simplicity, just appending reset at the end is usually enough
-        // but chalk does nested handling.
-        // Let's keep it simple: just wrap.
-        result = open + result + codes.reset;
+      const styleName = currentStyles[i];
+      const open = codes[styleName] || styleName;
+      // naive reset generally works, but we can be better if needed.
+      // for simplicity, just appending reset at the end is usually enough
+      // but chalk does nested handling.
+      // Let's keep it simple: just wrap.
+      result = open + result + codes.reset;
     }
     return result;
   };
@@ -55,11 +55,34 @@ const createBuilder = (currentStyles = []) => {
     });
   });
 
-  // Mock hex function simply by returning a close-enough color or ignoring
+  // Basic hex-to-ANSI approximation
   builder.hex = (hex) => {
-      // Return a builder that effectively maps to cyan (or closest approximation logic if we wanted)
-      // for now, let's map to cyan to keep it visually distinct but supported.
-      return createBuilder([...currentStyles, 'cyan']);
+    // Remove hash if present
+    const cleanHex = hex.replace(/^#/, '');
+
+    // Parse r, g, b
+    let r, g, b;
+    if (cleanHex.length === 3) {
+      r = parseInt(cleanHex[0] + cleanHex[0], 16);
+      g = parseInt(cleanHex[1] + cleanHex[1], 16);
+      b = parseInt(cleanHex[2] + cleanHex[2], 16);
+    } else {
+      r = parseInt(cleanHex.substring(0, 2), 16);
+      g = parseInt(cleanHex.substring(2, 4), 16);
+      b = parseInt(cleanHex.substring(4, 6), 16);
+    }
+
+    // Convert to nearest ANSI 256 color
+    // 6x6x6 color cube: 16 + 36*R + 6*G + B
+    // Map 0-255 to 0-5
+    const r6 = Math.round((r / 255) * 5);
+    const g6 = Math.round((g / 255) * 5);
+    const b6 = Math.round((b / 255) * 5);
+    const ansiCode = 16 + 36 * r6 + 6 * g6 + b6;
+
+    const open = `\x1b[38;5;${ansiCode}m`;
+
+    return createBuilder([...currentStyles, `\x1b[38;5;${ansiCode}m`]);
   };
 
   return builder;

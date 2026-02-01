@@ -26,19 +26,22 @@ if (isInteractiveMode && appName) {
   process.exit(1);
 }
 
+let projectPath = null;
+let createdProjectDir = false;
+
 (async () => {
-  let projectPath = null;
+
   const availablePackageManagers = ["npm"];
 
-  try {
-    run("yarn --version", process.cwd(), true);
+  const yarnCheck = run("yarn --version", process.cwd(), true);
+  if (yarnCheck.success) {
     availablePackageManagers.push("yarn");
-  } catch (error) { }
+  }
 
-  try {
-    run("pnpm --version", process.cwd(), true);
+  const pnpmCheck = run("pnpm --version", process.cwd(), true);
+  if (pnpmCheck.success) {
     availablePackageManagers.push("pnpm");
-  } catch (error) { }
+  }
 
   const validateProjectName = (input) => {
     if (input !== input.toLowerCase()) {
@@ -221,7 +224,16 @@ if (isInteractiveMode && appName) {
   const { projectName, packageManager, useTypeScript, useTailwind, useAppDir, useSrcDir, pages, linter, orm, useShadcn } = answers;
 
   const displayName = projectName === '.' ? path.basename(process.cwd()) : projectName;
-  projectPath = projectName === '.' ? process.cwd() : path.join(process.cwd(), projectName);
+  createdProjectDir = false;
+  if (projectName === '.') {
+    projectPath = process.cwd();
+  } else {
+    projectPath = path.join(process.cwd(), projectName);
+    // Track if we are creating the directory
+    if (!fs.existsSync(projectPath)) {
+      createdProjectDir = true;
+    }
+  }
 
   console.log();
   console.log(chalk.bold.hex("#23f0bcff")("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"));
@@ -347,7 +359,7 @@ if (isInteractiveMode && appName) {
       globalCssPath = useSrcDir ? path.join(projectPath, "src", "styles") : path.join(projectPath, "styles");
     }
     const globalDtsPath = path.join(globalCssPath, "global.d.ts");
-    const globalDtsContent = `declare module '*.css' {\r\n  interface CSSModule {\r\n    [className: string]: string\r\n  }\r\n  const cssModule: CSSModule\r\n  export default cssModule\r\n}`;
+    const globalDtsContent = `declare module '*.css' {\n  interface CSSModule {\n    [className: string]: string\n  }\n  const cssModule: CSSModule\n  export default cssModule\n}`;
     writeFile(globalDtsPath, globalDtsContent);
   }
 
@@ -454,7 +466,7 @@ export default prisma
 
 if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
 `
-        : `const { PrismaClient } = require('@prisma/client')
+        : `import { PrismaClient } from '@prisma/client'
 
 const prismaClientSingleton = () => {
   return new PrismaClient()
@@ -462,7 +474,7 @@ const prismaClientSingleton = () => {
 
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
 
-module.exports = prisma
+export default prisma
 
 if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
 `;
@@ -508,9 +520,9 @@ if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
 export default {
   schema: '${schemaPath}',
   out: './drizzle',
-  driver: 'pg',
+  dialect: 'postgresql',
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL!,
+    url: process.env.DATABASE_URL!,
   },
 } satisfies Config;`;
       writeFile(path.join(projectPath, "drizzle.config.ts"), drizzleConfigContent);
@@ -538,7 +550,13 @@ export const users = pgTable('users', {
     } else {
       console.log(chalk.magenta("Setting up Shadcn UI..."));
 
-      const shadcnInstallResult = run(`${packageManager} install --save-dev tailwindcss-animate class-variance-authority`, projectPath, false, 3, 2000);
+      const cvaInstallResult = run(`${packageManager} install class-variance-authority`, projectPath, false, 3, 2000);
+      if (!cvaInstallResult.success) {
+        console.error(chalk.bold.red("Failed to install class-variance-authority."));
+        throw new Error("class-variance-authority installation failed.");
+      }
+
+      const shadcnInstallResult = run(`${packageManager} install --save-dev tailwindcss-animate`, projectPath, false, 3, 2000);
       if (!shadcnInstallResult.success) {
         console.error(chalk.bold.red("Failed to install Shadcn UI dependencies."));
         if (shadcnInstallResult.stderr) {
@@ -590,8 +608,19 @@ export const users = pgTable('users', {
   }
 
   if (orm !== "none") {
-    const envContent = `DATABASE_URL="your_db_url"`;
-    writeFile(path.join(projectPath, ".env"), envContent);
+    const envPath = path.join(projectPath, ".env");
+    const dbUrlLine = `DATABASE_URL="your_db_url"`;
+
+    if (fs.existsSync(envPath)) {
+      const existingEnv = fs.readFileSync(envPath, 'utf8');
+      if (!existingEnv.includes('DATABASE_URL')) {
+        fs.appendFileSync(envPath, `\n${dbUrlLine}\n`);
+      } else {
+        console.warn(chalk.yellow("DATABASE_URL already exists in .env, skipping append."));
+      }
+    } else {
+      writeFile(envPath, dbUrlLine);
+    }
   }
 
   console.log();
@@ -611,9 +640,11 @@ export const users = pgTable('users', {
   process.exit(0);
 })().catch((error) => {
   console.error(chalk.bold.red(`\nAn unexpected error occurred: ${error.message}`));
-  if (projectPath && fs.existsSync(projectPath)) {
+  if (projectPath && fs.existsSync(projectPath) && createdProjectDir && projectPath !== process.cwd()) {
     console.error(chalk.yellow(`Cleaning up incomplete project directory: ${projectPath}`));
     deleteFolder(projectPath);
+  } else {
+    console.error(chalk.yellow(`Cleanup skipped or not needed (project directory not created by this process or is CWD).`));
   }
   process.exit(1);
 });

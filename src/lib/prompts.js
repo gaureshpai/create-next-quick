@@ -23,9 +23,10 @@ const processQuestion = async (question) => {
 
     const displayMessage = `${message}${defaultVal !== undefined ? ` (default: ${type === 'confirm' ? (defaultVal ? 'Yes' : 'No') : defaultVal})` : ''} `;
 
+    const confirmHint = defaultVal ? '(Y/n)' : '(y/N)';
     if (type === 'confirm') {
         while (true) {
-            const input = await ask(`${chalk.green('?')} ${chalk.bold(displayMessage)} (y/N) `);
+            const input = await ask(`${chalk.green('?')} ${chalk.bold(message)} ${chalk.dim(confirmHint)} `);
             const trimmed = input.trim().toLowerCase();
             if (trimmed === '') {
                 answer = defaultVal !== undefined ? defaultVal : false;
@@ -43,15 +44,15 @@ const processQuestion = async (question) => {
     } else if (type === 'list') {
         console.log(`${chalk.green('?')} ${chalk.bold(message)}`);
         choices.forEach((choice, index) => {
-            console.log(`  ${index + 1}) ${choice}`);
+            const isDefault = choice === defaultVal;
+            console.log(`  ${index + 1}) ${choice} ${isDefault ? chalk.dim('(default)') : ''}`);
         });
 
         while (true) {
             const input = await ask(`  ${chalk.dim('Answer:')} `);
             const trimmed = input.trim();
 
-            // Handle empty input if default exists
-            if (trimmed === '' && defaultVal) {
+            if (trimmed === '' && defaultVal !== undefined) {
                 // defaultVal might be the value string, finding its index
                 const defaultIndex = choices.indexOf(defaultVal);
                 if (defaultIndex !== -1) {
@@ -65,7 +66,15 @@ const processQuestion = async (question) => {
                 answer = choices[num - 1];
                 break;
             }
-            console.log(chalk.red(`  Please enter a number between 1 and ${choices.length}`));
+
+            // Try to match by string content
+            const matchedChoice = choices.find(c => c.toLowerCase() === trimmed.toLowerCase());
+            if (matchedChoice) {
+                answer = matchedChoice;
+                break;
+            }
+
+            console.log(chalk.red(`  Please enter a number between 1 and ${choices.length} or the option name`));
         }
 
     } else {
