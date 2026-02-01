@@ -38,12 +38,12 @@ let createdProjectDir = false;
 (async () => {
   const availablePackageManagers = ["npm"];
 
-  const yarnCheck = run("yarn --version", process.cwd(), true);
+  const yarnCheck = await run("yarn --version", process.cwd(), true);
   if (yarnCheck.success) {
     availablePackageManagers.push("yarn");
   }
 
-  const pnpmCheck = run("pnpm --version", process.cwd(), true);
+  const pnpmCheck = await run("pnpm --version", process.cwd(), true);
   if (pnpmCheck.success) {
     availablePackageManagers.push("pnpm");
   }
@@ -349,7 +349,7 @@ let createdProjectDir = false;
 
     console.log(chalk.cyan(`Installing dependencies with ${chalk.bold(packageManager)}...`));
 
-    const installResult = run(command, process.cwd(), false, 3, 2000);
+    const installResult = await run(command, process.cwd(), false, 3, 2000);
 
     if (!installResult.success) {
       console.error(chalk.bold.red("Failed to install dependencies."));
@@ -475,7 +475,7 @@ let createdProjectDir = false;
     } else {
       console.log(chalk.blue("Setting up Biome linter..."));
 
-      const biomeInstallResult = run(
+      const biomeInstallResult = await run(
         `${packageManager} install --save-dev @biomejs/biome`,
         projectPath,
         false,
@@ -491,7 +491,7 @@ let createdProjectDir = false;
         throw new Error("Biome installation failed.");
       }
 
-      const biomeInitResult = run(`npx @biomejs/biome init`, projectPath, false, 3, 2000);
+      const biomeInitResult = await run(`npx @biomejs/biome init`, projectPath, false, 3, 2000);
       if (!biomeInitResult.success) {
         console.error(chalk.bold.red("Failed to initialize Biome."));
         if (biomeInitResult.stderr) {
@@ -513,7 +513,7 @@ let createdProjectDir = false;
     } else {
       console.log(chalk.blue("Setting up Prisma ORM..."));
 
-      const prismaInstallDevResult = run(
+      const prismaInstallDevResult = await run(
         `${packageManager} install --save-dev prisma`,
         projectPath,
         false,
@@ -529,7 +529,7 @@ let createdProjectDir = false;
         throw new Error("Prisma dev dependency installation failed.");
       }
 
-      const prismaInstallClientResult = run(
+      const prismaInstallClientResult = await run(
         `${packageManager} install @prisma/client`,
         projectPath,
         false,
@@ -545,7 +545,7 @@ let createdProjectDir = false;
         throw new Error("Prisma client dependency installation failed.");
       }
 
-      const prismaInitResult = run(`npx prisma init`, projectPath, false, 3, 2000);
+      const prismaInitResult = await run(`npx prisma init`, projectPath, false, 3, 2000);
       if (!prismaInitResult.success) {
         console.error(chalk.bold.red("Failed to initialize Prisma."));
         if (prismaInitResult.stderr) {
@@ -555,7 +555,7 @@ let createdProjectDir = false;
         throw new Error("Prisma initialization failed.");
       }
 
-      const prismaGenerateResult = run(`npx prisma generate`, projectPath, false, 3, 2000);
+      const prismaGenerateResult = await run(`npx prisma generate`, projectPath, false, 3, 2000);
       if (!prismaGenerateResult.success) {
         console.error(chalk.bold.red("Failed to generate Prisma client."));
         if (prismaGenerateResult.stderr) {
@@ -620,7 +620,7 @@ if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
     } else {
       console.log(chalk.blue("Setting up Drizzle ORM..."));
 
-      const drizzleInstallResult = run(
+      const drizzleInstallResult = await run(
         `${packageManager} install drizzle-orm @vercel/postgres`,
         projectPath,
         false,
@@ -635,7 +635,7 @@ if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
         }
         throw new Error("Drizzle ORM dependency installation failed.");
       }
-      const drizzleKitInstallResult = run(
+      const drizzleKitInstallResult = await run(
         `${packageManager} install --save-dev drizzle-kit`,
         projectPath,
         false,
@@ -691,7 +691,7 @@ export const users = pgTable('users', {
     } else {
       console.log(chalk.magenta("Setting up Shadcn UI..."));
 
-      const cvaInstallResult = run(
+      const cvaInstallResult = await run(
         `${packageManager} install class-variance-authority`,
         projectPath,
         false,
@@ -703,7 +703,7 @@ export const users = pgTable('users', {
         throw new Error("class-variance-authority installation failed.");
       }
 
-      const shadcnInstallResult = run(
+      const shadcnInstallResult = await run(
         `${packageManager} install --save-dev tailwindcss-animate`,
         projectPath,
         false,
@@ -719,7 +719,13 @@ export const users = pgTable('users', {
         throw new Error("Shadcn UI dependency installation failed.");
       }
 
-      const shadcnInitResult = run(`npx shadcn@latest init --yes`, projectPath, false, 3, 2000);
+      const shadcnInitResult = await run(
+        `npx shadcn@latest init --yes`,
+        projectPath,
+        false,
+        3,
+        2000,
+      );
       if (!shadcnInitResult.success) {
         console.error(chalk.bold.red("Failed to initialize Shadcn UI."));
         if (shadcnInitResult.stderr) {
@@ -901,7 +907,7 @@ README.md
       "@testing-library/dom",
     ];
     const installCmd = `${packageManager} install --save-dev ${deps.join(" ")}`;
-    run(installCmd, projectPath, false);
+    await run(installCmd, projectPath, false);
 
     const vitestConfigContent = `import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
@@ -947,7 +953,7 @@ export default defineConfig({
     if (useTypeScript) {
       deps.push("@types/jest", "ts-node");
     }
-    run(`${packageManager} install --save-dev ${deps.join(" ")}`, projectPath, false);
+    await run(`${packageManager} install --save-dev ${deps.join(" ")}`, projectPath, false);
 
     // Skip interactive init, write config manually
     const jestConfig = `const nextJest = require('next/jest')
@@ -981,7 +987,7 @@ module.exports = createJestConfig(customJestConfig)`;
   if (auth !== "none") {
     console.log(chalk.blue(`Setting up Authentication (${auth})...`));
     if (auth === "next-auth") {
-      run(`${packageManager} install next-auth@beta`, projectPath, false);
+      await run(`${packageManager} install next-auth@beta`, projectPath, false);
       const authContent = `import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
  
@@ -1044,7 +1050,7 @@ export const config = {
 export const { GET, POST } = handlers`;
       writeFile(path.join(routePath, useTypeScript ? "route.ts" : "route.js"), routeContent);
     } else if (auth === "clerk") {
-      run(`${packageManager} install @clerk/nextjs`, projectPath, false);
+      await run(`${packageManager} install @clerk/nextjs`, projectPath, false);
 
       const middlewareContent = `import { clerkMiddleware } from "@clerk/nextjs/server";
 
@@ -1073,7 +1079,7 @@ export const config = {
       console.log(
         chalk.yellow("Lucia Auth requires a database adapter. Installing core package..."),
       );
-      run(`${packageManager} install lucia`, projectPath, false);
+      await run(`${packageManager} install lucia`, projectPath, false);
       console.log(
         chalk.yellow(
           "Please follow the docs to set up your specific adapter: https://lucia-auth.com/getting-started/",

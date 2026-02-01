@@ -4,13 +4,11 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
 import { deleteFolder } from "../lib/utils.js";
+import { testCases } from "./test-cases.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const cliPath = path.join(__dirname, "..", "index.js");
-
-import { testCases } from "./test-cases.js";
 
 describe("create-next-quick", function () {
   this.timeout(0);

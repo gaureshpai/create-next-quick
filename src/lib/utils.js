@@ -5,7 +5,13 @@ import chalk from "./colors.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const run = (cmd, cwd = process.cwd(), silent = false, retries = 0, retryDelay = 1000) => {
+export const run = async (
+  cmd,
+  cwd = process.cwd(),
+  silent = false,
+  retries = 0,
+  retryDelay = 1000,
+) => {
   for (let i = 0; i <= retries; i++) {
     try {
       if (!silent) {
@@ -20,7 +26,7 @@ export const run = (cmd, cwd = process.cwd(), silent = false, retries = 0, retry
             `Command failed. Retrying in ${retryDelay / 1000}s... (Attempt ${i + 1}/${retries})`,
           ),
         );
-        sleep(retryDelay);
+        await sleep(retryDelay);
       } else {
         return {
           success: false,

@@ -81,8 +81,7 @@ const createBuilder = (currentStyles = []) => {
     const ansiCode = 16 + 36 * r6 + 6 * g6 + b6;
 
     const _open = `\x1b[38;5;${ansiCode}m`;
-
-    return createBuilder([...currentStyles, `\x1b[38;5;${ansiCode}m`]);
+    return createBuilder([...currentStyles, _open]);
   };
 
   return builder;
