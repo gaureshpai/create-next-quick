@@ -86,6 +86,7 @@ export default function RootLayout({ children }) {
 }
 `;
 
-  createFolder(path.join(projectPath, "app"));
+  createFolder(appDir);
   writeFile(layoutPath, layoutContent);
+
 };
