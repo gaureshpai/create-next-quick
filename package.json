@@ -1,21 +1,29 @@
 {
   "name": "create-next-quick",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "A CLI tool to quickly scaffold a Next.js project",
-  "main": "index.js",
+  "main": "src/index.js",
+  "packageManager": "pnpm@10.28.2",
   "files": [
-    "index.js",
-    "lib",
-    "test"
+    "src"
   ],
   "type": "module",
   "scripts": {
-    "test": "mocha && echo \"Tests passed successfully\" || (echo \"Tests failed\" && exit 1)",
-    "test:generate": "node test/generate-tests.js",
-    "start": "node index.js"
+    "test": "mocha src/test/test.js && echo \"Tests passed successfully\" || (echo \"Tests failed\" && exit 1)",
+    "test:interactive": "mocha src/test/interactive.test.js",
+    "test:generate": "node src/test/generate-tests.js",
+    "start": "node src/index.js",
+    "lint": "biome check . --write",
+    "format": "biome format . --write",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "src/**/*.{js,json,md}": [
+      "biome check . --write"
+    ]
   },
   "bin": {
-    "create-next-quick": "index.js"
+    "create-next-quick": "src/index.js"
   },
   "keywords": [
     "next.js",
@@ -38,15 +46,11 @@
     "url": "https://github.com/gaureshpai/create-next-quick/issues"
   },
   "homepage": "https://gaureshpai.github.io/create-next-quick/",
-  "dependencies": {
-    "chalk": "^5.6.2",
-    "child_process": "^1.0.2",
-    "fs": "^0.0.1-security",
-    "inquirer": "^9.2.7",
-    "path": "^0.12.7"
-  },
   "devDependencies": {
+    "@biomejs/biome": "^2.3.13",
+    "husky": "^9.1.7",
     "inquirer-test": "^2.0.1",
-    "mocha": "^11.0.0"
+    "mocha": "^11.0.0",
+    "lint-staged": "^16.2.7"
   }
 }

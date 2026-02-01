@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import inquirer from "inquirer";
+import inquirer from "./lib/prompts.js";
 import path from "path";
 import fs from "fs";
-import chalk from "chalk";
+import chalk from "./lib/colors.js";
 import { run, deleteFolder, createFolder, deleteFile, fileExists, writeFile } from './lib/utils.js';
 import { createPages, createLayout } from './lib/templates.js';
 
@@ -160,7 +160,7 @@ if (isInteractiveMode && appName) {
         name: "packageManager",
         message: "Choose a package manager:",
         choices: availablePackageManagers,
-        default: "pnpm" || "npm" || "yarn",
+        default: availablePackageManagers.includes("pnpm") ? "pnpm" : (availablePackageManagers.includes("yarn") ? "yarn" : "npm"),
       },
       {
         type: "confirm",
@@ -230,7 +230,7 @@ if (isInteractiveMode && appName) {
   console.log();
 
   if (!isInteractiveMode) {
-    let command = `npx --yes create-next-app@latest ${projectName} --use-${packageManager} --yes`;
+    let command = `npx --yes create-next-app@latest ${projectName} --use-${packageManager} --yes --import-alias "@/*"`;
     if (useTypeScript) {
       command += " --ts";
     } else {
@@ -423,11 +423,52 @@ if (isInteractiveMode && appName) {
         throw new Error("Prisma initialization failed.");
       }
 
+      const prismaGenerateResult = run(`npx prisma generate`, projectPath, false, 3, 2000);
+      if (!prismaGenerateResult.success) {
+        console.error(chalk.bold.red("Failed to generate Prisma client."));
+        if (prismaGenerateResult.stderr) {
+          console.error(chalk.red("Error details:"));
+          console.error(chalk.red(prismaGenerateResult.stderr));
+        }
+        // We don't throw here, as it might just need a schema definition first, but it's good practice to try.
+        console.warn(chalk.yellow("Prisma generate failed, likely due to empty schema. You may need to run 'npx prisma generate' after defining your models."));
+      }
+
       const prismaLibDir = useSrcDir ? path.join(projectPath, "src", "lib") : path.join(projectPath, "lib");
       createFolder(prismaLibDir);
 
-      const prismaContent = `import { PrismaClient } from '@prisma/client'\n\n    declare global {\n      var prisma: PrismaClient | undefined\n    }\n\n    const prisma = global.prisma || new PrismaClient()\n\n    if (process.env.NODE_ENV !== 'production') global.prisma = prisma\n\n    export default prisma;`;
-      writeFile(path.join(prismaLibDir, "prisma.ts"), prismaContent);
+      const prismaContent = useTypeScript
+        ? `import { PrismaClient } from '@prisma/client'
+
+const prismaClientSingleton = () => {
+  return new PrismaClient()
+}
+
+declare global {
+  var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>
+}
+
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+
+export default prisma
+
+if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
+`
+        : `const { PrismaClient } = require('@prisma/client')
+
+const prismaClientSingleton = () => {
+  return new PrismaClient()
+}
+
+const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+
+module.exports = prisma
+
+if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
+`;
+
+      const prismaFileName = useTypeScript ? "prisma.ts" : "prisma.js";
+      writeFile(path.join(prismaLibDir, prismaFileName), prismaContent);
 
       console.log(chalk.bold.green("Prisma ORM configured"));
     }
@@ -460,16 +501,18 @@ if (isInteractiveMode && appName) {
         throw new Error("Drizzle Kit dev dependency installation failed.");
       }
 
+      const schemaPath = useSrcDir ? './src/db/schema.ts' : './db/schema.ts';
+
       const drizzleConfigContent = `import type { Config } from 'drizzle-kit';
 
-    export default {
-      schema: './src/db/schema.ts',
-      out: './drizzle',
-      driver: 'pg',
-      dbCredentials: {
-        connectionString: process.env.DATABASE_URL!,
-      },
-    } satisfies Config;`;
+export default {
+  schema: '${schemaPath}',
+  out: './drizzle',
+  driver: 'pg',
+  dbCredentials: {
+    connectionString: process.env.DATABASE_URL!,
+  },
+} satisfies Config;`;
       writeFile(path.join(projectPath, "drizzle.config.ts"), drizzleConfigContent);
 
       const dbDir = useSrcDir ? path.join(projectPath, "src", "db") : path.join(projectPath, "db");
@@ -477,10 +520,10 @@ if (isInteractiveMode && appName) {
 
       const schemaContent = `import { pgTable, serial, text } from 'drizzle-orm/pg-core';
 
-    export const users = pgTable('users', {
-      id: serial('id').primaryKey(),
-      name: text('name').notNull(),
-    });`;
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+});`;
       writeFile(path.join(dbDir, "schema.ts"), schemaContent);
 
       console.log(chalk.bold.green("Drizzle ORM configured"));
@@ -505,7 +548,7 @@ if (isInteractiveMode && appName) {
         throw new Error("Shadcn UI dependency installation failed.");
       }
 
-      const shadcnInitResult = run(`cmd /C "echo y | npx shadcn@latest init --yes"`, projectPath, false, 3, 2000);
+      const shadcnInitResult = run(`npx shadcn@latest init --yes`, projectPath, false, 3, 2000);
       if (!shadcnInitResult.success) {
         console.error(chalk.bold.red("Failed to initialize Shadcn UI."));
         if (shadcnInitResult.stderr) {
@@ -564,6 +607,8 @@ if (isInteractiveMode && appName) {
   console.log();
   console.log(chalk.white.bold(`Thank you for using create-next-quick!`));
   console.log();
+  inquirer.close();
+  process.exit(0);
 })().catch((error) => {
   console.error(chalk.bold.red(`\nAn unexpected error occurred: ${error.message}`));
   if (projectPath && fs.existsSync(projectPath)) {

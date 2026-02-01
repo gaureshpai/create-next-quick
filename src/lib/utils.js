@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
-import chalk from "chalk";
+import chalk from "./colors.js";
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 

@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const cliPath = path.join(__dirname, '..', 'index.js');
 
 describe('create-next-quick interactive mode', function () {
-  this.timeout(0);
+  this.timeout(300000);
 
   let currentProjectName;
   let currentProjectPath;
@@ -30,31 +30,22 @@ describe('create-next-quick interactive mode', function () {
   });
 
   afterEach(() => {
-    deleteFolder(currentProjectPath);
+    try {
+      deleteFolder(currentProjectPath);
+    } catch (error) {
+      console.error(`Failed to cleanup project directory: ${currentProjectPath}`, error);
+    }
   });
 
   it('should add a new page in interactive mode', (done) => {
     const answers = [
       'about',
-      '\n',
-      '\n',
-      'n\n',
+      '',
+      '',
+      'n',
     ];
 
     const child = spawn('node', [cliPath, '-i'], { cwd: currentProjectPath });
-    let stdout = '';
-    let stderr = '';
-
-    child.stdout.on('data', (data) => {
-      console.log(data.toString());
-      stdout += data.toString();
-    });
-
-    child.stderr.on('data', (data) => {
-      console.error(data.toString());
-      stderr += data.toString();
-    });
-
     let i = 0;
     const interval = setInterval(() => {
       if (i < answers.length) {
@@ -64,7 +55,7 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(interval);
         child.stdin.end();
       }
-    }, 3000);
+    }, 5000);
 
     child.on('close', (code) => {
       assert.strictEqual(code, 0, 'CLI should exit with code 0');
@@ -79,9 +70,9 @@ describe('create-next-quick interactive mode', function () {
   it('should add biome linter in interactive mode', (done) => {
     const answers = [
       '',
-      'biome\n',
-      '\n',
-      'n\n',
+      '3',
+      '',
+      'n',
     ];
 
     const child = spawn('node', [cliPath, '-i'], { cwd: currentProjectPath });
@@ -95,7 +86,7 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(interval);
         child.stdin.end();
       }
-    }, 3000);
+    }, 5000);
 
     child.on('close', (code) => {
       assert.strictEqual(code, 0, 'CLI should exit with code 0');
@@ -111,9 +102,9 @@ describe('create-next-quick interactive mode', function () {
   it('should add prisma orm in interactive mode', (done) => {
     const answers = [
       '',
-      '\n',
-      'prisma\n',
-      'n\n',
+      '',
+      '2',
+      'n',
     ];
 
     const child = spawn('node', [cliPath, '-i'], { cwd: currentProjectPath });
@@ -127,7 +118,7 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(interval);
         child.stdin.end();
       }
-    }, 3000);
+    }, 5000);
 
     child.on('close', (code) => {
       assert.strictEqual(code, 0, 'CLI should exit with code 0');
@@ -144,9 +135,9 @@ describe('create-next-quick interactive mode', function () {
   it('should add shadcn ui in interactive mode', (done) => {
     const answers = [
       '',
-      '\n',
-      '\n',
-      'y\n',
+      '',
+      '',
+      'y',
     ];
 
     const child = spawn('node', [cliPath, '-i'], { cwd: currentProjectPath });
@@ -160,7 +151,7 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(interval);
         child.stdin.end();
       }
-    }, 3000);
+    }, 5000);
 
     child.on('close', (code) => {
       assert.strictEqual(code, 0, 'CLI should exit with code 0');
@@ -177,9 +168,9 @@ describe('create-next-quick interactive mode', function () {
   it('should skip installation if feature already exists', (done) => {
     const firstRunAnswers = [
       '',
-      'biome\n',
-      '\n', 
-      'n\n', 
+      '3',
+      '',
+      'n',
     ];
 
     const firstRun = spawn('node', [cliPath, '-i'], { cwd: currentProjectPath });
@@ -193,16 +184,16 @@ describe('create-next-quick interactive mode', function () {
         clearInterval(firstInterval);
         firstRun.stdin.end();
       }
-    }, 3000);
+    }, 5000);
 
     firstRun.on('close', (code) => {
       assert.strictEqual(code, 0, 'First run should exit with code 0');
 
       const secondRunAnswers = [
         '',
-        'biome\n',
-        '\n', 
-        'n\n',
+        '3',
+        '',
+        'n',
       ];
 
       const secondRun = spawn('node', [cliPath, '-i'], { cwd: currentProjectPath });
@@ -221,7 +212,7 @@ describe('create-next-quick interactive mode', function () {
           clearInterval(secondInterval);
           secondRun.stdin.end();
         }
-      }, 3000);
+      }, 5000);
 
       secondRun.on('close', (secondCode) => {
         assert.strictEqual(secondCode, 0, 'Second run should exit with code 0');
