@@ -25,6 +25,20 @@ describe("create-next-quick", function () {
     deleteFolder(currentProjectPath);
   });
 
+  /**
+   * Maps a desired boolean value to the appropriate confirm prompt answer string.
+   * For confirm prompts:
+   * - If desiredValue matches defaultValue: return "" (press Enter to accept default)
+   * - If desiredValue is true and defaultValue is false: return "y"
+   * - If desiredValue is false and defaultValue is true: return "n"
+   */
+  const mapConfirmAnswer = (desiredValue, defaultValue) => {
+    if (desiredValue === defaultValue) {
+      return "";
+    }
+    return desiredValue ? "y" : "n";
+  };
+
   const runTest = (answers, assertions, done) => {
     deleteFolder(currentProjectPath);
     const child = spawn("node", [cliPath]);
@@ -97,10 +111,10 @@ describe("create-next-quick", function () {
       const answers = [
         currentProjectName,
         "", // Package manager (default variables)
-        testCase.options.useTypeScript ? "" : "n",
-        testCase.options.useTailwind ? "" : "n",
-        testCase.options.useSrcDir ? "" : "n",
-        testCase.options.useAppDir ? "" : "n",
+        mapConfirmAnswer(testCase.options.useTypeScript, true),
+        mapConfirmAnswer(testCase.options.useTailwind, true),
+        mapConfirmAnswer(testCase.options.useSrcDir, true),
+        mapConfirmAnswer(testCase.options.useAppDir, true),
         testCase.options.pages,
         testCase.options.linter === "none"
           ? ""
@@ -112,7 +126,7 @@ describe("create-next-quick", function () {
           : testCase.options.orm === "prisma"
             ? "\u001b[B"
             : "\u001b[B\u001b[B", // ORM: none (default), prisma (1 down), drizzle (2 down)
-        testCase.options.useShadcn ? "" : "n",
+        mapConfirmAnswer(testCase.options.useShadcn, true),
         testCase.options.testing === "none"
           ? ""
           : testCase.options.testing === "vitest"
@@ -125,7 +139,7 @@ describe("create-next-quick", function () {
             : testCase.options.auth === "clerk"
               ? "\u001b[B\u001b[B"
               : "\u001b[B\u001b[B\u001b[B", // auth
-        testCase.options.docker ? "y" : "", // docker (default false, so enter is false. but to be safe, explicit? No, confirm default false means Enter -> false.)
+        mapConfirmAnswer(testCase.options.docker, false),
       ];
 
       const assertions = () => {

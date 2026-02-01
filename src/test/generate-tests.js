@@ -53,6 +53,21 @@ while (promptArrayMatch !== null) {
   promptArrayMatch = inquirerPromptRegex.exec(indexJsContent);
 }
 
+// Validation: Count expected prompts in src/index.js and warn if mismatch
+const expectedPromptCount = (indexJsContent.match(/type:\s*["'](confirm|list|input)["']/g) || [])
+  .length;
+if (extractedPrompts.length < expectedPromptCount) {
+  console.warn(
+    `⚠️  Warning: Extracted ${extractedPrompts.length} prompts but found ${expectedPromptCount} prompt definitions in src/index.js.`,
+  );
+  console.warn(
+    `   This may indicate that the promptObjectRegex is missing some prompts due to property reordering.`,
+  );
+  console.warn(
+    `   Consider updating the regex to be order-agnostic or reviewing the prompt definitions in src/index.js.`,
+  );
+}
+
 const testCases = [];
 
 // Helper function to resolve prompt default values

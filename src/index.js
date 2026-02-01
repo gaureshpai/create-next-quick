@@ -90,13 +90,13 @@ let createdProjectDir = false;
     );
 
     answers.useTypeScript = fileExists(path.join(process.cwd(), "tsconfig.json"));
-    answers.useSrcDir = fs.existsSync(path.join(process.cwd(), "src"));
+    answers.useSrcDir = fileExists(path.join(process.cwd(), "src"));
     answers.useAppDir =
-      fs.existsSync(path.join(process.cwd(), "app")) ||
-      (answers.useSrcDir && fs.existsSync(path.join(process.cwd(), "src", "app")));
-    if (fs.existsSync(path.join(process.cwd(), "yarn.lock"))) {
+      fileExists(path.join(process.cwd(), "app")) ||
+      (answers.useSrcDir && fileExists(path.join(process.cwd(), "src", "app")));
+    if (fileExists(path.join(process.cwd(), "yarn.lock"))) {
       answers.packageManager = "yarn";
-    } else if (fs.existsSync(path.join(process.cwd(), "pnpm-lock.yaml"))) {
+    } else if (fileExists(path.join(process.cwd(), "pnpm-lock.yaml"))) {
       answers.packageManager = "pnpm";
     } else {
       answers.packageManager = "npm";
@@ -932,8 +932,8 @@ README.md
 
     const vitestConfigContent = `import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
  

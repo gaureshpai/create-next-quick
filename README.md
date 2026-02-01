@@ -28,7 +28,7 @@
   - [Interactive Mode](#interactive-mode-for-existing-projects)
   - [Interactive Prompts](#interactive-prompts)
   - [Example Walkthrough](#example-walkthrough)
-- [Configuration Options](#%EF%B8%8F-configuration-options)
+- [Configuration Options](#configuration-options)
 - [Advanced Features](#-advanced-features)
   - [Authentication Setup](#authentication-setup)
   - [Testing Frameworks](#testing-frameworks)
@@ -271,6 +271,7 @@ Generates production-ready Docker configuration:
 - **Node.js**: `v20.0.0` or higher
 
 Check your Node.js version:
+
 ```bash
 node --version
 ```
