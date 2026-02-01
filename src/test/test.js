@@ -65,14 +65,15 @@ describe('create-next-quick', function () {
     it(testCase.description, (done) => {
       const answers = [
         currentProjectName,
-        testCase.options.useTypeScript ? '\n' : 'n\n',
-        testCase.options.useTailwind ? '\n' : 'n\n',
-        testCase.options.useSrcDir ? '\n' : 'n\n',
-        testCase.options.useAppDir ? '\n' : 'n\n',
-        testCase.options.pages + '\n',
-        (testCase.options.linter === 'none' ? '1' : (testCase.options.linter === 'eslint' ? '2' : '3')) + '\n',
-        (testCase.options.orm === 'none' ? '1' : (testCase.options.orm === 'prisma' ? '2' : '3')) + '\n',
-        testCase.options.useShadcn ? '\n' : 'n\n',
+        '', // Package manager (default variables)
+        testCase.options.useTypeScript ? '' : 'n',
+        testCase.options.useTailwind ? '' : 'n',
+        testCase.options.useSrcDir ? '' : 'n',
+        testCase.options.useAppDir ? '' : 'n',
+        testCase.options.pages,
+        (testCase.options.linter === 'none' ? '' : (testCase.options.linter === 'eslint' ? '\u001b[B' : '\u001b[B\u001b[B')), // Linter: none (default), eslint (1 down), biome (2 down)
+        (testCase.options.orm === 'none' ? '' : (testCase.options.orm === 'prisma' ? '\u001b[B' : '\u001b[B\u001b[B')), // ORM: none (default), prisma (1 down), drizzle (2 down)
+        testCase.options.useShadcn ? '' : 'n',
       ];
 
       const assertions = () => {

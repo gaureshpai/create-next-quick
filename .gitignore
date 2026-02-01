@@ -2,7 +2,9 @@
 *generated-test-cases.js
 *test-project
 *.tgz
-test-*
+test-project*
+test-interactive-project*
+temp-test-project
 my-app
 package-lock.json
 pnpm-lock.yaml
