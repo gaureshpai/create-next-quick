@@ -651,9 +651,11 @@ if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
         throw new Error("Drizzle Kit dev dependency installation failed.");
       }
 
-      const schemaPath = useSrcDir ? "./src/db/schema.ts" : "./db/schema.ts";
+      const schemaExt = useTypeScript ? ".ts" : ".js";
+      const schemaPath = useSrcDir ? `./src/db/schema${schemaExt}` : `./db/schema${schemaExt}`;
 
-      const drizzleConfigContent = `import type { Config } from 'drizzle-kit';
+      const drizzleConfigContent = useTypeScript
+        ? `import type { Config } from 'drizzle-kit';
 
 export default {
   schema: '${schemaPath}',
@@ -662,8 +664,18 @@ export default {
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-} satisfies Config;`;
-      writeFile(path.join(projectPath, "drizzle.config.ts"), drizzleConfigContent);
+} satisfies Config;`
+        : `/** @type {import('drizzle-kit').Config} */
+export default {
+  schema: '${schemaPath}',
+  out: './drizzle',
+  dialect: 'postgresql',
+  dbCredentials: {
+    url: process.env.DATABASE_URL,
+  },
+};`;
+      const drizzleConfigFile = useTypeScript ? "drizzle.config.ts" : "drizzle.config.js";
+      writeFile(path.join(projectPath, drizzleConfigFile), drizzleConfigContent);
 
       const dbDir = useSrcDir ? path.join(projectPath, "src", "db") : path.join(projectPath, "db");
       createFolder(dbDir);
@@ -674,7 +686,8 @@ export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
 });`;
-      writeFile(path.join(dbDir, "schema.ts"), schemaContent);
+      const schemaFile = useTypeScript ? "schema.ts" : "schema.js";
+      writeFile(path.join(dbDir, schemaFile), schemaContent);
 
       console.log(chalk.bold.green("Drizzle ORM configured"));
     }
@@ -911,7 +924,10 @@ README.md
 
     const vitestConfigContent = `import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
  
 export default defineConfig({
   plugins: [react()],
@@ -922,7 +938,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src')
     },
   },
 })`;
