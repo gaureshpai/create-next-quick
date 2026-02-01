@@ -1,13 +1,12 @@
-import { writeFile, createFolder } from './utils.js';
-import path from 'path';
+import { writeFile, createFolder } from "./utils.js";
+import path from "node:path";
 
 export const createPages = (pagesPath, pages, useTypeScript, useAppDir) => {
-  const extension = useTypeScript ? '.tsx' : '.js';
+  const extension = useTypeScript ? ".tsx" : ".js";
 
   pages.forEach((page) => {
     const pageName = page.charAt(0).toUpperCase() + page.slice(1);
-    const pageContent =
-      `export default function ${pageName}() {
+    const pageContent = `export default function ${pageName}() {
     return (
         <div>
             <h1>${pageName}</h1>
@@ -17,7 +16,7 @@ export const createPages = (pagesPath, pages, useTypeScript, useAppDir) => {
 
     let pagePath;
     if (useAppDir) {
-      if (page.toLowerCase() === 'index' || page.toLowerCase() === 'home') {
+      if (page.toLowerCase() === "index" || page.toLowerCase() === "home") {
         pagePath = path.join(pagesPath, `page${extension}`);
       } else {
         const pageDir = path.join(pagesPath, page.toLowerCase());
@@ -25,7 +24,7 @@ export const createPages = (pagesPath, pages, useTypeScript, useAppDir) => {
         pagePath = path.join(pageDir, `page${extension}`);
       }
     } else {
-      if (page.toLowerCase() === 'index' || page.toLowerCase() === 'home') {
+      if (page.toLowerCase() === "index" || page.toLowerCase() === "home") {
         pagePath = path.join(pagesPath, `index${extension}`);
       } else {
         pagePath = path.join(pagesPath, `${page.toLowerCase()}${extension}`);
@@ -88,5 +87,4 @@ export default function RootLayout({ children }) {
 
   createFolder(appDir);
   writeFile(layoutPath, layoutContent);
-
 };

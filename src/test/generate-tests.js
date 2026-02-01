@@ -1,21 +1,20 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "node:fs";
+import path from "node:path";
 
-const indexJsPath = path.join(process.cwd(), 'src', 'index.js');
-const indexJsContent = fs.readFileSync(indexJsPath, 'utf-8');
+const indexJsPath = path.join(process.cwd(), "src", "index.js");
+const indexJsContent = fs.readFileSync(indexJsPath, "utf-8");
 
 const extractedPrompts = [];
 
 const inquirerPromptRegex = /inquirer\.prompt\(\[([\s\S]*?)\]\)/g;
-let promptArrayMatch;
-
-while ((promptArrayMatch = inquirerPromptRegex.exec(indexJsContent)) !== null) {
+let promptArrayMatch = inquirerPromptRegex.exec(indexJsContent);
+while (promptArrayMatch !== null) {
   const promptArrayString = promptArrayMatch[1];
 
-  const promptObjectRegex = /{\s*type:\s*"(.*?)",\s*name:\s*"(.*?)",\s*message:\s*"(.*?)"(?:,\s*choices:\s*\[([\s\S]*?)\])?(?:,\s*default:\s*(.*?))?[\s\S]*?}/g;
-  let promptMatch;
-
-  while ((promptMatch = promptObjectRegex.exec(promptArrayString)) !== null) {
+  const promptObjectRegex =
+    /{\s*type:\s*"(.*?)",\s*name:\s*"(.*?)",\s*message:\s*"(.*?)"(?:,\s*choices:\s*\[([\s\S]*?)\])?(?:,\s*default:\s*(.*?))?[\s\S]*?}/g;
+  let promptMatch = promptObjectRegex.exec(promptArrayString);
+  while (promptMatch !== null) {
     const prompt = {
       type: promptMatch[1],
       name: promptMatch[2],
@@ -25,43 +24,73 @@ while ((promptArrayMatch = inquirerPromptRegex.exec(indexJsContent)) !== null) {
     };
 
     if (promptMatch[4]) {
-      prompt.choices = promptMatch[4].split(',').map(c => c.trim().replace(/['"]/g, '')).filter(c => c !== '');
+      prompt.choices = promptMatch[4]
+        .split(",")
+        .map((c) => c.trim().replace(/['"]/g, ""))
+        .filter((c) => c !== "");
     }
 
     if (promptMatch[5]) {
       const defaultValue = promptMatch[5].trim();
-      if (defaultValue === 'true') {
+      if (defaultValue === "true") {
         prompt.default = true;
-      } else if (defaultValue === 'false') {
+      } else if (defaultValue === "false") {
         prompt.default = false;
-      } else if (defaultValue === '' || defaultValue === '""') {
-        prompt.default = '';
-      } else if (defaultValue !== '' && !isNaN(defaultValue)) {
-        prompt.default = Number(defaultValue);
+      } else if (defaultValue === "" || defaultValue === '""') {
+        prompt.default = "";
       } else {
-        prompt.default = defaultValue.replace(/['"]/g, '');
+        const parsed = Number(defaultValue);
+        if (defaultValue !== "" && !Number.isNaN(parsed)) {
+          prompt.default = parsed;
+        } else {
+          prompt.default = defaultValue.replace(/['"]/g, "");
+        }
       }
     }
     extractedPrompts.push(prompt);
+    promptMatch = promptObjectRegex.exec(promptArrayString);
   }
+  promptArrayMatch = inquirerPromptRegex.exec(indexJsContent);
+}
+
+// Validation: Count expected prompts in src/index.js and warn if mismatch
+const expectedPromptCount = (indexJsContent.match(/type:\s*["'](confirm|list|input)["']/g) || [])
+  .length;
+if (extractedPrompts.length < expectedPromptCount) {
+  console.warn(
+    `⚠️  Warning: Extracted ${extractedPrompts.length} prompts but found ${expectedPromptCount} prompt definitions in src/index.js.`,
+  );
+  console.warn(
+    `   This may indicate that the promptObjectRegex is missing some prompts due to property reordering.`,
+  );
+  console.warn(
+    `   Consider updating the regex to be order-agnostic or reviewing the prompt definitions in src/index.js.`,
+  );
 }
 
 const testCases = [];
 
-for (const prompt of extractedPrompts) {
-  if (prompt.name === 'projectName') continue;
+// Helper function to resolve prompt default values
+const getPromptDefault = (prompt) => {
+  if (prompt.default !== undefined) {
+    return prompt.default;
+  }
+  return prompt.type === "confirm" ? false : "";
+};
 
-  if (prompt.type === 'confirm') {
+for (const prompt of extractedPrompts) {
+  if (prompt.name === "projectName") continue;
+
+  if (prompt.type === "confirm") {
     const enableTestCase = {
       description: `should create a project with ${prompt.name} enabled`,
       options: {},
       expectedFiles: [],
-      assertions: "assert.ok(fs.existsSync(projectPath), 'Project directory should exist');",
     };
 
-    extractedPrompts.forEach(p => {
-      if (p.name !== 'projectName') {
-        enableTestCase.options[p.name] = p.default !== undefined ? p.default : (p.type === 'confirm' ? false : '');
+    extractedPrompts.forEach((p) => {
+      if (p.name !== "projectName") {
+        enableTestCase.options[p.name] = getPromptDefault(p);
       }
     });
     enableTestCase.options[prompt.name] = true;
@@ -72,60 +101,62 @@ for (const prompt of extractedPrompts) {
         description: `should create a project with ${prompt.name} disabled`,
         options: {},
         expectedFiles: [],
-        assertions: "assert.ok(fs.existsSync(projectPath), 'Project directory should exist');",
       };
-      extractedPrompts.forEach(p => {
-        if (p.name !== 'projectName') {
-          disableTestCase.options[p.name] = p.default !== undefined ? p.default : (p.type === 'confirm' ? false : '');
+      extractedPrompts.forEach((p) => {
+        if (p.name !== "projectName") {
+          disableTestCase.options[p.name] = getPromptDefault(p);
         }
       });
       disableTestCase.options[prompt.name] = false;
       testCases.push(disableTestCase);
     }
-  } else if (prompt.type === 'list') {
-    prompt.choices.forEach(choice => {
+  } else if (prompt.type === "list") {
+    prompt.choices.forEach((choice) => {
       const listTestCase = {
         description: `should create a project with ${prompt.name} set to ${choice}`,
         options: {},
         expectedFiles: [],
-        assertions: "assert.ok(fs.existsSync(projectPath), 'Project directory should exist');",
       };
-      extractedPrompts.forEach(p => {
-        if (p.name !== 'projectName') {
-          listTestCase.options[p.name] = p.default !== undefined ? p.default : (p.type === 'confirm' ? false : '');
+      extractedPrompts.forEach((p) => {
+        if (p.name !== "projectName") {
+          listTestCase.options[p.name] = getPromptDefault(p);
         }
       });
       listTestCase.options[prompt.name] = choice;
       testCases.push(listTestCase);
     });
-  } else if (prompt.type === 'input') {
+  } else if (prompt.type === "input") {
     const inputTestCase = {
       description: `should create a project with custom ${prompt.name}`,
       options: {},
       expectedFiles: [],
-      assertions: "assert.ok(fs.existsSync(projectPath), 'Project directory should exist');",
     };
-    extractedPrompts.forEach(p => {
-      if (p.name !== 'projectName') {
-        inputTestCase.options[p.name] = p.default !== undefined ? p.default : (p.type === 'confirm' ? false : '');
+    extractedPrompts.forEach((p) => {
+      if (p.name !== "projectName") {
+        inputTestCase.options[p.name] = getPromptDefault(p);
       }
     });
-    inputTestCase.options[prompt.name] = prompt.default || (prompt.name === 'pages' ? 'testpage' : 'custom');
+    inputTestCase.options[prompt.name] =
+      prompt.default || (prompt.name === "pages" ? "testpage" : "custom");
     testCases.push(inputTestCase);
   }
 }
 
-const generatedTestCasesPath = path.join(process.cwd(), 'src', 'test', 'generated-test-cases.js');
+const generatedTestCasesPath = path.join(process.cwd(), "src", "test", "generated-test-cases.js");
 const fileContent = `// This file is auto-generated by test/generate-tests.js
 // Do not edit this file directly. Run 'npm run test:generate' to regenerate.
 
-import { strict as assert } from 'assert';
-import fs from 'fs';
-import path from 'path';
+import { strict as assert } from 'node:assert';
+import fs from 'node:fs';
+
+// Default assertion function for all test cases
+const defaultAssertion = (projectPath) => {
+  assert.ok(fs.existsSync(projectPath), 'Project directory should exist');
+};
 
 export const testCases = ${JSON.stringify(testCases, null, 2)}.map(tc => ({
   ...tc,
-  assertions: (projectPath) => { eval(tc.assertions) }
+  assertions: defaultAssertion
 }));
 `;
 fs.writeFileSync(generatedTestCasesPath, fileContent);
