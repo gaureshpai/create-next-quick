@@ -938,7 +938,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, '${useSrcDir ? "./src" : "."}')
     },
   },
 })`;
@@ -969,7 +969,21 @@ export default defineConfig({
     if (useTypeScript) {
       deps.push("@types/jest", "ts-node");
     }
-    await run(`${packageManager} install --save-dev ${deps.join(" ")}`, projectPath, false);
+    const jestInstallResult = await run(
+      `${packageManager} install --save-dev ${deps.join(" ")}`,
+      projectPath,
+      false,
+      3,
+      2000,
+    );
+    if (!jestInstallResult.success) {
+      console.error(chalk.bold.red("Failed to install Jest dependencies."));
+      if (jestInstallResult.stderr) {
+        console.error(chalk.red("Error details:"));
+        console.error(chalk.red(jestInstallResult.stderr));
+      }
+      throw new Error("Jest dependency installation failed.");
+    }
 
     // Skip interactive init, write config manually
     const jestConfig = `const nextJest = require('next/jest')
@@ -1003,7 +1017,21 @@ module.exports = createJestConfig(customJestConfig)`;
   if (auth !== "none") {
     console.log(chalk.blue(`Setting up Authentication (${auth})...`));
     if (auth === "next-auth") {
-      await run(`${packageManager} install next-auth@beta`, projectPath, false);
+      const nextAuthInstallResult = await run(
+        `${packageManager} install next-auth@beta`,
+        projectPath,
+        false,
+        3,
+        2000,
+      );
+      if (!nextAuthInstallResult.success) {
+        console.error(chalk.bold.red("Failed to install NextAuth.js."));
+        if (nextAuthInstallResult.stderr) {
+          console.error(chalk.red("Error details:"));
+          console.error(chalk.red(nextAuthInstallResult.stderr));
+        }
+        throw new Error("NextAuth.js installation failed.");
+      }
       const authContent = `import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
  
@@ -1066,7 +1094,21 @@ export const config = {
 export const { GET, POST } = handlers`;
       writeFile(path.join(routePath, useTypeScript ? "route.ts" : "route.js"), routeContent);
     } else if (auth === "clerk") {
-      await run(`${packageManager} install @clerk/nextjs`, projectPath, false);
+      const clerkInstallResult = await run(
+        `${packageManager} install @clerk/nextjs`,
+        projectPath,
+        false,
+        3,
+        2000,
+      );
+      if (!clerkInstallResult.success) {
+        console.error(chalk.bold.red("Failed to install Clerk."));
+        if (clerkInstallResult.stderr) {
+          console.error(chalk.red("Error details:"));
+          console.error(chalk.red(clerkInstallResult.stderr));
+        }
+        throw new Error("Clerk installation failed.");
+      }
 
       const middlewareContent = `import { clerkMiddleware } from "@clerk/nextjs/server";
 
@@ -1095,7 +1137,21 @@ export const config = {
       console.log(
         chalk.yellow("Lucia Auth requires a database adapter. Installing core package..."),
       );
-      await run(`${packageManager} install lucia`, projectPath, false);
+      const luciaInstallResult = await run(
+        `${packageManager} install lucia`,
+        projectPath,
+        false,
+        3,
+        2000,
+      );
+      if (!luciaInstallResult.success) {
+        console.error(chalk.bold.red("Failed to install Lucia."));
+        if (luciaInstallResult.stderr) {
+          console.error(chalk.red("Error details:"));
+          console.error(chalk.red(luciaInstallResult.stderr));
+        }
+        throw new Error("Lucia installation failed.");
+      }
       console.log(
         chalk.yellow(
           "Please follow the docs to set up your specific adapter: https://lucia-auth.com/getting-started/",

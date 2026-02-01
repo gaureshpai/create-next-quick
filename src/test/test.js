@@ -30,6 +30,7 @@ describe("create-next-quick", function () {
     const child = spawn("node", [cliPath]);
     let _stdout = "";
     let _stderr = "";
+    let interval = null;
 
     child.stdout.on("data", (data) => {
       console.log(data.toString());
@@ -41,18 +42,42 @@ describe("create-next-quick", function () {
       _stderr += data.toString();
     });
 
+    // Error handler for child process
+    child.on("error", (err) => {
+      if (interval) clearInterval(interval);
+      console.error("Child process error:", err);
+      done(err);
+    });
+
+    // Error handler for stdin
+    child.stdin.on("error", (err) => {
+      if (interval) clearInterval(interval);
+      console.error("Child stdin error:", err);
+    });
+
     let i = 0;
-    const interval = setInterval(() => {
+    interval = setInterval(() => {
       if (i < answers.length) {
-        child.stdin.write(`${answers[i]}\n`);
-        i++;
+        // Check if child is still alive and stdin is writable
+        if (!child.killed && child.stdin && child.stdin.writable) {
+          try {
+            child.stdin.write(`${answers[i]}\n`);
+            i++;
+          } catch (err) {
+            console.error("Error writing to stdin:", err);
+            clearInterval(interval);
+          }
+        } else {
+          clearInterval(interval);
+        }
       } else {
         clearInterval(interval);
-        child.stdin.end();
+        child.stdin?.end();
       }
     }, 3000);
 
     child.on("close", (code) => {
+      if (interval) clearInterval(interval);
       if (code !== 0) {
         console.log("Full stdout:", _stdout);
         console.error("Full stderr:", _stderr);
@@ -60,6 +85,10 @@ describe("create-next-quick", function () {
       assert.strictEqual(code, 0, "CLI should exit with code 0");
       assertions();
       done();
+    });
+
+    child.on("exit", () => {
+      if (interval) clearInterval(interval);
     });
   };
 

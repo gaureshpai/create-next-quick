@@ -28,7 +28,7 @@
   - [Interactive Mode](#interactive-mode-for-existing-projects)
   - [Interactive Prompts](#interactive-prompts)
   - [Example Walkthrough](#example-walkthrough)
-- [Configuration Options](#-configuration-options)
+- [Configuration Options](#%EF%B8%8F-configuration-options)
 - [Advanced Features](#-advanced-features)
   - [Authentication Setup](#authentication-setup)
   - [Testing Frameworks](#testing-frameworks)
@@ -36,10 +36,8 @@
 - [Prerequisites](#-prerequisites)
 - [Available Scripts](#-available-scripts)
 - [Testing](#-testing)
-- [Project Structure](#-project-structure)
 - [Troubleshooting](#-troubleshooting)
 - [Contributing](#-contributing)
-- [Changelog](#-changelog)
 - [License](#-license)
 
 ---
@@ -50,25 +48,26 @@
 
 ### Comparison with create-next-app
 
-| Feature                          | `create-next-quick`                                   | `create-next-app` |
-| -------------------------------- | ------------------------------------------------------ | ----------------- |
-| **Multi-page Generation**        | ✅ Yes (e.g., `home, about, contact`)                  | ❌ No             |
-| **ORM Support**                  | ✅ Yes (Prisma, Drizzle)                               | ❌ No             |
-| **Linter Choice**                | ✅ Yes (ESLint, Biome)                                 | ❌ ESLint only    |
-| **Shadcn UI Auto-Setup**         | ✅ Yes (non-interactive)                               | ❌ No             |
-| **Authentication Integration**   | ✅ Yes (NextAuth, Clerk, Lucia)                        | ❌ No             |
-| **Testing Framework Setup**      | ✅ Yes (Vitest, Jest)                                  | ❌ No             |
-| **Docker Configuration**         | ✅ Yes (Dockerfile + .dockerignore)                    | ❌ No             |
-| **Clean Project Start**          | ✅ Yes (removes boilerplate & default assets)          | ❌ No             |
-| **Package Manager Detection**    | ✅ Yes (npm, yarn, pnpm)                               | ✅ Yes            |
-| **Robust Error Handling**        | ✅ Yes (retries, cleanup, clear tips)                  | ❌ Basic          |
-| **Interactive Mode**             | ✅ Yes (add features to existing projects)             | ❌ No             |
+| Feature                        | `create-next-quick`                            | `create-next-app` |
+| ------------------------------ | ---------------------------------------------- | ----------------- |
+| **Multi-page Generation**      | ✅ Yes (e.g., `home, about, contact`)          | ❌ No             |
+| **ORM Support**                | ✅ Yes (Prisma, Drizzle)                       | ❌ No             |
+| **Linter Choice**              | ✅ Yes (ESLint, Biome)                         | ❌ ESLint only    |
+| **Shadcn UI Auto-Setup**       | ✅ Yes (non-interactive)                       | ❌ No             |
+| **Authentication Integration** | ✅ Yes (NextAuth, Clerk, Lucia)                | ❌ No             |
+| **Testing Framework Setup**    | ✅ Yes (Vitest, Jest)                          | ❌ No             |
+| **Docker Configuration**       | ✅ Yes (Dockerfile + .dockerignore)            | ❌ No             |
+| **Clean Project Start**        | ✅ Yes (removes boilerplate & default assets)  | ❌ No             |
+| **Package Manager Detection**  | ✅ Yes (npm, yarn, pnpm)                       | ✅ Yes            |
+| **Robust Error Handling**      | ✅ Yes (retries, cleanup, clear tips)          | ❌ Basic          |
+| **Interactive Mode**           | ✅ Yes (add features to existing projects)     | ❌ No             |
 
 ---
 
 ## ✨ Features
 
 ### 🏗️ Project Scaffolding
+
 - **CLI Argument for Project Name**: Skip the project name prompt by passing it as an argument
 - **Custom Page Generation**: Create multiple pages at once from the CLI
 - **Clean Project Setup**: Automatically removes the default favicon, clears the public folder, and provides clean `page.tsx` and `layout.tsx` files
@@ -76,6 +75,7 @@
 - **Conditional API Route Deletion**: Removes the default `hello.js` API route when not needed
 
 ### 🛠️ Tooling & Integrations
+
 - **Package Manager Detection**: Auto-detects `npm`, `yarn`, and `pnpm`
 - **Linter Support**: Choose between ESLint, Biome, or no linter
 - **ORM Support**: Integrated setup for Prisma or Drizzle (with TypeScript/JavaScript support)
@@ -86,6 +86,7 @@
 - **Docker**: Auto-generated `Dockerfile` and `.dockerignore` for containerized deployments
 
 ### 💎 Developer Experience
+
 - **Robust Error Handling**: Automatic retries for failed installs, intelligent cleanup of incomplete projects, and actionable troubleshooting tips
 - **Automated CI/CD Feedback**: Get automated comments on the test status of your Pull Requests
 - **Interactive Mode**: Add features to existing Next.js projects without starting from scratch
@@ -176,10 +177,12 @@ $ npx create-next-quick my-portfolio
 ### Linters
 
 #### ESLint
+
 - Pre-configured with Next.js recommended rules
 - Automatically installed if selected
 
 #### Biome
+
 - Fast, modern linter and formatter
 - Zero-config setup with `biome.json`
 - Includes pre-commit hooks with Husky
@@ -187,6 +190,7 @@ $ npx create-next-quick my-portfolio
 ### ORMs
 
 #### Prisma
+
 - Automatically installs `prisma` and `@prisma/client`
 - Initializes Prisma with `prisma init`
 - Creates a singleton Prisma client in `src/lib/prisma.ts` (or `.js`)
@@ -194,6 +198,7 @@ $ npx create-next-quick my-portfolio
 - Supports both TypeScript and JavaScript projects
 
 #### Drizzle
+
 - Installs `drizzle-orm`, `drizzle-kit`, and `@vercel/postgres`
 - Creates `drizzle.config.ts` (or `.js`) with PostgreSQL dialect
 - Generates example schema in `src/db/schema.ts` (or `.js`)
@@ -207,6 +212,7 @@ $ npx create-next-quick my-portfolio
 ### Authentication Setup
 
 #### NextAuth.js (v5 Beta)
+
 ```bash
 # Automatically sets up:
 - src/lib/auth.ts (or .js) with credentials provider
@@ -214,6 +220,7 @@ $ npx create-next-quick my-portfolio
 ```
 
 #### Clerk
+
 ```bash
 # Automatically sets up:
 - middleware.ts (or .js) with Clerk middleware
@@ -221,6 +228,7 @@ $ npx create-next-quick my-portfolio
 ```
 
 #### Lucia
+
 ```bash
 # Installs core package
 - Provides instructions for adapter setup
@@ -229,6 +237,7 @@ $ npx create-next-quick my-portfolio
 ### Testing Frameworks
 
 #### Vitest
+
 ```bash
 # Automatically configures:
 - vitest.config.ts (or .js) with React plugin
@@ -238,6 +247,7 @@ $ npx create-next-quick my-portfolio
 ```
 
 #### Jest
+
 ```bash
 # Automatically configures:
 - jest.config.js with Next.js integration
@@ -286,16 +296,19 @@ Once your project is created, you can use the following commands:
 The test suite is dynamically generated to ensure comprehensive coverage.
 
 ### Generate Test Cases
+
 ```bash
 npm run test:generate
 ```
 
 ### Run Tests
+
 ```bash
 npm test
 ```
 
 ### Run Interactive Tests
+
 ```bash
 npm run test:interactive
 ```
@@ -307,6 +320,7 @@ npm run test:interactive
 ### Common Issues
 
 #### Installation Fails
+
 ```bash
 # Check your internet connection
 # Ensure package manager is up to date
@@ -316,24 +330,28 @@ pnpm add -g pnpm@latest
 ```
 
 #### Permission Errors
+
 ```bash
 # On macOS/Linux, you might need to use sudo
 sudo npx create-next-quick my-app
 ```
 
 #### TypeScript Errors After Setup
+
 ```bash
 # Regenerate types
 pnpm run build
 ```
 
 #### Prisma Client Not Found
+
 ```bash
 # Generate Prisma client
 npx prisma generate
 ```
 
 #### Port Already in Use
+
 ```bash
 # Kill the process using port 3000
 # On macOS/Linux:
@@ -406,7 +424,7 @@ This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE)
 
 <div align="center">
   <a href="https://github.com/gaureshpai/create-next-quick/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=gaureshpai/create-next-quick" />
+    <img src="https://contrib.rocks/image?repo=gaureshpai/create-next-quick" alt="Contributors" />
   </a>
 </div>
 
