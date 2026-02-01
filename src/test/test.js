@@ -53,6 +53,10 @@ describe("create-next-quick", function () {
     }, 3000);
 
     child.on("close", (code) => {
+      if (code !== 0) {
+        console.log("Full stdout:", _stdout);
+        console.error("Full stderr:", _stderr);
+      }
       assert.strictEqual(code, 0, "CLI should exit with code 0");
       assertions();
       done();

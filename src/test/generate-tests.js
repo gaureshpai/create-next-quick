@@ -38,10 +38,13 @@ while (promptArrayMatch !== null) {
         prompt.default = false;
       } else if (defaultValue === "" || defaultValue === '""') {
         prompt.default = "";
-      } else if (defaultValue !== "" && !Number.isNaN(defaultValue)) {
-        prompt.default = Number(defaultValue);
       } else {
-        prompt.default = defaultValue.replace(/['"]/g, "");
+        const parsed = Number(defaultValue);
+        if (defaultValue !== "" && !Number.isNaN(parsed)) {
+          prompt.default = parsed;
+        } else {
+          prompt.default = defaultValue.replace(/['"]/g, "");
+        }
       }
     }
     extractedPrompts.push(prompt);
