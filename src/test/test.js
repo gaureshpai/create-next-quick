@@ -1,18 +1,18 @@
-import { spawn } from 'child_process';
-import { strict as assert } from 'assert';
-import { fileURLToPath } from 'url';
-import path from 'path';
-import fs from 'fs';
-import { deleteFolder } from '../lib/utils.js';
+import { spawn } from "node:child_process";
+import { strict as assert } from "node:assert";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+import fs from "node:fs";
+import { deleteFolder } from "../lib/utils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const cliPath = path.join(__dirname, '..', 'index.js');
+const cliPath = path.join(__dirname, "..", "index.js");
 
-import { testCases } from './test-cases.js';
+import { testCases } from "./test-cases.js";
 
-describe('create-next-quick', function () {
+describe("create-next-quick", function () {
   this.timeout(0);
 
   let currentProjectName;
@@ -29,24 +29,24 @@ describe('create-next-quick', function () {
 
   const runTest = (answers, assertions, done) => {
     deleteFolder(currentProjectPath);
-    const child = spawn('node', [cliPath]);
-    let stdout = '';
-    let stderr = '';
+    const child = spawn("node", [cliPath]);
+    let _stdout = "";
+    let _stderr = "";
 
-    child.stdout.on('data', (data) => {
+    child.stdout.on("data", (data) => {
       console.log(data.toString());
-      stdout += data.toString();
+      _stdout += data.toString();
     });
 
-    child.stderr.on('data', (data) => {
+    child.stderr.on("data", (data) => {
       console.error(data.toString());
-      stderr += data.toString();
+      _stderr += data.toString();
     });
 
     let i = 0;
     const interval = setInterval(() => {
       if (i < answers.length) {
-        child.stdin.write(answers[i] + '\n');
+        child.stdin.write(`${answers[i]}\n`);
         i++;
       } else {
         clearInterval(interval);
@@ -54,8 +54,8 @@ describe('create-next-quick', function () {
       }
     }, 3000);
 
-    child.on('close', (code) => {
-      assert.strictEqual(code, 0, 'CLI should exit with code 0');
+    child.on("close", (code) => {
+      assert.strictEqual(code, 0, "CLI should exit with code 0");
       assertions();
       done();
     });
@@ -65,22 +65,40 @@ describe('create-next-quick', function () {
     it(testCase.description, (done) => {
       const answers = [
         currentProjectName,
-        '', // Package manager (default variables)
-        testCase.options.useTypeScript ? '' : 'n',
-        testCase.options.useTailwind ? '' : 'n',
-        testCase.options.useSrcDir ? '' : 'n',
-        testCase.options.useAppDir ? '' : 'n',
+        "", // Package manager (default variables)
+        testCase.options.useTypeScript ? "" : "n",
+        testCase.options.useTailwind ? "" : "n",
+        testCase.options.useSrcDir ? "" : "n",
+        testCase.options.useAppDir ? "" : "n",
         testCase.options.pages,
-        (testCase.options.linter === 'none' ? '' : (testCase.options.linter === 'eslint' ? '\u001b[B' : '\u001b[B\u001b[B')), // Linter: none (default), eslint (1 down), biome (2 down)
-        (testCase.options.orm === 'none' ? '' : (testCase.options.orm === 'prisma' ? '\u001b[B' : '\u001b[B\u001b[B')), // ORM: none (default), prisma (1 down), drizzle (2 down)
-        testCase.options.useShadcn ? '' : 'n',
-        testCase.options.testing === 'none' ? '' : (testCase.options.testing === 'vitest' ? '\u001b[B' : '\u001b[B\u001b[B'), // testing
-        testCase.options.auth === 'none' ? '' : (testCase.options.auth === 'next-auth' ? '\u001b[B' : (testCase.options.auth === 'clerk' ? '\u001b[B\u001b[B' : '\u001b[B\u001b[B\u001b[B')), // auth
-        testCase.options.docker ? 'y' : '', // docker (default false, so enter is false. but to be safe, explicit? No, confirm default false means Enter -> false.)
+        testCase.options.linter === "none"
+          ? ""
+          : testCase.options.linter === "eslint"
+            ? "\u001b[B"
+            : "\u001b[B\u001b[B", // Linter: none (default), eslint (1 down), biome (2 down)
+        testCase.options.orm === "none"
+          ? ""
+          : testCase.options.orm === "prisma"
+            ? "\u001b[B"
+            : "\u001b[B\u001b[B", // ORM: none (default), prisma (1 down), drizzle (2 down)
+        testCase.options.useShadcn ? "" : "n",
+        testCase.options.testing === "none"
+          ? ""
+          : testCase.options.testing === "vitest"
+            ? "\u001b[B"
+            : "\u001b[B\u001b[B", // testing
+        testCase.options.auth === "none"
+          ? ""
+          : testCase.options.auth === "next-auth"
+            ? "\u001b[B"
+            : testCase.options.auth === "clerk"
+              ? "\u001b[B\u001b[B"
+              : "\u001b[B\u001b[B\u001b[B", // auth
+        testCase.options.docker ? "y" : "", // docker (default false, so enter is false. but to be safe, explicit? No, confirm default false means Enter -> false.)
       ];
 
       const assertions = () => {
-        assert.ok(fs.existsSync(currentProjectPath), 'Project directory should exist');
+        assert.ok(fs.existsSync(currentProjectPath), "Project directory should exist");
         testCase.assertions(currentProjectPath);
       };
 

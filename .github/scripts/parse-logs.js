@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 const artifactsDir = "./artifacts";
 const summaries = [];
@@ -8,10 +8,7 @@ if (!fs.existsSync(artifactsDir)) {
   console.error(`❌ Artifacts directory not found: ${artifactsDir}`);
   console.log("Creating empty summary...");
   fs.mkdirSync(artifactsDir, { recursive: true });
-  fs.writeFileSync(
-    path.join(artifactsDir, "parsed-summary.json"),
-    JSON.stringify([], null, 2)
-  );
+  fs.writeFileSync(path.join(artifactsDir, "parsed-summary.json"), JSON.stringify([], null, 2));
   process.exit(0);
 }
 

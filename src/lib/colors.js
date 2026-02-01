@@ -58,7 +58,7 @@ const createBuilder = (currentStyles = []) => {
   // Basic hex-to-ANSI approximation
   builder.hex = (hex) => {
     // Remove hash if present
-    const cleanHex = hex.replace(/^#/, '');
+    const cleanHex = hex.replace(/^#/, "");
 
     // Parse r, g, b
     let r, g, b;
@@ -80,7 +80,7 @@ const createBuilder = (currentStyles = []) => {
     const b6 = Math.round((b / 255) * 5);
     const ansiCode = 16 + 36 * r6 + 6 * g6 + b6;
 
-    const open = `\x1b[38;5;${ansiCode}m`;
+    const _open = `\x1b[38;5;${ansiCode}m`;
 
     return createBuilder([...currentStyles, `\x1b[38;5;${ansiCode}m`]);
   };
