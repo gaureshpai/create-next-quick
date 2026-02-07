@@ -63,7 +63,7 @@ describe("create-next-quick interactive mode", function () {
   });
 
   it("should add biome linter in interactive mode", (done) => {
-    const answers = ["", "3", "", "n"];
+    const answers = ["", "\x1b[B\x1b[B", "", "n"]; // Choose biome (2 down from none)
 
     const child = spawn("node", [cliPath, "-i"], { cwd: currentProjectPath });
 
@@ -96,7 +96,7 @@ describe("create-next-quick interactive mode", function () {
   });
 
   it("should add prisma orm in interactive mode", (done) => {
-    const answers = ["", "", "2", "n"];
+    const answers = ["", "", "\x1b[B", "n"]; // Choose prisma (1 down from none)
 
     const child = spawn("node", [cliPath, "-i"], { cwd: currentProjectPath });
 
@@ -167,7 +167,7 @@ describe("create-next-quick interactive mode", function () {
   });
 
   it("should skip installation if feature already exists", (done) => {
-    const firstRunAnswers = ["", "3", "", "n"];
+    const firstRunAnswers = ["", "\x1b[B\x1b[B", "", "n"];
 
     const firstRun = spawn("node", [cliPath, "-i"], { cwd: currentProjectPath });
 
@@ -185,7 +185,7 @@ describe("create-next-quick interactive mode", function () {
     firstRun.on("close", (code) => {
       assert.strictEqual(code, 0, "First run should exit with code 0");
 
-      const secondRunAnswers = ["", "3", "", "n"];
+      const secondRunAnswers = ["", "\x1b[B\x1b[B", "", "n"];
 
       const secondRun = spawn("node", [cliPath, "-i"], { cwd: currentProjectPath });
       let stdout = "";
