@@ -117,6 +117,11 @@ npx create-next-quick [project-name]
 
 If you omit `[project-name]`, the tool will prompt you for it. Use `.` to create in the current directory (must be empty).
 
+**Other Flags:**
+
+- `-v, --version`: Display the version number
+- `-h, --help`: Display the help message
+
 ### Interactive Mode (for existing projects)
 
 Already have a Next.js project? Use the `-i` or `--interactive` flag to run `create-next-quick` on your existing project and add new features without starting from scratch.

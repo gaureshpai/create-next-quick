@@ -5,6 +5,10 @@ import fs from "node:fs";
 import chalk from "./lib/colors.js";
 import { run, deleteFolder, createFolder, deleteFile, fileExists, writeFile } from "./lib/utils.js";
 import { createPages, createLayout } from "./lib/templates.js";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json");
 
 const MIN_NODE_VERSION = 20;
 const currentNodeVersion = process.versions.node;
@@ -21,6 +25,28 @@ if (parseInt(currentNodeVersion.split(".")[0], 10) < MIN_NODE_VERSION) {
 }
 
 const args = process.argv.slice(2);
+
+if (args.includes("-h") || args.includes("--help")) {
+  console.log(`
+Usage: create-next-quick [project-name] [options]
+
+Options:
+  -i, --interactive  Run in interactive mode to add features (pages, ORM, Auth, etc.) to an existing Next.js project
+  -h, --help         Display this help message
+  -v, --version      Display the version number
+
+Examples:
+  npx create-next-quick my-app          # Create a new project
+  cd my-existing-app && npx create-next-quick -i  # Integrate into existing project
+`);
+  process.exit(0);
+}
+
+if (args.includes("-v") || args.includes("--version")) {
+  console.log(pkg.version);
+  process.exit(0);
+}
+
 const isInteractiveMode = args.includes("-i") || args.includes("--interactive");
 const appName = args.find((arg) => !arg.startsWith("-"));
 
@@ -936,7 +962,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
- 
+
 export default defineConfig({
   plugins: [react()],
   test: {
@@ -1000,13 +1026,13 @@ const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
   dir: './',
 })
- 
+
 // Add any custom config to be passed to Jest
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
 }
- 
+
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 module.exports = createJestConfig(customJestConfig)`;
 
@@ -1042,7 +1068,7 @@ module.exports = createJestConfig(customJestConfig)`;
       }
       const authContent = `import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
- 
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -1052,20 +1078,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       authorize: async (credentials) => {
         let user = null
- 
+
         // logic to verify if user exists
         user = {
             id: '1',
             name: 'John Doe',
             email: 'john@example.com'
         }
- 
+
         if (!user) {
           // No user found, so this is their first attempt to login
           // return null - this is where you could throw an error
           throw new Error("Invalid credentials.")
         }
- 
+
         // return user object with their profile data
         return user
       },
@@ -1079,11 +1105,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       writeFile(path.join(libDir, useTypeScript ? "auth.ts" : "auth.js"), authContent);
 
       const middlewareContent = `import { auth } from "@/lib/auth"
- 
+
 export default auth((req) => {
   // req.auth
 })
- 
+
 // Optionally, don't invoke Middleware on some paths
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
