@@ -220,7 +220,7 @@ describe("CI workflow build step", () => {
     const buildStepSection = ciYml.slice(buildIndex, endIndex);
     assert.ok(
       buildStepSection.includes("matrix.package-manager"),
-      "Build step should use ${{ matrix.package-manager }} to run build",
+      `Build step should use ${matrix.package - manager} to run build`,
     );
   });
 
