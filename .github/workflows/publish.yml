@@ -46,6 +46,9 @@ jobs:
       - name: Run Tests
         run: pnpm test
 
+      - name: Build package
+        run: pnpm build
+
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"

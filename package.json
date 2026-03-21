@@ -2,16 +2,14 @@
   "name": "create-next-quick",
   "version": "2.0.2",
   "description": "A CLI tool to quickly scaffold a Next.js project",
-  "main": "src/index.js",
-  "files": [
-    "src"
-  ],
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
+    "build": "rollup -c --environment BUILD:production",
+    "start": "node dist/index.js",
     "test": "mocha src/test/test.js && echo \"Tests passed successfully\" || (echo \"Tests failed\" && exit 1)",
     "test:interactive": "mocha src/test/interactive.test.js",
     "test:generate": "node src/test/generate-tests.js",
-    "start": "node src/index.js",
     "lint": "biome check . --write",
     "format": "biome format . --write",
     "prepare": "husky"
@@ -21,8 +19,11 @@
       "biome check . --write"
     ]
   },
+  "files": [
+    "dist"
+  ],
   "bin": {
-    "create-next-quick": "src/index.js"
+    "create-next-quick": "dist/index.js"
   },
   "keywords": [
     "next.js",
@@ -47,9 +48,13 @@
   "homepage": "https://gaureshpai.github.io/create-next-quick/",
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",
+    "@rollup/plugin-alias": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
     "husky": "^9.1.7",
     "inquirer-test": "^2.0.1",
+    "lint-staged": "^16.2.7",
     "mocha": "^11.0.0",
-    "lint-staged": "^16.2.7"
+    "rollup": "^4.59.1"
   }
 }
