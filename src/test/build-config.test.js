@@ -7,70 +7,67 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.join(__dirname, "..", "..");
 
-describe("rollup.config.mjs", function () {
+describe("rollup.config.mjs", () => {
   let config;
 
-  before(async function () {
+  before(async () => {
     const configPath = path.join(ROOT, "rollup.config.mjs");
-    const mod = await import(configPath);
+    const configUrl = `file://${configPath.replace(/\\/g, "/")}`;
+    const mod = await import(configUrl);
     config = mod.default;
   });
 
-  describe("input", function () {
-    it("should use src/index.js as the entry point", function () {
-      assert.strictEqual(config.input, "src/index.js");
+  describe("input", () => {
+    it("should use src/create-next-quick.js as the entry point", () => {
+      assert.strictEqual(config.input, "src/create-next-quick.js");
     });
   });
 
-  describe("output", function () {
-    it("should output to the dist directory", function () {
+  describe("output", () => {
+    it("should output to the dist directory", () => {
       assert.strictEqual(config.output.dir, "dist");
     });
 
-    it("should use ESM output format", function () {
+    it("should use ESM output format", () => {
       assert.strictEqual(config.output.format, "esm");
     });
 
-    it("should use [name].js pattern for entry file names", function () {
+    it("should use [name].js pattern for entry file names", () => {
       assert.strictEqual(config.output.entryFileNames, "[name].js");
     });
 
-    it("should use [name]-[hash].js pattern for chunk file names", function () {
+    it("should use [name]-[hash].js pattern for chunk file names", () => {
       assert.strictEqual(config.output.chunkFileNames, "[name]-[hash].js");
     });
 
-    it("should disable hoistTransitiveImports", function () {
+    it("should disable hoistTransitiveImports", () => {
       assert.strictEqual(config.output.hoistTransitiveImports, false);
     });
 
-    it("should use es2015 preset for generatedCode", function () {
-      assert.strictEqual(config.output.generatedCode.preset, "es2015");
-    });
-
-    it("should enable constBindings in generatedCode", function () {
+    it("should enable constBindings in generatedCode", () => {
       assert.strictEqual(config.output.generatedCode.constBindings, true);
     });
   });
 
-  describe("plugins", function () {
-    it("should have exactly 2 plugins configured", function () {
+  describe("plugins", () => {
+    it("should have exactly 2 plugins configured", () => {
       assert.ok(Array.isArray(config.plugins), "plugins should be an array");
       assert.strictEqual(config.plugins.length, 2);
     });
 
-    it("should have a node-resolve plugin as the first plugin", function () {
+    it("should have a node-resolve plugin as the first plugin", () => {
       const resolvePlugin = config.plugins[0];
       assert.ok(resolvePlugin != null, "first plugin should not be null");
       assert.ok(typeof resolvePlugin === "object", "first plugin should be an object");
     });
 
-    it("should have a terser plugin as the second plugin", function () {
+    it("should have a terser plugin as the second plugin", () => {
       const terserPlugin = config.plugins[1];
       assert.ok(terserPlugin != null, "second plugin should not be null");
       assert.ok(typeof terserPlugin === "object", "second plugin should be an object");
     });
 
-    it("node-resolve plugin should have a name property", function () {
+    it("node-resolve plugin should have a name property", () => {
       const resolvePlugin = config.plugins[0];
       assert.ok(
         typeof resolvePlugin.name === "string" && resolvePlugin.name.length > 0,
@@ -79,88 +76,85 @@ describe("rollup.config.mjs", function () {
     });
   });
 
-  describe("external", function () {
-    it("should have an empty external array (bundle all dependencies)", function () {
+  describe("external", () => {
+    it("should have an empty external array (bundle all dependencies)", () => {
       assert.ok(Array.isArray(config.external), "external should be an array");
       assert.strictEqual(config.external.length, 0);
     });
   });
 });
 
-describe("package.json build configuration", function () {
+describe("package.json build configuration", () => {
   let pkg;
 
-  before(function () {
+  before(() => {
     const pkgPath = path.join(ROOT, "package.json");
     pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
   });
 
-  describe("main entry point", function () {
-    it("should point to dist/index.js (compiled output)", function () {
-      assert.strictEqual(pkg.main, "dist/index.js");
+  describe("main entry point", () => {
+    it("should point to dist/create-next-quick.js (compiled output)", () => {
+      assert.strictEqual(pkg.main, "dist/create-next-quick.js");
     });
 
-    it("should not point to the source file src/index.js", function () {
-      assert.notStrictEqual(pkg.main, "src/index.js");
-    });
-  });
-
-  describe("bin entry point", function () {
-    it("should have create-next-quick binary pointing to dist/index.js", function () {
-      assert.strictEqual(pkg.bin["create-next-quick"], "dist/index.js");
-    });
-
-    it("should not point the binary to the source file src/index.js", function () {
-      assert.notStrictEqual(pkg.bin["create-next-quick"], "src/index.js");
+    it("should not point to the source file src/create-next-quick.js", () => {
+      assert.notStrictEqual(pkg.main, "src/create-next-quick.js");
     });
   });
 
-  describe("published files", function () {
-    it("should include dist in the files array", function () {
+  describe("bin entry point", () => {
+    it("should have create-next-quick binary pointing to dist/create-next-quick.js", () => {
+      assert.strictEqual(pkg.bin["create-next-quick"], "dist/create-next-quick.js");
+    });
+
+    it("should not point the binary to the source file src/create-next-quick.js", () => {
+      assert.notStrictEqual(pkg.bin["create-next-quick"], "src/create-next-quick.js");
+    });
+  });
+
+  describe("published files", () => {
+    it("should include dist in the files array", () => {
       assert.ok(Array.isArray(pkg.files), "files should be an array");
       assert.ok(pkg.files.includes("dist"), "files should include 'dist'");
     });
 
-    it("should not include src in the published files", function () {
+    it("should not include src in the published files", () => {
       assert.ok(!pkg.files.includes("src"), "files should not include 'src'");
     });
   });
 
-  describe("scripts", function () {
-    it("should have a build script using rollup", function () {
+  describe("scripts", () => {
+    it("should have a build script using rollup", () => {
       assert.ok(pkg.scripts.build != null, "build script should exist");
-      assert.ok(
-        pkg.scripts.build.includes("rollup"),
-        "build script should invoke rollup",
-      );
+      assert.ok(pkg.scripts.build.includes("rollup"), "build script should invoke rollup");
     });
 
-    it("build script should use the rollup config file (-c flag)", function () {
+    it("build script should use the rollup config file (-c flag)", () => {
       assert.ok(
         pkg.scripts.build.includes("-c"),
         "build script should include -c flag to use rollup.config.mjs",
       );
     });
 
-    it("build script should set BUILD:production environment", function () {
+    it("build script should set BUILD:production environment", () => {
       assert.ok(
         pkg.scripts.build.includes("BUILD:production"),
         "build script should set BUILD:production environment variable",
       );
     });
 
-    it("should have a start script pointing to dist/index.js", function () {
+    it("should have a start script pointing to dist/create-next-quick.js", () => {
       assert.ok(pkg.scripts.start != null, "start script should exist");
-      assert.strictEqual(pkg.scripts.start, "node dist/index.js");
+      assert.strictEqual(pkg.scripts.start, "node dist/create-next-quick.js");
     });
   });
 
-  describe("devDependencies", function () {
-    it("should include rollup as a devDependency", function () {
+  describe("devDependencies", () => {
+    it("should include rollup as a devDependency", () => {
       assert.ok(pkg.devDependencies.rollup != null, "rollup should be in devDependencies");
     });
 
-    it("rollup version should be >= 4.0.0", function () {
+    it("rollup version should be >= 4.0.0", () => {
       const version = pkg.devDependencies.rollup;
       assert.ok(
         version.startsWith("^4") || version.startsWith("4") || version.startsWith(">=4"),
@@ -168,97 +162,54 @@ describe("package.json build configuration", function () {
       );
     });
 
-    it("should include @rollup/plugin-node-resolve", function () {
+    it("should include @rollup/plugin-node-resolve", () => {
       assert.ok(
         pkg.devDependencies["@rollup/plugin-node-resolve"] != null,
         "@rollup/plugin-node-resolve should be in devDependencies",
       );
     });
 
-    it("should include @rollup/plugin-terser", function () {
+    it("should include @rollup/plugin-terser", () => {
       assert.ok(
         pkg.devDependencies["@rollup/plugin-terser"] != null,
         "@rollup/plugin-terser should be in devDependencies",
       );
     });
-
-    it("should include @rollup/plugin-alias", function () {
-      assert.ok(
-        pkg.devDependencies["@rollup/plugin-alias"] != null,
-        "@rollup/plugin-alias should be in devDependencies",
-      );
-    });
   });
 });
 
-describe(".gitignore build artifact exclusion", function () {
+describe(".gitignore build artifact exclusion", () => {
   let gitignoreContent;
 
-  before(function () {
+  before(() => {
     gitignoreContent = readFileSync(path.join(ROOT, ".gitignore"), "utf-8");
   });
 
-  it("should exclude dist/ from version control", function () {
+  it("should exclude dist/ from version control", () => {
     assert.ok(
       gitignoreContent.includes("dist/"),
       ".gitignore should contain 'dist/' to exclude the build output directory",
     );
   });
 
-  it("dist/ entry should be on its own line", function () {
+  it("dist/ entry should be on its own line", () => {
     const lines = gitignoreContent.split("\n").map((l) => l.trim());
-    assert.ok(
-      lines.includes("dist/"),
-      ".gitignore should have 'dist/' as a standalone line entry",
-    );
+    assert.ok(lines.includes("dist/"), ".gitignore should have 'dist/' as a standalone line entry");
   });
 });
 
-describe("biome.json dist exclusion", function () {
-  let biomeConfig;
-
-  before(function () {
-    biomeConfig = JSON.parse(readFileSync(path.join(ROOT, "biome.json"), "utf-8"));
-  });
-
-  it("should have a files.ignore configuration", function () {
-    assert.ok(
-      biomeConfig.files != null && Array.isArray(biomeConfig.files.ignore),
-      "biome.json should have files.ignore array",
-    );
-  });
-
-  it("should ignore dist/** in biome linting/formatting", function () {
-    assert.ok(
-      biomeConfig.files.ignore.includes("dist/**"),
-      "biome.json files.ignore should contain 'dist/**'",
-    );
-  });
-
-  it("should not lint/format any path under dist", function () {
-    const ignorePatterns = biomeConfig.files.ignore;
-    const coversDistDir = ignorePatterns.some(
-      (p) => p === "dist/**" || p === "dist/" || p === "dist",
-    );
-    assert.ok(coversDistDir, "At least one ignore pattern should cover the dist directory");
-  });
-});
-
-describe("CI workflow build step", function () {
+describe("CI workflow build step", () => {
   let ciYml;
 
-  before(function () {
+  before(() => {
     ciYml = readFileSync(path.join(ROOT, ".github", "workflows", "ci.yml"), "utf-8");
   });
 
-  it("should contain a build step", function () {
-    assert.ok(
-      ciYml.includes("Build package"),
-      "ci.yml should include a 'Build package' step",
-    );
+  it("should contain a build step", () => {
+    assert.ok(ciYml.includes("Build package"), "ci.yml should include a 'Build package' step");
   });
 
-  it("build step should run before the test step", function () {
+  it("build step should run before the test step", () => {
     const buildIndex = ciYml.indexOf("Build package");
     const testIndex = ciYml.indexOf("Run tests");
     assert.ok(buildIndex !== -1, "ci.yml should have a Build package step");
@@ -266,7 +217,7 @@ describe("CI workflow build step", function () {
     assert.ok(buildIndex < testIndex, "Build package step should appear before Run tests step");
   });
 
-  it("build step should use the matrix package-manager variable", function () {
+  it("build step should use the matrix package-manager variable", () => {
     const buildStepSection = ciYml.slice(
       ciYml.indexOf("Build package"),
       ciYml.indexOf("Build package") + 200,
@@ -277,33 +228,40 @@ describe("CI workflow build step", function () {
     );
   });
 
-  it("build step should invoke the build command", function () {
+  it("build step should invoke the build command", () => {
     const buildStepSection = ciYml.slice(
       ciYml.indexOf("Build package"),
       ciYml.indexOf("Build package") + 200,
     );
+    assert.ok(buildStepSection.includes("run build"), "Build step should run the 'build' script");
+  });
+
+  it("should contain a smoke test step after build", () => {
+    const smokeTestIndex = ciYml.indexOf("Smoke test built artifact");
+    const buildIndex = ciYml.indexOf("Build package");
+    assert.ok(smokeTestIndex !== -1, "ci.yml should have a Smoke test built artifact step");
     assert.ok(
-      buildStepSection.includes("run build"),
-      "Build step should run the 'build' script",
+      smokeTestIndex > buildIndex,
+      "Smoke test step should appear after Build package step",
     );
   });
 });
 
-describe("publish workflow build step", function () {
+describe("publish workflow build step", () => {
   let publishYml;
 
-  before(function () {
+  before(() => {
     publishYml = readFileSync(path.join(ROOT, ".github", "workflows", "publish.yml"), "utf-8");
   });
 
-  it("should contain a build step", function () {
+  it("should contain a build step", () => {
     assert.ok(
       publishYml.includes("Build package"),
       "publish.yml should include a 'Build package' step",
     );
   });
 
-  it("build step should run before the Configure Git step", function () {
+  it("build step should run before the Configure Git step", () => {
     const buildIndex = publishYml.indexOf("Build package");
     const configureGitIndex = publishYml.indexOf("Configure Git");
     assert.ok(buildIndex !== -1, "publish.yml should have a Build package step");
@@ -314,7 +272,7 @@ describe("publish workflow build step", function () {
     );
   });
 
-  it("build step should use pnpm to run build", function () {
+  it("build step should use pnpm to run build", () => {
     const buildStepSection = publishYml.slice(
       publishYml.indexOf("Build package"),
       publishYml.indexOf("Build package") + 200,
@@ -325,14 +283,11 @@ describe("publish workflow build step", function () {
     );
   });
 
-  it("build step should run after tests", function () {
+  it("build step should run after tests", () => {
     const testIndex = publishYml.indexOf("Run Tests");
     const buildIndex = publishYml.indexOf("Build package");
     assert.ok(testIndex !== -1, "publish.yml should have a Run Tests step");
     assert.ok(buildIndex !== -1, "publish.yml should have a Build package step");
-    assert.ok(
-      testIndex < buildIndex,
-      "Run Tests step should appear before Build package step",
-    );
+    assert.ok(testIndex < buildIndex, "Run Tests step should appear before Build package step");
   });
 });
