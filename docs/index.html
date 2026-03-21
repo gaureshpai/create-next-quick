@@ -1,360 +1,477 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>create-next-quick Docs</title>
-    <meta name="description"
-        content="create-next-quick: Bootstrap your Next.js project in seconds with your preferred setup.">
-    <meta name="keywords"
-        content="create-next-quick, Next.js, project scaffolding, CLI tool, TypeScript, Tailwind CSS, Prisma, Drizzle, ESLint, Biome, Shadcn UI">
-    <meta name="author" content="Gauresh Pai">
-    <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#ffffff">
-    <meta property="og:title" content="create-next-quick Docs">
-    <meta property="og:description"
-        content="create-next-quick: Bootstrap your Next.js project in seconds with your preferred setup.">
-    <meta property="og:image" content="https://gaureshpai.github.io/create-next-quick/logo.png">
-    <meta property="og:url" content="https://gaureshpai.github.io/create-next-quick/">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="create-next-quick Docs">
-    <meta name="twitter:description"
-        content="create-next-quick: Bootstrap your Next.js project in seconds with your preferred setup.">
-    <meta name="twitter:image" content="https://gaureshpai.github.io/create-next-quick/logo.png">
-    <link rel="icon" type="image/png" sizes="32x32"
-        href="https://gaureshpai.github.io/create-next-quick/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16"
-        href="https://gaureshpai.github.io/create-next-quick/favicon-16x16.png">
-    <link rel="apple-touch-icon" href="https://gaureshpai.github.io/create-next-quick/apple-touch-icon.png">
-    <link rel="manifest" href="https://gaureshpai.github.io/create-next-quick/site.webmanifest">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap">
-    <link rel="stylesheet" href="style.css">
-</head>
+    <meta
+      name="description"
+      content="create-next-quick: Bootstrap your Next.js project in seconds with your preferred setup."
+    />
+    <meta
+      name="keywords"
+      content="create-next-quick, Next.js, project scaffolding, CLI tool, TypeScript, Tailwind CSS, Prisma, Drizzle, ESLint, Biome, Shadcn UI"
+    />
+    <meta name="author" content="Gauresh Pai" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:title" content="create-next-quick Docs" />
+    <meta
+      property="og:description"
+      content="create-next-quick: Bootstrap your Next.js project in seconds with your preferred setup."
+    />
+    <meta
+      property="og:image"
+      content="https://gaureshpai.github.io/create-next-quick/logo.png"
+    />
+    <meta
+      property="og:url"
+      content="https://gaureshpai.github.io/create-next-quick/"
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="create-next-quick Docs" />
+    <meta
+      name="twitter:description"
+      content="create-next-quick: Bootstrap your Next.js project in seconds with your preferred setup."
+    />
+    <meta
+      name="twitter:image"
+      content="https://gaureshpai.github.io/create-next-quick/logo.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="https://gaureshpai.github.io/create-next-quick/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="https://gaureshpai.github.io/create-next-quick/favicon-16x16.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://gaureshpai.github.io/create-next-quick/apple-touch-icon.png"
+    />
+    <link
+      rel="manifest"
+      href="https://gaureshpai.github.io/create-next-quick/site.webmanifest"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
     <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <img src="logo.png" alt="create-next-quick" class="logo-image">
-                <span class="logo-text">create-next-quick</span>
-            </div>
-            <button class="hamburger-menu" id="hamburger-menu" aria-label="Toggle navigation">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <nav class="header-nav" id="main-nav">
-                <ul>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#usage">Usage</a></li>
-                    <li><a href="#contributing">Contributing</a></li>
-                </ul>
-            </nav>
+      <div class="header-content">
+        <div class="logo-section">
+          <img src="logo.png" alt="create-next-quick" class="logo-image" />
+          <span class="logo-text">create-next-quick</span>
         </div>
+        <button
+          class="hamburger-menu"
+          id="hamburger-menu"
+          aria-label="Toggle navigation"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="header-nav" id="main-nav">
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#usage">Usage</a></li>
+            <li><a href="#contributing">Contributing</a></li>
+          </ul>
+        </nav>
+      </div>
     </header>
 
     <div class="main-wrapper">
-        <main class="content">
-            <section id="hero" class="hero-section">
-                <h1>create-next-quick</h1>
-                <p class="subtitle">Bootstrap your Next.js project in seconds with your preferred setup</p>
-                <div class="badges">
-                    <a target="_blank" href="https://www.npmjs.com/package/create-next-quick">
-                        <img src="https://img.shields.io/npm/v/create-next-quick.svg" alt="npm version">
-                    </a>
-                    <a target="_blank" href="https://github.com/gaureshpai/create-next-quick/blob/main/LICENSE">
-                        <img src="https://img.shields.io/npm/l/create-next-quick.svg" alt="license">
-                    </a>
-                    <a target="_blank" href="https://www.npmjs.com/package/create-next-quick">
-                        <img src="https://img.shields.io/npm/dt/create-next-quick.svg" alt="npm downloads">
-                    </a>
-                    <a target="_blank" href="https://github.com/gaureshpai/create-next-quick">
-                        <img src="https://img.shields.io/github/stars/gaureshpai/create-next-quick?style=social"
-                            alt="github stars">
-                    </a>
-                    <a target="_blank" href="https://www.npmjs.com/package/create-next-quick">
-                        <img src="https://img.shields.io/badge/npm-create--next--quick-cb3837.svg" alt="npm package">
-                    </a>
-                    <a target="_blank" href="https://github.com/gaureshpai/create-next-quick">
-                        <img src="https://img.shields.io/badge/github-repo-181717.svg" alt="github repository">
-                    </a>
-                    <a target="_blank" href="https://patreon.com/gaureshpai">
-                        <img src="https://img.shields.io/badge/sponsor-Patreon-F96854.svg" alt="patreon sponsor">
-                    </a>
-                </div>
-            </section>
+      <main class="content">
+        <section id="hero" class="hero-section">
+          <h1>create-next-quick</h1>
+          <p class="subtitle">
+            Bootstrap your Next.js project in seconds with your preferred setup
+          </p>
+          <div class="badges">
+            <a
+              target="_blank"
+              href="https://www.npmjs.com/package/create-next-quick"
+            >
+              <img
+                src="https://img.shields.io/npm/v/create-next-quick.svg"
+                alt="npm version"
+              />
+            </a>
+            <a
+              target="_blank"
+              href="https://github.com/gaureshpai/create-next-quick/blob/main/LICENSE"
+            >
+              <img
+                src="https://img.shields.io/npm/l/create-next-quick.svg"
+                alt="license"
+              />
+            </a>
+            <a
+              target="_blank"
+              href="https://www.npmjs.com/package/create-next-quick"
+            >
+              <img
+                src="https://img.shields.io/npm/dt/create-next-quick.svg"
+                alt="npm downloads"
+              />
+            </a>
+            <a
+              target="_blank"
+              href="https://github.com/gaureshpai/create-next-quick"
+            >
+              <img
+                src="https://img.shields.io/github/stars/gaureshpai/create-next-quick?style=social"
+                alt="github stars"
+              />
+            </a>
+            <a
+              target="_blank"
+              href="https://www.npmjs.com/package/create-next-quick"
+            >
+              <img
+                src="https://img.shields.io/badge/npm-create--next--quick-cb3837.svg"
+                alt="npm package"
+              />
+            </a>
+            <a
+              target="_blank"
+              href="https://github.com/gaureshpai/create-next-quick"
+            >
+              <img
+                src="https://img.shields.io/badge/github-repo-181717.svg"
+                alt="github repository"
+              />
+            </a>
+            <a target="_blank" href="https://patreon.com/gaureshpai">
+              <img
+                src="https://img.shields.io/badge/sponsor-Patreon-F96854.svg"
+                alt="patreon sponsor"
+              />
+            </a>
+          </div>
+        </section>
 
-            <section id="why">
-                <h2>Why create-next-quick?</h2>
-                <p>
-                    <code>create-next-quick</code> is a powerful, lightweight alternative to
-                    <code>create-next-app</code>, designed for developers who want more control and speed right from the
-                    start.
-                </p>
-                <div class="comparison-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Feature</th>
-                                <th><code>create-next-quick</code></th>
-                                <th><code>create-next-app</code></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Multi-page Generation</strong></td>
-                                <td>✅ Yes (e.g., <code>home, about, contact</code>)</td>
-                                <td>❌ No</td>
-                            </tr>
-                            <tr>
-                                <td><strong>ORM Support</strong></td>
-                                <td>✅ Yes (Prisma, Drizzle)</td>
-                                <td>❌ No</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Linter Choice</strong></td>
-                                <td>✅ Yes (ESLint, Biome)</td>
-                                <td>❌ ESLint only</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Shadcn UI Auto-Setup</strong></td>
-                                <td>✅ Yes (non-interactive)</td>
-                                <td>❌ No</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Clean Project Start</strong></td>
-                                <td>✅ Yes (removes boilerplate & default assets)</td>
-                                <td>❌ No</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Package Manager Detection</strong></td>
-                                <td>✅ Yes (npm, yarn, pnpm)</td>
-                                <td>✅ Yes</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Robust Error Handling</strong></td>
-                                <td>✅ Yes (retries, cleanup, clear tips)</td>
-                                <td>❌ Basic</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+        <section id="why">
+          <h2>Why create-next-quick?</h2>
+          <p>
+            <code>create-next-quick</code> is a powerful, lightweight
+            alternative to <code>create-next-app</code>, designed for developers
+            who want more control and speed right from the start.
+          </p>
+          <div class="comparison-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th><code>create-next-quick</code></th>
+                  <th><code>create-next-app</code></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Multi-page Generation</strong></td>
+                  <td>✅ Yes (e.g., <code>home, about, contact</code>)</td>
+                  <td>❌ No</td>
+                </tr>
+                <tr>
+                  <td><strong>ORM Support</strong></td>
+                  <td>✅ Yes (Prisma, Drizzle)</td>
+                  <td>❌ No</td>
+                </tr>
+                <tr>
+                  <td><strong>Linter Choice</strong></td>
+                  <td>✅ Yes (ESLint, Biome)</td>
+                  <td>❌ ESLint only</td>
+                </tr>
+                <tr>
+                  <td><strong>Shadcn UI Auto-Setup</strong></td>
+                  <td>✅ Yes (non-interactive)</td>
+                  <td>❌ No</td>
+                </tr>
+                <tr>
+                  <td><strong>Clean Project Start</strong></td>
+                  <td>✅ Yes (removes boilerplate & default assets)</td>
+                  <td>❌ No</td>
+                </tr>
+                <tr>
+                  <td><strong>Package Manager Detection</strong></td>
+                  <td>✅ Yes (npm, yarn, pnpm)</td>
+                  <td>✅ Yes</td>
+                </tr>
+                <tr>
+                  <td><strong>Robust Error Handling</strong></td>
+                  <td>✅ Yes (retries, cleanup, clear tips)</td>
+                  <td>❌ Basic</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-            <section id="features">
-                <h2>Features</h2>
-                <div class="features-grid">
-                    <div class="feature-item">
-                        <h3>Project Scaffolding</h3>
-                        <ul>
-                            <li>
-                                <strong>CLI Argument for Project Name</strong>: Skip the project name prompt by passing
-                                it as an argument.
-                            </li>
-                            <li>
-                                <strong>Custom Page Generation</strong>: Create multiple pages at once from the CLI.
-                            </li>
-                            <li>
-                                <strong>Clean Project Setup</strong>: Automatically removes the default favicon, clears
-                                the public folder, and provides a clean <code>page.tsx</code> and
-                                <code>layout.tsx</code>.
-                            </li>
-                            <li>
-                                <strong>Safe Project Creation</strong>: Prevents accidental overwrites by checking if
-                                the target directory is empty.
-                            </li>
-                            <li>
-                                <strong>Conditional API Route Deletion</strong>: Removes the default
-                                <code>hello.js</code>
-                                API route when not needed.
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="feature-item">
-                        <h3>Tooling & Integrations</h3>
-                        <ul>
-                            <li>
-                                <strong>Package Manager Detection</strong>: Auto-detects <code>npm</code>,
-                                <code>yarn</code>, and <code>pnpm</code>.
-                            </li>
-                            <li><strong>Linter Support</strong>: Choose between ESLint, Biome, or no linter.</li>
-                            <li><strong>ORM Support</strong>: Integrated setup for Prisma or Drizzle.</li>
-                            <li>
-                                <strong>Shadcn UI</strong>: Automatically installs and configures Shadcn UI
-                                non-interactively.
-                            </li>
-                            <li>
-                                <strong>TypeScript CSS Module Support</strong>: Generates <code>global.d.ts</code> to
-                                provide type declarations for CSS imports.
-                            </li>
-                            <li>
-                                <strong>Authentication</strong>: Integrated setup for <strong>NextAuth.js</strong>,
-                                <strong>Clerk</strong>, or <strong>Lucia</strong> with middleware and API routes.
-                            </li>
-                            <li>
-                                <strong>Testing</strong>: Ready-to-use configuration for <strong>Vitest</strong> or
-                                <strong>Jest</strong> with React Testing Library.
-                            </li>
-                            <li>
-                                <strong>Docker</strong>: Auto-generated <code>Dockerfile</code> and
-                                <code>.dockerignore</code> for containerized deployments.
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="feature-item">
-                        <h3>Developer Experience</h3>
-                        <ul>
-                            <li>
-                                <strong>Robust Error Handling</strong>: Automatic retries for failed installs,
-                                intelligent cleanup of incomplete projects, and actionable troubleshooting tips.
-                            </li>
-                            <li>
-                                <strong>Automated CI/CD Feedback</strong>: Get automated comments on the test status of
-                                your Pull Requests.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+        <section id="features">
+          <h2>Features</h2>
+          <div class="features-grid">
+            <div class="feature-item">
+              <h3>Project Scaffolding</h3>
+              <ul>
+                <li>
+                  <strong>CLI Argument for Project Name</strong>: Skip the
+                  project name prompt by passing it as an argument.
+                </li>
+                <li>
+                  <strong>Custom Page Generation</strong>: Create multiple pages
+                  at once from the CLI.
+                </li>
+                <li>
+                  <strong>Clean Project Setup</strong>: Automatically removes
+                  the default favicon, clears the public folder, and provides a
+                  clean <code>page.tsx</code> and <code>layout.tsx</code>.
+                </li>
+                <li>
+                  <strong>Safe Project Creation</strong>: Prevents accidental
+                  overwrites by checking if the target directory is empty.
+                </li>
+                <li>
+                  <strong>Conditional API Route Deletion</strong>: Removes the
+                  default
+                  <code>hello.js</code>
+                  API route when not needed.
+                </li>
+              </ul>
+            </div>
+            <div class="feature-item">
+              <h3>Tooling & Integrations</h3>
+              <ul>
+                <li>
+                  <strong>Package Manager Detection</strong>: Auto-detects
+                  <code>npm</code>, <code>yarn</code>, and <code>pnpm</code>.
+                </li>
+                <li>
+                  <strong>Linter Support</strong>: Choose between ESLint, Biome,
+                  or no linter.
+                </li>
+                <li>
+                  <strong>ORM Support</strong>: Integrated setup for Prisma or
+                  Drizzle.
+                </li>
+                <li>
+                  <strong>Shadcn UI</strong>: Automatically installs and
+                  configures Shadcn UI non-interactively.
+                </li>
+                <li>
+                  <strong>TypeScript CSS Module Support</strong>: Generates
+                  <code>global.d.ts</code> to provide type declarations for CSS
+                  imports.
+                </li>
+                <li>
+                  <strong>Authentication</strong>: Integrated setup for
+                  <strong>NextAuth.js</strong>, <strong>Clerk</strong>, or
+                  <strong>Lucia</strong> with middleware and API routes.
+                </li>
+                <li>
+                  <strong>Testing</strong>: Ready-to-use configuration for
+                  <strong>Vitest</strong> or <strong>Jest</strong> with React
+                  Testing Library.
+                </li>
+                <li>
+                  <strong>Docker</strong>: Auto-generated
+                  <code>Dockerfile</code> and <code>.dockerignore</code> for
+                  containerized deployments.
+                </li>
+              </ul>
+            </div>
+            <div class="feature-item">
+              <h3>Developer Experience</h3>
+              <ul>
+                <li>
+                  <strong>Robust Error Handling</strong>: Automatic retries for
+                  failed installs, intelligent cleanup of incomplete projects,
+                  and actionable troubleshooting tips.
+                </li>
+                <li>
+                  <strong>Automated CI/CD Feedback</strong>: Get automated
+                  comments on the test status of your Pull Requests.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
-            <section id="usage">
-                <h2>Usage</h2>
-                <p>No global installation is needed. Run it instantly with <code>npx</code>:</p>
-                <div class="code-block">
-                    <code>npx create-next-quick [project-name]</code>
-                    <button class="copy-btn" data-code="npx create-next-quick [project-name]">
-                        <span class="copy-icon">📋</span>
-                        <span class="copy-text">Copy</span>
-                    </button>
-                </div>
-                <p>
-                    If you omit <code>[project-name]</code>, the tool will prompt you for it. Use <code>.</code> to
-                    create in the current directory (must be empty).
-                </p>
+        <section id="usage">
+          <h2>Usage</h2>
+          <p>
+            No global installation is needed. Run it instantly with
+            <code>npx</code>:
+          </p>
+          <div class="code-block">
+            <code>npx create-next-quick [project-name]</code>
+            <button
+              class="copy-btn"
+              data-code="npx create-next-quick [project-name]"
+            >
+              <span class="copy-icon">📋</span>
+              <span class="copy-text">Copy</span>
+            </button>
+          </div>
+          <p>
+            If you omit <code>[project-name]</code>, the tool will prompt you
+            for it. Use <code>.</code> to create in the current directory (must
+            be empty).
+          </p>
 
-                <h3>Other Flags</h3>
-                <ul>
-                    <li><code>-v, --version</code>: Display the version number</li>
-                    <li><code>-h, --help</code>: Display the help message</li>
-                </ul>
+          <h3>Other Flags</h3>
+          <ul>
+            <li><code>-v, --version</code>: Display the version number</li>
+            <li><code>-h, --help</code>: Display the help message</li>
+          </ul>
 
-                <h3>Interactive Mode (for existing projects)</h3>
-                <p>
-                    Already have a Next.js project? Use the <code>-i</code> or <code>--interactive</code> flag to run
-                    <code>create-next-quick</code> on your existing project and add new features without starting from
-                    scratch.
-                </p>
-                <div class="code-block">
-                    <code>npx create-next-quick -i</code>
-                    <button class="copy-btn" data-code="npx create-next-quick -i">
-                        <span class="copy-icon">📋</span>
-                        <span class="copy-text">Copy</span>
-                    </button>
-                </div>
-                <p>When you run in interactive mode, the tool will:</p>
-                <ol>
-                    <li>
-                        <strong>Detect Your Project's Setup</strong>: It automatically detects if you're using
-                        TypeScript, the <code>src</code> directory, the <code>app</code> directory, and Tailwind CSS.
-                    </li>
-                    <li>
-                        <strong>Skip Project Creation</strong>: It will not run <code>create-next-app</code> or remove
-                        any existing files.
-                    </li>
-                    <li>
-                        <strong>Prompt for Additions</strong>: It will only ask you what you want to <em>add</em> to
-                        your project, such as new pages, a linter, an ORM, or Shadcn UI.
-                    </li>
-                </ol>
-                <p>
-                    This is perfect for when you want to add a new feature to your project and want to use the same
-                    streamlined setup process.
-                </p>
+          <h3>Interactive Mode (for existing projects)</h3>
+          <p>
+            Already have a Next.js project? Use the <code>-i</code> or
+            <code>--interactive</code> flag to run
+            <code>create-next-quick</code> on your existing project and add new
+            features without starting from scratch.
+          </p>
+          <div class="code-block">
+            <code>npx create-next-quick -i</code>
+            <button class="copy-btn" data-code="npx create-next-quick -i">
+              <span class="copy-icon">📋</span>
+              <span class="copy-text">Copy</span>
+            </button>
+          </div>
+          <p>When you run in interactive mode, the tool will:</p>
+          <ol>
+            <li>
+              <strong>Detect Your Project's Setup</strong>: It automatically
+              detects if you're using TypeScript, the
+              <code>src</code> directory, the <code>app</code> directory, and
+              Tailwind CSS.
+            </li>
+            <li>
+              <strong>Skip Project Creation</strong>: It will not run
+              <code>create-next-app</code> or remove any existing files.
+            </li>
+            <li>
+              <strong>Prompt for Additions</strong>: It will only ask you what
+              you want to <em>add</em> to your project, such as new pages, a
+              linter, an ORM, or Shadcn UI.
+            </li>
+          </ol>
+          <p>
+            This is perfect for when you want to add a new feature to your
+            project and want to use the same streamlined setup process.
+          </p>
 
-                <h3>Interactive Prompts</h3>
-                <p>The CLI will guide you through the following options:</p>
-                <div class="comparison-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Prompt</th>
-                                <th>Description</th>
-                                <th>Default</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Package Manager</strong></td>
-                                <td>Auto-detects installed <code>npm</code>, <code>yarn</code>, <code>pnpm</code></td>
-                                <td><code>pnpm</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>TypeScript</strong></td>
-                                <td>Use TypeScript for type safety</td>
-                                <td><code>Yes</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Tailwind CSS</strong></td>
-                                <td>Use Tailwind CSS for styling</td>
-                                <td><code>Yes</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong><code>src/</code> Directory</strong></td>
-                                <td>Use the <code>src/</code> directory for project structure</td>
-                                <td><code>Yes</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>App Router</strong></td>
-                                <td>Use the Next.js App Router</td>
-                                <td><code>Yes</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Pages</strong></td>
-                                <td>Enter page names to create (comma-separated)</td>
-                                <td><code>none</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Linter</strong></td>
-                                <td>Choose a linter (<code>ESLint</code>, <code>Biome</code>)</td>
-                                <td><code>none</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>ORM</strong></td>
-                                <td>Choose an ORM (<code>Prisma</code>, <code>Drizzle</code>)</td>
-                                <td><code>none</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Shadcn UI</strong></td>
-                                <td>Automatically install and set up Shadcn UI</td>
-                                <td><code>Yes</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Testing</strong></td>
-                                <td>Choose a testing framework (<code>Vitest</code>, <code>Jest</code>)</td>
-                                <td><code>none</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Authentication</strong></td>
-                                <td>Choose auth solution (<code>NextAuth</code>, <code>Clerk</code>, <code>Lucia</code>)</td>
-                                <td><code>none</code></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Docker</strong></td>
-                                <td>Add Docker support with Dockerfile and .dockerignore</td>
-                                <td><code>No</code></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+          <h3>Interactive Prompts</h3>
+          <p>The CLI will guide you through the following options:</p>
+          <div class="comparison-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Prompt</th>
+                  <th>Description</th>
+                  <th>Default</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Package Manager</strong></td>
+                  <td>
+                    Auto-detects installed <code>npm</code>, <code>yarn</code>,
+                    <code>pnpm</code>
+                  </td>
+                  <td><code>pnpm</code></td>
+                </tr>
+                <tr>
+                  <td><strong>TypeScript</strong></td>
+                  <td>Use TypeScript for type safety</td>
+                  <td><code>Yes</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Tailwind CSS</strong></td>
+                  <td>Use Tailwind CSS for styling</td>
+                  <td><code>Yes</code></td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong><code>src/</code> Directory</strong>
+                  </td>
+                  <td>
+                    Use the <code>src/</code> directory for project structure
+                  </td>
+                  <td><code>Yes</code></td>
+                </tr>
+                <tr>
+                  <td><strong>App Router</strong></td>
+                  <td>Use the Next.js App Router</td>
+                  <td><code>Yes</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Pages</strong></td>
+                  <td>Enter page names to create (comma-separated)</td>
+                  <td><code>none</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Linter</strong></td>
+                  <td>
+                    Choose a linter (<code>ESLint</code>, <code>Biome</code>)
+                  </td>
+                  <td><code>none</code></td>
+                </tr>
+                <tr>
+                  <td><strong>ORM</strong></td>
+                  <td>
+                    Choose an ORM (<code>Prisma</code>, <code>Drizzle</code>)
+                  </td>
+                  <td><code>none</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Shadcn UI</strong></td>
+                  <td>Automatically install and set up Shadcn UI</td>
+                  <td><code>Yes</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Testing</strong></td>
+                  <td>
+                    Choose a testing framework (<code>Vitest</code>,
+                    <code>Jest</code>)
+                  </td>
+                  <td><code>none</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Authentication</strong></td>
+                  <td>
+                    Choose auth solution (<code>NextAuth</code>,
+                    <code>Clerk</code>, <code>Lucia</code>)
+                  </td>
+                  <td><code>none</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Docker</strong></td>
+                  <td>Add Docker support with Dockerfile and .dockerignore</td>
+                  <td><code>No</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-                <h3>Example Walkthrough</h3>
-                <div class="code-block">
-                    <pre><code>$ npx create-next-quick my-portfolio
+          <h3>Example Walkthrough</h3>
+          <div class="code-block">
+            <pre><code>$ npx create-next-quick my-portfolio
 ✔ Using default for package manager: pnpm
 ✔ Using default for TypeScript: Yes
 ✔ Using default for Tailwind CSS: Yes
@@ -364,119 +481,138 @@
 ✔ Using default for linter: none
 ✔ Using default for ORM: none
 ✔ Using default for Shadcn UI: Yes</code></pre>
-                </div>
-            </section>
+          </div>
+        </section>
 
-            <section id="prerequisites">
-                <h2>Prerequisites</h2>
-                <p>Before you begin, ensure you have the following installed:</p>
-                <ul>
-                    <li><strong>Node.js</strong>: <code>v20.0.0</code> or higher.</li>
-                </ul>
-            </section>
+        <section id="prerequisites">
+          <h2>Prerequisites</h2>
+          <p>Before you begin, ensure you have the following installed:</p>
+          <ul>
+            <li><strong>Node.js</strong>: <code>v20.0.0</code> or higher.</li>
+          </ul>
+        </section>
 
-            <section id="scripts">
-                <h2>Available Scripts</h2>
-                <p>Once your project is created, you can use the following commands:</p>
-                <div class="comparison-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><code>pnpm</code></th>
-                                <th><code>npm</code></th>
-                                <th><code>yarn</code></th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>pnpm dev</code></td>
-                                <td><code>npm run dev</code></td>
-                                <td><code>yarn dev</code></td>
-                                <td>Starts the development server.</td>
-                            </tr>
-                            <tr>
-                                <td><code>pnpm build</code></td>
-                                <td><code>npm run build</code></td>
-                                <td><code>yarn build</code></td>
-                                <td>Builds the app for production.</td>
-                            </tr>
-                            <tr>
-                                <td><code>pnpm start</code></td>
-                                <td><code>npm start</code></td>
-                                <td><code>yarn start</code></td>
-                                <td>Starts the production server.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+        <section id="scripts">
+          <h2>Available Scripts</h2>
+          <p>
+            Once your project is created, you can use the following commands:
+          </p>
+          <div class="comparison-table">
+            <table>
+              <thead>
+                <tr>
+                  <th><code>pnpm</code></th>
+                  <th><code>npm</code></th>
+                  <th><code>yarn</code></th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>pnpm dev</code></td>
+                  <td><code>npm run dev</code></td>
+                  <td><code>yarn dev</code></td>
+                  <td>Starts the development server.</td>
+                </tr>
+                <tr>
+                  <td><code>pnpm build</code></td>
+                  <td><code>npm run build</code></td>
+                  <td><code>yarn build</code></td>
+                  <td>Builds the app for production.</td>
+                </tr>
+                <tr>
+                  <td><code>pnpm start</code></td>
+                  <td><code>npm start</code></td>
+                  <td><code>yarn start</code></td>
+                  <td>Starts the production server.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-            <section id="testing">
-                <h2>Testing</h2>
-                <p>The test suite is dynamically generated to ensure comprehensive coverage.</p>
-                <ol>
-                    <li><strong>Generate Test Cases:</strong>
-                        <div class="code-block">
-                            <code>npm run test:generate</code>
-                            <button class="copy-btn" data-code="npm run test:generate">
-                                <span class="copy-icon">📋</span>
-                                <span class="copy-text">Copy</span>
-                            </button>
-                        </div>
-                    </li>
-                    <li><strong>Run Tests:</strong>
-                        <div class="code-block">
-                            <code>npm test</code>
-                            <button class="copy-btn" data-code="npm test">
-                                <span class="copy-icon">📋</span>
-                                <span class="copy-text">Copy</span>
-                            </button>
-                        </div>
-                    </li>
-                </ol>
-            </section>
+        <section id="testing">
+          <h2>Testing</h2>
+          <p>
+            The test suite is dynamically generated to ensure comprehensive
+            coverage.
+          </p>
+          <ol>
+            <li>
+              <strong>Generate Test Cases:</strong>
+              <div class="code-block">
+                <code>npm run test:generate</code>
+                <button class="copy-btn" data-code="npm run test:generate">
+                  <span class="copy-icon">📋</span>
+                  <span class="copy-text">Copy</span>
+                </button>
+              </div>
+            </li>
+            <li>
+              <strong>Run Tests:</strong>
+              <div class="code-block">
+                <code>npm test</code>
+                <button class="copy-btn" data-code="npm test">
+                  <span class="copy-icon">📋</span>
+                  <span class="copy-text">Copy</span>
+                </button>
+              </div>
+            </li>
+          </ol>
+        </section>
 
-            <section id="contributing">
-                <h2>Contributing</h2>
-                <p>
-                    Contributions are welcome! Please fork the repository, create a feature branch, and open a Pull
-                    Request.
-                </p>
-                <ol>
-                    <li>Fork the repository.</li>
-                    <li>Create a new branch: <code>git checkout -b feature/your-feature-name</code></li>
-                    <li>Commit your changes: <code>git commit -m "feat: Add some amazing feature"</code></li>
-                    <li>Push to the branch: <code>git push origin feature/your-feature-name</code></li>
-                    <li>Open a Pull Request.</li>
-                </ol>
-            </section>
+        <section id="contributing">
+          <h2>Contributing</h2>
+          <p>
+            Contributions are welcome! Please fork the repository, create a
+            feature branch, and open a Pull Request.
+          </p>
+          <ol>
+            <li>Fork the repository.</li>
+            <li>
+              Create a new branch:
+              <code>git checkout -b feature/your-feature-name</code>
+            </li>
+            <li>
+              Commit your changes:
+              <code>git commit -m "feat: Add some amazing feature"</code>
+            </li>
+            <li>
+              Push to the branch:
+              <code>git push origin feature/your-feature-name</code>
+            </li>
+            <li>Open a Pull Request.</li>
+          </ol>
+        </section>
 
-            <section id="support">
-                <h2>Show Your Support</h2>
-                <p>Give a ⭐️ if this project helped you!</p>
-            </section>
+        <section id="support">
+          <h2>Show Your Support</h2>
+          <p>Give a ⭐️ if this project helped you!</p>
+        </section>
 
-            <section id="license">
-                <h2>License</h2>
-                <p>
-                    This project is licensed under the MIT License. See the <a href="LICENSE">LICENSE</a> file for
-                    details.
-                </p>
-            </section>
+        <section id="license">
+          <h2>License</h2>
+          <p>
+            This project is licensed under the MIT License. See the
+            <a href="LICENSE">LICENSE</a> file for details.
+          </p>
+        </section>
 
-            <section id="contributors">
-                <h2>Contributors</h2>
-                <div class="contributors-section">
-                    <a href="https://github.com/gaureshpai/create-next-quick/graphs/contributors">
-                        <img src="https://contrib.rocks/image?repo=gaureshpai/create-next-quick" />
-                    </a>
-                </div>
-            </section>
-        </main>
+        <section id="contributors">
+          <h2>Contributors</h2>
+          <div class="contributors-section">
+            <a
+              href="https://github.com/gaureshpai/create-next-quick/graphs/contributors"
+            >
+              <img
+                src="https://contrib.rocks/image?repo=gaureshpai/create-next-quick"
+              />
+            </a>
+          </div>
+        </section>
+      </main>
     </div>
 
     <script src="script.js"></script>
-</body>
-
+  </body>
 </html>

@@ -8,7 +8,7 @@ import { testCases } from "./test-cases.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const cliPath = path.join(__dirname, "..", "index.js");
+const cliPath = path.join(__dirname, "..", "..", "dist", "create-next-quick.js");
 
 describe("create-next-quick", function () {
   this.timeout(0);
