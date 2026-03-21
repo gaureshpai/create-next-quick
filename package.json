@@ -7,6 +7,7 @@
   "scripts": {
     "build": "rollup -c --environment BUILD:production",
     "start": "node dist/create-next-quick.js",
+    "pretest": "pnpm build",
     "test": "mocha src/test/test.js && echo \"Tests passed successfully\" || (echo \"Tests failed\" && exit 1)",
     "test:build-config": "mocha src/test/build-config.test.js",
     "test:interactive": "mocha src/test/interactive.test.js",
