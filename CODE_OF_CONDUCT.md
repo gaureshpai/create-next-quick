@@ -100,4 +100,4 @@ This Code of Conduct is adapted from the **Contributor Covenant**, version 2.0:
 Community Impact Guidelines are inspired by **Mozilla's enforcement ladder**.
 
 Need help understanding this document? Visit the [Contributor Covenant FAQ](https://www.contributor-covenant.org/faq).  
-Translations are available [here](https://www.contributor-covenant.org/translations).
+Translations are available at [Contributor Covenant translations](https://www.contributor-covenant.org/translations).
