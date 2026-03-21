@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,7 +12,7 @@ describe("rollup.config.mjs", () => {
 
   before(async () => {
     const configPath = path.join(ROOT, "rollup.config.mjs");
-    const configUrl = `file://${configPath.replace(/\\/g, "/")}`;
+    const configUrl = pathToFileURL(configPath);
     const mod = await import(configUrl);
     config = mod.default;
   });
