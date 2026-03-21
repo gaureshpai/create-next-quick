@@ -59,20 +59,14 @@ describe("rollup.config.mjs", () => {
       const resolvePlugin = config.plugins[0];
       assert.ok(resolvePlugin != null, "first plugin should not be null");
       assert.ok(typeof resolvePlugin === "object", "first plugin should be an object");
+      assert.strictEqual(resolvePlugin.name, "node-resolve", "first plugin should be node-resolve");
     });
 
     it("should have a terser plugin as the second plugin", () => {
       const terserPlugin = config.plugins[1];
       assert.ok(terserPlugin != null, "second plugin should not be null");
       assert.ok(typeof terserPlugin === "object", "second plugin should be an object");
-    });
-
-    it("node-resolve plugin should have a name property", () => {
-      const resolvePlugin = config.plugins[0];
-      assert.ok(
-        typeof resolvePlugin.name === "string" && resolvePlugin.name.length > 0,
-        "resolve plugin should have a non-empty name",
-      );
+      assert.strictEqual(terserPlugin.name, "terser", "second plugin should be terser");
     });
   });
 
@@ -219,10 +213,11 @@ describe("CI workflow build step", () => {
   });
 
   it("build step should use the matrix package-manager variable", () => {
-    const buildStepSection = ciYml.slice(
-      ciYml.indexOf("Build package"),
-      ciYml.indexOf("Build package") + 200,
-    );
+    const buildIndex = ciYml.indexOf("Build package");
+    assert.ok(buildIndex !== -1, "ci.yml should have a Build package step");
+    const nextStepMatch = ciYml.slice(buildIndex + 1).match(/(?=\n {6}- name:)/);
+    const endIndex = nextStepMatch ? buildIndex + 1 + nextStepMatch.index : ciYml.length;
+    const buildStepSection = ciYml.slice(buildIndex, endIndex);
     assert.ok(
       buildStepSection.includes("matrix.package-manager"),
       "Build step should use ${{ matrix.package-manager }} to run build",
@@ -230,10 +225,11 @@ describe("CI workflow build step", () => {
   });
 
   it("build step should invoke the build command", () => {
-    const buildStepSection = ciYml.slice(
-      ciYml.indexOf("Build package"),
-      ciYml.indexOf("Build package") + 200,
-    );
+    const buildIndex = ciYml.indexOf("Build package");
+    assert.ok(buildIndex !== -1, "ci.yml should have a Build package step");
+    const nextStepMatch = ciYml.slice(buildIndex + 1).match(/(?=\n {6}- name:)/);
+    const endIndex = nextStepMatch ? buildIndex + 1 + nextStepMatch.index : ciYml.length;
+    const buildStepSection = ciYml.slice(buildIndex, endIndex);
     assert.ok(buildStepSection.includes("run build"), "Build step should run the 'build' script");
   });
 
