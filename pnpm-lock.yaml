@@ -11,9 +11,6 @@ importers:
       '@biomejs/biome':
         specifier: ^2.3.13
         version: 2.3.13
-      '@rollup/plugin-alias':
-        specifier: ^6.0.0
-        version: 6.0.0(rollup@4.59.1)
       '@rollup/plugin-node-resolve':
         specifier: ^16.0.3
         version: 16.0.3(rollup@4.59.1)
@@ -118,15 +115,6 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
-
-  '@rollup/plugin-alias@6.0.0':
-    resolution: {integrity: sha512-tPCzJOtS7uuVZd+xPhoy5W4vThe6KWXNmsFCNktaAh5RTqcLiSfT4huPQIXkgJ6YCOjJHvecOAzQxLFhPxKr+g==}
-    engines: {node: '>=20.19.0'}
-    peerDependencies:
-      rollup: '>=4.0.0'
-    peerDependenciesMeta:
-      rollup:
-        optional: true
 
   '@rollup/plugin-node-resolve@16.0.3':
     resolution: {integrity: sha512-lUYM3UBGuM93CnMPG1YocWu7X802BrNF3jW2zny5gQyLQgRFJhV1Sq0Zi74+dh/6NBx1DxFC4b4GXg9wUCG5Qg==}
@@ -896,10 +884,6 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
-
-  '@rollup/plugin-alias@6.0.0(rollup@4.59.1)':
-    optionalDependencies:
-      rollup: 4.59.1
 
   '@rollup/plugin-node-resolve@16.0.3(rollup@4.59.1)':
     dependencies:
