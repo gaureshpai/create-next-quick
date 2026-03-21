@@ -8,6 +8,7 @@
     "build": "rollup -c --environment BUILD:production",
     "start": "node dist/index.js",
     "test": "mocha src/test/test.js && echo \"Tests passed successfully\" || (echo \"Tests failed\" && exit 1)",
+    "test:build-config": "mocha src/test/build-config.test.js",
     "test:interactive": "mocha src/test/interactive.test.js",
     "test:generate": "node src/test/generate-tests.js",
     "lint": "biome check . --write",
