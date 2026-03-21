@@ -18,7 +18,7 @@
   },
   "lint-staged": {
     "src/**/*.{js,json,md}": [
-      "biome check . --write"
+      "biome check --write"
     ]
   },
   "files": [
