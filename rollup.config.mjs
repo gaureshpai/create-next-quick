@@ -2,7 +2,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
 
 export default {
-  input: "src/index.js",
+  input: "src/create-next-quick.js",
   output: {
     dir: "dist",
     format: "esm",

@@ -36,6 +36,13 @@ jobs:
       - name: Build package
         run: ${{ matrix.package-manager }} run build
 
+      - name: Smoke test built artifact
+        run: |
+          mkdir -p test-logs
+          node dist/create-next-quick.js --version > test-logs/smoke-test.txt 2>&1
+          if [ $? -ne 0 ]; then cat test-logs/smoke-test.txt; exit 1; fi
+          cat test-logs/smoke-test.txt
+
       - name: Run tests and save logs
         run: |
           mkdir -p test-logs

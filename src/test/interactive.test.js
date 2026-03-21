@@ -169,7 +169,9 @@ describe("create-next-quick interactive mode", function () {
   it("should skip installation if feature already exists", (done) => {
     const firstRunAnswers = ["", "\x1b[B\x1b[B", "", "n"];
 
-    const firstRun = spawn("node", [cliPath, "-i"], { cwd: currentProjectPath });
+    const firstRun = spawn("node", [cliPath, "-i"], {
+      cwd: currentProjectPath,
+    });
 
     let i = 0;
     const firstInterval = setInterval(() => {
@@ -187,7 +189,9 @@ describe("create-next-quick interactive mode", function () {
 
       const secondRunAnswers = ["", "\x1b[B\x1b[B", "", "n"];
 
-      const secondRun = spawn("node", [cliPath, "-i"], { cwd: currentProjectPath });
+      const secondRun = spawn("node", [cliPath, "-i"], {
+        cwd: currentProjectPath,
+      });
       let stdout = "";
 
       secondRun.stdout.on("data", (data) => {

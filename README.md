@@ -49,19 +49,19 @@
 
 ### Comparison with create-next-app
 
-| Feature                        | `create-next-quick`                            | `create-next-app` |
-| ------------------------------ | ---------------------------------------------- | ----------------- |
-| **Multi-page Generation**      | ✅ Yes (e.g., `home, about, contact`)          | ❌ No             |
-| **ORM Support**                | ✅ Yes (Prisma, Drizzle)                       | ❌ No             |
-| **Linter Choice**              | ✅ Yes (ESLint, Biome)                         | ❌ ESLint only    |
-| **Shadcn UI Auto-Setup**       | ✅ Yes (non-interactive)                       | ❌ No             |
-| **Authentication Integration** | ✅ Yes (NextAuth, Clerk, Lucia)                | ❌ No             |
-| **Testing Framework Setup**    | ✅ Yes (Vitest, Jest)                          | ❌ No             |
-| **Docker Configuration**       | ✅ Yes (Dockerfile + .dockerignore)            | ❌ No             |
-| **Clean Project Start**        | ✅ Yes (removes boilerplate & default assets)  | ❌ No             |
-| **Package Manager Detection**  | ✅ Yes (npm, yarn, pnpm)                       | ✅ Yes            |
-| **Robust Error Handling**      | ✅ Yes (retries, cleanup, clear tips)          | ❌ Basic          |
-| **Interactive Mode**           | ✅ Yes (add features to existing projects)     | ❌ No             |
+| Feature                        | `create-next-quick`                           | `create-next-app` |
+| ------------------------------ | --------------------------------------------- | ----------------- |
+| **Multi-page Generation**      | ✅ Yes (e.g., `home, about, contact`)         | ❌ No             |
+| **ORM Support**                | ✅ Yes (Prisma, Drizzle)                      | ❌ No             |
+| **Linter Choice**              | ✅ Yes (ESLint, Biome)                        | ❌ ESLint only    |
+| **Shadcn UI Auto-Setup**       | ✅ Yes (non-interactive)                      | ❌ No             |
+| **Authentication Integration** | ✅ Yes (NextAuth, Clerk, Lucia)               | ❌ No             |
+| **Testing Framework Setup**    | ✅ Yes (Vitest, Jest)                         | ❌ No             |
+| **Docker Configuration**       | ✅ Yes (Dockerfile + .dockerignore)           | ❌ No             |
+| **Clean Project Start**        | ✅ Yes (removes boilerplate & default assets) | ❌ No             |
+| **Package Manager Detection**  | ✅ Yes (npm, yarn, pnpm)                      | ✅ Yes            |
+| **Robust Error Handling**      | ✅ Yes (retries, cleanup, clear tips)         | ❌ Basic          |
+| **Interactive Mode**           | ✅ Yes (add features to existing projects)    | ❌ No             |
 
 ---
 
@@ -132,9 +132,10 @@ npx create-next-quick -i
 ```
 
 When you run in interactive mode, the tool will:
+
 1. **Detect Your Project's Setup**: Automatically detects if you're using TypeScript, the `src` directory, the `app` directory, and Tailwind CSS
 2. **Skip Project Creation**: It will not run `create-next-app` or remove any existing files
-3. **Prompt for Additions**: It will only ask you what you want to *add* to your project, such as new pages, a linter, an ORM, or Shadcn UI
+3. **Prompt for Additions**: It will only ask you what you want to _add_ to your project, such as new pages, a linter, an ORM, or Shadcn UI
 
 This is perfect for when you want to add a new feature to your project and want to use the same streamlined setup process.
 
@@ -142,20 +143,20 @@ This is perfect for when you want to add a new feature to your project and want 
 
 The CLI will guide you through the following options:
 
-| Prompt                | Description                                        | Default |
-| --------------------- | -------------------------------------------------- | ------- |
-| **Package Manager**   | Auto-detects installed `npm`, `yarn`, `pnpm`       | `pnpm`  |
-| **TypeScript**        | Use TypeScript for type safety                     | `Yes`   |
-| **Tailwind CSS**      | Use Tailwind CSS for styling                       | `Yes`   |
-| **`src/` Directory**  | Use the `src/` directory for project structure     | `Yes`   |
-| **App Router**        | Use the Next.js App Router                         | `Yes`   |
-| **Pages**             | Enter page names to create (comma-separated)       | `none`  |
-| **Linter**            | Choose a linter (`ESLint`, `Biome`)                | `none`  |
-| **ORM**               | Choose an ORM (`Prisma`, `Drizzle`)                | `none`  |
-| **Testing**           | Choose a testing framework (`Vitest`, `Jest`)      | `none`  |
-| **Authentication**    | Choose auth solution (`NextAuth`, `Clerk`, `Lucia`)| `none`  |
-| **Shadcn UI**         | Automatically install and set up Shadcn UI         | `Yes`   |
-| **Docker**            | Add Docker support with Dockerfile                 | `No`    |
+| Prompt               | Description                                         | Default |
+| -------------------- | --------------------------------------------------- | ------- |
+| **Package Manager**  | Auto-detects installed `npm`, `yarn`, `pnpm`        | `pnpm`  |
+| **TypeScript**       | Use TypeScript for type safety                      | `Yes`   |
+| **Tailwind CSS**     | Use Tailwind CSS for styling                        | `Yes`   |
+| **`src/` Directory** | Use the `src/` directory for project structure      | `Yes`   |
+| **App Router**       | Use the Next.js App Router                          | `Yes`   |
+| **Pages**            | Enter page names to create (comma-separated)        | `none`  |
+| **Linter**           | Choose a linter (`ESLint`, `Biome`)                 | `none`  |
+| **ORM**              | Choose an ORM (`Prisma`, `Drizzle`)                 | `none`  |
+| **Testing**          | Choose a testing framework (`Vitest`, `Jest`)       | `none`  |
+| **Authentication**   | Choose auth solution (`NextAuth`, `Clerk`, `Lucia`) | `none`  |
+| **Shadcn UI**        | Automatically install and set up Shadcn UI          | `Yes`   |
+| **Docker**           | Add Docker support with Dockerfile                  | `No`    |
 
 ### Example Walkthrough
 
@@ -265,6 +266,7 @@ Automatically configures:
 ### Docker Support
 
 Generates production-ready Docker configuration:
+
 - Multi-stage build for optimized image size
 - Standalone output mode in `next.config.mjs`
 - `.dockerignore` for efficient builds
@@ -288,13 +290,13 @@ node --version
 
 Once your project is created, you can use the following commands:
 
-| `pnpm`          | `npm`           | `yarn`          | Description                    |
-| --------------- | --------------- | --------------- | ------------------------------ |
-| `pnpm dev`      | `npm run dev`   | `yarn dev`      | Starts the development server  |
-| `pnpm build`    | `npm run build` | `yarn build`    | Builds the app for production  |
-| `pnpm start`    | `npm start`     | `yarn start`    | Starts the production server   |
-| `pnpm lint`     | `npm run lint`  | `yarn lint`     | Runs the linter (if configured)|
-| `pnpm test`     | `npm test`      | `yarn test`     | Runs tests (if configured)     |
+| `pnpm`       | `npm`           | `yarn`       | Description                     |
+| ------------ | --------------- | ------------ | ------------------------------- |
+| `pnpm dev`   | `npm run dev`   | `yarn dev`   | Starts the development server   |
+| `pnpm build` | `npm run build` | `yarn build` | Builds the app for production   |
+| `pnpm start` | `npm start`     | `yarn start` | Starts the production server    |
+| `pnpm lint`  | `npm run lint`  | `yarn lint`  | Runs the linter (if configured) |
+| `pnpm test`  | `npm test`      | `yarn test`  | Runs tests (if configured)      |
 
 ---
 

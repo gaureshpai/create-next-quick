@@ -2,15 +2,16 @@
   "name": "create-next-quick",
   "version": "2.0.2",
   "description": "A CLI tool to quickly scaffold a Next.js project",
-  "main": "dist/index.js",
+  "main": "dist/create-next-quick.js",
   "type": "module",
   "scripts": {
     "build": "rollup -c --environment BUILD:production",
-    "start": "node dist/index.js",
+    "start": "node dist/create-next-quick.js",
     "test": "mocha src/test/test.js && echo \"Tests passed successfully\" || (echo \"Tests failed\" && exit 1)",
     "test:interactive": "mocha src/test/interactive.test.js",
     "test:generate": "node src/test/generate-tests.js",
-    "lint": "biome check . --write",
+    "check": "biome check . --write",
+    "lint": "biome lint . --write",
     "format": "biome format . --write",
     "prepare": "husky"
   },
@@ -23,7 +24,7 @@
     "dist"
   ],
   "bin": {
-    "create-next-quick": "dist/index.js"
+    "create-next-quick": "dist/create-next-quick.js"
   },
   "keywords": [
     "next.js",
@@ -48,7 +49,6 @@
   "homepage": "https://gaureshpai.github.io/create-next-quick/",
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",
-    "@rollup/plugin-alias": "^6.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^1.0.0",
     "husky": "^9.1.7",
