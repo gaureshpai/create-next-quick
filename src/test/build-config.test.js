@@ -156,9 +156,10 @@ describe("package.json build configuration", () => {
 
     it("rollup version should be >= 4.0.0", () => {
       const version = pkg.devDependencies.rollup;
+      const validMajor4 = /^(?:[\^~]|>=?4(?:\.|$)|>=4\.0\.0|4(?:\.x?|$))/;
       assert.ok(
-        version.startsWith("^4") || version.startsWith("4") || version.startsWith(">=4"),
-        `rollup version '${version}' should be ^4.x.x`,
+        validMajor4.test(version),
+        `rollup version '${version}' should be >=4.0.0 (e.g. ^4, ~4, 4, 4.x, >=4)`,
       );
     });
 
