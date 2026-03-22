@@ -23,7 +23,7 @@ const processQuestion = async (question) => {
 
   const displayMessage = `${message}${defaultVal !== undefined ? ` (default: ${type === "confirm" ? (defaultVal ? "Yes" : "No") : defaultVal})` : ""} `;
 
-  const confirmHint = defaultVal ? "(Y/n)" : "(y/N)";
+  const confirmHint = defaultVal === true ? "(Y/n)" : "(y/N)";
   if (type === "confirm") {
     while (true) {
       const input = await ask(
