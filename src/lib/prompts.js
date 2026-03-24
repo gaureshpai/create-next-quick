@@ -21,7 +21,7 @@ const processQuestion = async (question) => {
   let answer;
   const { type, name, message, default: defaultVal, choices, validate, filter } = question;
 
-  const displayMessage = `${message}${defaultVal !== undefined ? ` (default: ${type === "confirm" ? (defaultVal ? "Yes" : "No") : defaultVal})` : ""} `;
+  const displayMessage = `${message}${defaultVal !== undefined ? ` (default: ${type === "confirm" ? (defaultVal === true ? "Yes" : "No") : defaultVal})` : ""} `;
 
   const confirmHint = defaultVal === true ? "(Y/n)" : "(y/N)";
   if (type === "confirm") {
