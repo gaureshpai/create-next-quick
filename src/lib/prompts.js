@@ -27,7 +27,7 @@ const processQuestion = async (question) => {
   if (type === "confirm") {
     while (true) {
       const input = await ask(
-        `${chalk.green("?")} ${chalk.bold(message)} ${chalk.dim(confirmHint)} `,
+        `${chalk.green("?")} ${chalk.bold(displayMessage)} ${chalk.dim(confirmHint)} `,
       );
       const trimmed = input.trim().toLowerCase();
       if (trimmed === "") {
