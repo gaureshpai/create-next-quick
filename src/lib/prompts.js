@@ -21,13 +21,13 @@ const processQuestion = async (question) => {
   let answer;
   const { type, name, message, default: defaultVal, choices, validate, filter } = question;
 
-  const displayMessage = `${message}${defaultVal !== undefined ? ` (default: ${type === "confirm" ? (defaultVal ? "Yes" : "No") : defaultVal})` : ""} `;
+  const displayMessage = `${message}${defaultVal !== undefined ? ` (default: ${type === "confirm" ? (defaultVal === true ? "Yes" : "No") : defaultVal})` : ""} `;
 
-  const confirmHint = defaultVal ? "(Y/n)" : "(y/N)";
+  const confirmHint = defaultVal === true ? "(Y/n)" : "(y/N)";
   if (type === "confirm") {
     while (true) {
       const input = await ask(
-        `${chalk.green("?")} ${chalk.bold(message)} ${chalk.dim(confirmHint)} `,
+        `${chalk.green("?")} ${chalk.bold(displayMessage)} ${chalk.dim(confirmHint)} `,
       );
       const trimmed = input.trim().toLowerCase();
       if (trimmed === "") {
