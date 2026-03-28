@@ -9,6 +9,97 @@ import { testCases } from "./test-cases.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const cliPath = path.join(__dirname, "..", "..", "dist", "create-next-quick.js");
+const repoRoot = path.join(__dirname, "..", "..");
+const ansiPattern = new RegExp(`${String.fromCharCode(27)}\\[[0-9;?]*[ -/]*[@-~]`, "g");
+
+const stripAnsi = (value) => value.replace(ansiPattern, "");
+
+const runPromptQuestion = (question, stdinInput = "\n") =>
+  new Promise((resolve, reject) => {
+    const child = spawn(
+      process.execPath,
+      [
+        "--input-type=module",
+        "-e",
+        `
+          import prompts from "./src/lib/prompts.js";
+          const result = await prompts.prompt([${JSON.stringify(question)}]);
+          prompts.close();
+          console.log("RESULT=" + JSON.stringify(result));
+        `,
+      ],
+      { cwd: repoRoot },
+    );
+
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout.on("data", (data) => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    child.on("error", reject);
+
+    child.on("close", (code) => {
+      if (code !== 0) {
+        reject(
+          new Error(
+            `Prompt runner exited with code ${code}\nstdout:\n${stdout}\nstderr:\n${stderr}`,
+          ),
+        );
+        return;
+      }
+
+      const cleanOutput = stripAnsi(stdout);
+      const resultMatch = cleanOutput.match(/RESULT=(\{.*\})/s);
+
+      if (!resultMatch) {
+        reject(new Error(`Prompt runner did not emit result.\nstdout:\n${cleanOutput}`));
+        return;
+      }
+
+      resolve({
+        output: cleanOutput,
+        result: JSON.parse(resultMatch[1]),
+      });
+    });
+
+    child.stdin.end(stdinInput);
+  });
+
+describe("prompt rendering", () => {
+  it("does not duplicate explicit confirm defaults in the rendered prompt", async () => {
+    const { output } = await runPromptQuestion({
+      type: "confirm",
+      name: "useTypeScript",
+      message: "Do you want to use TypeScript? (default: Yes)",
+      default: true,
+    });
+
+    assert.strictEqual(
+      (output.match(/\(default: Yes\)/g) || []).length,
+      1,
+      `Expected a single default label in prompt output.\n${output}`,
+    );
+    assert.match(output, /\(Y\/n\)/);
+  });
+
+  it("normalizes empty confirm answers to a boolean", async () => {
+    const { result } = await runPromptQuestion({
+      type: "confirm",
+      name: "docker",
+      message: "Do you want to add Docker support?",
+      default: "false",
+    });
+
+    assert.strictEqual(result.docker, false);
+    assert.strictEqual(typeof result.docker, "boolean");
+  });
+});
 
 describe("create-next-quick", function () {
   this.timeout(0);
