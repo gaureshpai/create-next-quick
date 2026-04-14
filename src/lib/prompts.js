@@ -26,6 +26,17 @@ const processQuestion = async (question) => {
   const displayMessage = `${message}${defaultVal !== undefined && !hasDefaultSuffix ? ` (default: ${defaultDisplay})` : ""} `;
 
   const confirmHint = defaultVal === true ? "(Y/n)" : "(y/N)";
+  const renderConfirmSelection = (value) => {
+    if (!process.stdin.isTTY || !process.stdout.isTTY) return;
+    const renderedMessage = displayMessage.trimEnd();
+    const selectedLabel = value ? "Yes" : "No";
+    readline.moveCursor(process.stdout, 0, -1);
+    readline.clearLine(process.stdout, 0);
+    readline.cursorTo(process.stdout, 0);
+    process.stdout.write(
+      `${chalk.green("?")} ${chalk.bold(renderedMessage)} ${chalk.cyan(selectedLabel)}\n`,
+    );
+  };
   if (type === "confirm") {
     while (true) {
       const input = await ask(
@@ -34,14 +45,17 @@ const processQuestion = async (question) => {
       const trimmed = input.trim().toLowerCase();
       if (trimmed === "") {
         answer = defaultVal === true;
+        renderConfirmSelection(answer);
         break;
       }
       if (trimmed === "y" || trimmed === "yes") {
         answer = true;
+        renderConfirmSelection(answer);
         break;
       }
       if (trimmed === "n" || trimmed === "no") {
         answer = false;
+        renderConfirmSelection(answer);
         break;
       }
     }

@@ -55,16 +55,16 @@ const runPromptQuestion = (question, stdinInput = "\n") =>
       }
 
       const cleanOutput = stripAnsi(stdout);
-      const resultMatch = cleanOutput.match(/RESULT=(\{.*\})/s);
+      const resultLine = cleanOutput.split(/\r?\n/).find((line) => line.includes("RESULT="));
 
-      if (!resultMatch) {
+      if (!resultLine) {
         reject(new Error(`Prompt runner did not emit result.\nstdout:\n${cleanOutput}`));
         return;
       }
 
       resolve({
         output: cleanOutput,
-        result: JSON.parse(resultMatch[1]),
+        result: JSON.parse(resultLine.slice(resultLine.indexOf("RESULT=") + "RESULT=".length)),
       });
     });
 
