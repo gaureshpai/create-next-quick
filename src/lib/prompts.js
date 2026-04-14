@@ -22,10 +22,13 @@ const processQuestion = async (question) => {
   const { type, name, message, default: defaultVal, choices, validate, filter } = question;
 
   const hasDefaultSuffix = /\(default:\s*[^)]+\)\s*$/i.test(message);
-  const defaultDisplay = type === "confirm" ? (defaultVal === true ? "Yes" : "No") : defaultVal;
+  const confirmDefault =
+    defaultVal === true ||
+    (typeof defaultVal === "string" && defaultVal.trim().toLowerCase() === "true");
+  const defaultDisplay = type === "confirm" ? (confirmDefault ? "Yes" : "No") : defaultVal;
   const displayMessage = `${message}${defaultVal !== undefined && !hasDefaultSuffix ? ` (default: ${defaultDisplay})` : ""} `;
 
-  const confirmHint = defaultVal === true ? "(Y/n)" : "(y/N)";
+  const confirmHint = confirmDefault ? "(Y/n)" : "(y/N)";
   const renderConfirmSelection = (value) => {
     if (!process.stdin.isTTY || !process.stdout.isTTY) return;
     const renderedMessage = displayMessage.trimEnd();
@@ -44,7 +47,7 @@ const processQuestion = async (question) => {
       );
       const trimmed = input.trim().toLowerCase();
       if (trimmed === "") {
-        answer = defaultVal === true;
+        answer = confirmDefault;
         renderConfirmSelection(answer);
         break;
       }

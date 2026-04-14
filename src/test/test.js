@@ -114,6 +114,18 @@ describe("prompt rendering", () => {
     assert.strictEqual(result.docker, false);
     assert.strictEqual(typeof result.docker, "boolean");
   });
+
+  it("treats string true defaults as true", async () => {
+    const { result } = await runPromptQuestion({
+      type: "confirm",
+      name: "docker",
+      message: "Do you want to add Docker support?",
+      default: "true",
+    });
+
+    assert.strictEqual(result.docker, true);
+    assert.strictEqual(typeof result.docker, "boolean");
+  });
 });
 
 describe("create-next-quick", function () {
