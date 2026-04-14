@@ -21,7 +21,7 @@ const processQuestion = async (question) => {
   let answer;
   const { type, name, message, default: defaultVal, choices, validate, filter } = question;
 
-  const hasDefaultSuffix = /\(default:\s*[^)]+\)/i.test(message);
+  const hasDefaultSuffix = /\(default:\s*[^)]+\)\s*$/i.test(message);
   const defaultDisplay = type === "confirm" ? (defaultVal === true ? "Yes" : "No") : defaultVal;
   const displayMessage = `${message}${defaultVal !== undefined && !hasDefaultSuffix ? ` (default: ${defaultDisplay})` : ""} `;
 

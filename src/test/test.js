@@ -88,6 +88,21 @@ describe("prompt rendering", () => {
     assert.match(output, /\(Y\/n\)/);
   });
 
+  it("adds a default suffix when the token appears mid-message", async () => {
+    const { output } = await runPromptQuestion({
+      type: "confirm",
+      name: "useTypeScript",
+      message: "Use (default: Yes) as an example",
+      default: true,
+    });
+
+    assert.strictEqual(
+      (output.match(/\(default: Yes\)/g) || []).length,
+      2,
+      `Expected the default label to be appended at the end.\n${output}`,
+    );
+  });
+
   it("normalizes empty confirm answers to a boolean", async () => {
     const { result } = await runPromptQuestion({
       type: "confirm",
