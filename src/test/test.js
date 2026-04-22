@@ -24,12 +24,16 @@ const runPromptQuestion = (question, stdinInput = "\n") =>
         "-e",
         `
           import prompts from "./src/lib/prompts.js";
-          const result = await prompts.prompt([${JSON.stringify(question)}]);
+          const question = JSON.parse(process.env.PROMPT_QUESTION);
+          const result = await prompts.prompt([question]);
           prompts.close();
           console.log("RESULT=" + JSON.stringify(result));
         `,
       ],
-      { cwd: repoRoot },
+      {
+        cwd: repoRoot,
+        env: { ...process.env, PROMPT_QUESTION: JSON.stringify(question) },
+      },
     );
 
     let stdout = "";
@@ -116,6 +120,17 @@ describe("prompt rendering", () => {
       2,
       `Expected the default label to be appended at the end.\n${output}`,
     );
+  });
+
+  it("supports template-literal characters in question content", async () => {
+    const { output } = await runPromptQuestion({
+      type: "confirm",
+      name: "useExample",
+      message: "Use `code` and ${value} literally?",
+      default: true,
+    });
+
+    assert.match(output, /Use `code` and \$\{value\} literally\?/);
   });
 
   it("normalizes empty confirm answers to a boolean", async () => {
