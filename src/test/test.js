@@ -3,6 +3,7 @@ import { strict as assert } from "node:assert";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
+import { __testing as promptsTesting } from "../lib/prompts.js";
 import { deleteFolder } from "../lib/utils.js";
 import { testCases } from "./test-cases.js";
 
@@ -72,6 +73,20 @@ const runPromptQuestion = (question, stdinInput = "\n") =>
   });
 
 describe("prompt rendering", () => {
+  it("counts wrapped confirm prompts as multiple terminal rows", () => {
+    assert.strictEqual(
+      promptsTesting.getRenderedRowCount(
+        "? Do you want to use TypeScript? (default: Yes) (Y/n) ",
+        20,
+      ),
+      3,
+    );
+  });
+
+  it("includes typed confirm input in the rendered row count", () => {
+    assert.strictEqual(promptsTesting.getRenderedRowCount("? Example prompt (Y/n) yes", 10), 3);
+  });
+
   it("does not duplicate explicit confirm defaults in the rendered prompt", async () => {
     const { output } = await runPromptQuestion({
       type: "confirm",

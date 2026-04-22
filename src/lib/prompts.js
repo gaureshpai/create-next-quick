@@ -17,6 +17,11 @@ const ask = (query) => {
   return new Promise((resolve) => getRl().question(query, resolve));
 };
 
+const getRenderedRowCount = (text, columns = process.stdout.columns ?? 80) => {
+  const safeColumns = Math.max(columns || 80, 1);
+  return Math.max(1, Math.ceil(text.length / safeColumns));
+};
+
 const processQuestion = async (question) => {
   let answer;
   const { type, name, message, default: defaultVal, choices, validate, filter } = question;
@@ -30,13 +35,15 @@ const processQuestion = async (question) => {
   const displayMessage = `${message}${defaultVal !== undefined && !hasDefaultSuffix ? ` (default: ${defaultDisplay})` : ""} `;
 
   const confirmHint = confirmDefault ? "(Y/n)" : "(y/N)";
-  const renderConfirmSelection = (value) => {
+  const renderConfirmSelection = (value, input = "") => {
     if (!process.stdin.isTTY || !process.stdout.isTTY) return;
     const renderedMessage = displayMessage.trimEnd();
     const selectedLabel = value ? "Yes" : "No";
-    readline.moveCursor(process.stdout, 0, -1);
-    readline.clearLine(process.stdout, 0);
+    const promptText = `? ${displayMessage} ${confirmHint} ${input}`;
+    const promptRows = getRenderedRowCount(promptText);
+    readline.moveCursor(process.stdout, 0, -promptRows);
     readline.cursorTo(process.stdout, 0);
+    readline.clearScreenDown(process.stdout);
     process.stdout.write(
       `${chalk.green("?")} ${chalk.bold(renderedMessage)} ${chalk.cyan(selectedLabel)}\n`,
     );
@@ -49,17 +56,17 @@ const processQuestion = async (question) => {
       const trimmed = input.trim().toLowerCase();
       if (trimmed === "") {
         answer = confirmDefault;
-        renderConfirmSelection(answer);
+        renderConfirmSelection(answer, input);
         break;
       }
       if (trimmed === "y" || trimmed === "yes") {
         answer = true;
-        renderConfirmSelection(answer);
+        renderConfirmSelection(answer, input);
         break;
       }
       if (trimmed === "n" || trimmed === "no") {
         answer = false;
-        renderConfirmSelection(answer);
+        renderConfirmSelection(answer, input);
         break;
       }
     }
@@ -221,4 +228,8 @@ const close = () => {
 export default {
   prompt,
   close,
+};
+
+export const __testing = {
+  getRenderedRowCount,
 };
