@@ -26,8 +26,8 @@ if (parseInt(currentNodeVersion.split(".")[0], 10) < MIN_NODE_VERSION) {
 
 const args = process.argv.slice(2);
 
-if (args.includes("-h") || args.includes("--help")) {
-  console.log(`
+const showHelp = (log = console.log) => {
+  log(`
 Usage: create-next-quick [project-name] [options]
 
 Options:
@@ -39,6 +39,10 @@ Examples:
   npx create-next-quick my-app          # Create a new project
   cd my-existing-app && npx create-next-quick -i  # Integrate into existing project
 `);
+};
+
+if (args.includes("-h") || args.includes("--help")) {
+  showHelp();
   process.exit(0);
 }
 
@@ -49,6 +53,14 @@ if (args.includes("-v") || args.includes("--version")) {
 
 const isInteractiveMode = args.includes("-i") || args.includes("--interactive");
 const appName = args.find((arg) => !arg.startsWith("-"));
+
+const knownFlags = ["-h", "--help", "-v", "--version", "-i", "--interactive"];
+const unknownFlags = args.filter((arg) => arg.startsWith("-") && !knownFlags.includes(arg));
+if (unknownFlags.length > 0) {
+  console.error(chalk.red.bold(`Error: Unknown flag(s): ${unknownFlags.join(", ")}`));
+  showHelp(console.error);
+  process.exit(1);
+}
 
 if (isInteractiveMode && appName) {
   console.error(
