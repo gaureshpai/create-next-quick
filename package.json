@@ -1,6 +1,6 @@
 {
   "name": "create-next-quick",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "A CLI tool to quickly scaffold a Next.js project",
   "main": "dist/create-next-quick.js",
   "type": "module",
