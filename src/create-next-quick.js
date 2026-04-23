@@ -58,7 +58,7 @@ const knownFlags = ["-h", "--help", "-v", "--version", "-i", "--interactive"];
 const unknownFlags = args.filter((arg) => arg.startsWith("-") && !knownFlags.includes(arg));
 if (unknownFlags.length > 0) {
   console.error(chalk.red.bold(`Error: Unknown flag(s): ${unknownFlags.join(", ")}`));
-  showHelp();
+  showHelp(console.error);
   process.exit(1);
 }
 
