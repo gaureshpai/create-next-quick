@@ -57,7 +57,8 @@ const appName = args.find((arg) => !arg.startsWith("-"));
 const knownFlags = ["-h", "--help", "-v", "--version", "-i", "--interactive"];
 const unknownFlags = args.filter((arg) => arg.startsWith("-") && !knownFlags.includes(arg));
 if (unknownFlags.length > 0) {
-  showHelp();
+  console.error(chalk.red.bold(`Error: Unknown flag(s): ${unknownFlags.join(", ")}`));
+  showHelp(1);
 }
 
 if (isInteractiveMode && appName) {
