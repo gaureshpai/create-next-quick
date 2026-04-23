@@ -26,8 +26,8 @@ if (parseInt(currentNodeVersion.split(".")[0], 10) < MIN_NODE_VERSION) {
 
 const args = process.argv.slice(2);
 
-const showHelp = () => {
-  console.log(`
+const showHelp = (log = console.log) => {
+  log(`
 Usage: create-next-quick [project-name] [options]
 
 Options:
