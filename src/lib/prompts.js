@@ -22,6 +22,14 @@ const getRenderedRowCount = (text, columns = process.stdout.columns ?? 80) => {
   return Math.max(1, Math.ceil(text.length / safeColumns));
 };
 
+const resolveConfirmInput = (input, defaultValue) => {
+  const trimmed = input.trim().toLowerCase();
+  if (trimmed === "") return defaultValue;
+  if (trimmed === "y" || trimmed === "yes") return true;
+  if (trimmed === "n" || trimmed === "no") return false;
+  return undefined;
+};
+
 const processQuestion = async (question) => {
   let answer;
   const { type, name, message, default: defaultVal, choices, validate, filter } = question;
@@ -35,41 +43,96 @@ const processQuestion = async (question) => {
   const displayMessage = `${message}${defaultVal !== undefined && !hasDefaultSuffix ? ` (default: ${defaultDisplay})` : ""} `;
 
   const confirmHint = confirmDefault ? "(Y/n)" : "(y/N)";
+  const renderedMessage = displayMessage.trimEnd();
   const renderConfirmSelection = (value, input = "") => {
-    if (!process.stdin.isTTY || !process.stdout.isTTY) return;
-    const renderedMessage = displayMessage.trimEnd();
+    if (!process.stdout.isTTY) return;
     const selectedLabel = value ? "Yes" : "No";
-    const promptText = `? ${displayMessage} ${confirmHint} ${input}`;
+    const promptText = `? ${renderedMessage} ${confirmHint} ${input}`;
     const promptRows = getRenderedRowCount(promptText);
-    readline.moveCursor(process.stdout, 0, -promptRows);
+    readline.moveCursor(process.stdout, 0, -(promptRows - 1));
     readline.cursorTo(process.stdout, 0);
     readline.clearScreenDown(process.stdout);
     process.stdout.write(
       `${chalk.green("?")} ${chalk.bold(renderedMessage)} ${chalk.cyan(selectedLabel)}\n`,
     );
   };
-  if (type === "confirm") {
-    while (true) {
-      const input = await ask(
-        `${chalk.green("?")} ${chalk.bold(displayMessage)} ${chalk.dim(confirmHint)} `,
-      );
-      const trimmed = input.trim().toLowerCase();
-      if (trimmed === "") {
-        answer = confirmDefault;
-        renderConfirmSelection(answer, input);
-        break;
-      }
-      if (trimmed === "y" || trimmed === "yes") {
-        answer = true;
-        renderConfirmSelection(answer, input);
-        break;
-      }
-      if (trimmed === "n" || trimmed === "no") {
-        answer = false;
-        renderConfirmSelection(answer, input);
-        break;
+
+  const askConfirm = async () => {
+    const { stdin, stdout } = process;
+    const confirmPrompt = `${chalk.green("?")} ${chalk.bold(renderedMessage)} ${chalk.dim(confirmHint)} `;
+
+    if (!stdin.isTTY || !stdout.isTTY) {
+      while (true) {
+        const input = await ask(confirmPrompt);
+        const resolved = resolveConfirmInput(input, confirmDefault);
+        if (resolved !== undefined) return resolved;
       }
     }
+
+    return new Promise((resolve) => {
+      let input = "";
+
+      const cleanup = () => {
+        stdin.removeListener("keypress", handleKeypress);
+        stdin.setRawMode(false);
+      };
+
+      const resetPrompt = () => {
+        const promptRows = getRenderedRowCount(`? ${renderedMessage} ${confirmHint} ${input}`);
+        readline.moveCursor(stdout, 0, -(promptRows - 1));
+        readline.cursorTo(stdout, 0);
+        readline.clearScreenDown(stdout);
+        input = "";
+        stdout.write(confirmPrompt);
+      };
+
+      const complete = (value) => {
+        cleanup();
+        renderConfirmSelection(value, input);
+        resolve(value);
+      };
+
+      const handleKeypress = (str, key) => {
+        if (key?.ctrl && key.name === "c") {
+          cleanup();
+          process.exit(0);
+        }
+
+        if (key?.name === "return" || key?.name === "enter") {
+          const resolved = resolveConfirmInput(input, confirmDefault);
+          if (resolved === undefined) {
+            resetPrompt();
+            return;
+          }
+
+          complete(resolved);
+          return;
+        }
+
+        if (key?.name === "backspace") {
+          if (input.length === 0) return;
+          input = input.slice(0, -1);
+          readline.moveCursor(stdout, -1, 0);
+          readline.clearLine(stdout, 1);
+          return;
+        }
+
+        if (str && str >= " " && !key?.ctrl && !key?.meta) {
+          input += str;
+          stdout.write(str);
+        }
+      };
+
+      stdout.write(confirmPrompt);
+      readline.emitKeypressEvents(stdin);
+      stdin.setRawMode(true);
+      stdin.resume();
+      stdin.on("keypress", handleKeypress);
+    });
+  };
+
+  if (type === "confirm") {
+    answer = await askConfirm();
   } else if (type === "list") {
     const { stdin, stdout } = process;
 

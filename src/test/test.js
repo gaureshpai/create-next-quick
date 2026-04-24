@@ -24,16 +24,14 @@ const runPromptQuestion = (question, stdinInput = "\n") =>
         "-e",
         `
           import prompts from "./src/lib/prompts.js";
-          const question = JSON.parse(process.env.PROMPT_QUESTION);
+          const question = JSON.parse(process.argv[1]);
           const result = await prompts.prompt([question]);
           prompts.close();
           console.log("RESULT=" + JSON.stringify(result));
         `,
+        JSON.stringify(question),
       ],
-      {
-        cwd: repoRoot,
-        env: { ...process.env, PROMPT_QUESTION: JSON.stringify(question) },
-      },
+      { cwd: repoRoot },
     );
 
     let stdout = "";
@@ -105,6 +103,7 @@ describe("prompt rendering", () => {
       `Expected a single default label in prompt output.\n${output}`,
     );
     assert.match(output, /\(Y\/n\)/);
+    assert.doesNotMatch(output, /\(default: Yes\)\s{2}\(Y\/n\)/);
   });
 
   it("adds a default suffix when the token appears mid-message", async () => {
@@ -126,7 +125,7 @@ describe("prompt rendering", () => {
     const { output } = await runPromptQuestion({
       type: "confirm",
       name: "useExample",
-      message: "Use `code` and ${value} literally?",
+      message: "Use `code` and $" + "{value} literally?",
       default: true,
     });
 
