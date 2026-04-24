@@ -49,7 +49,7 @@ const processQuestion = async (question) => {
     const selectedLabel = value ? "Yes" : "No";
     const promptText = `? ${renderedMessage} ${confirmHint} ${input}`;
     const promptRows = getRenderedRowCount(promptText);
-    readline.moveCursor(process.stdout, 0, -(promptRows - 1));
+    readline.moveCursor(process.stdout, 0, -promptRows);
     readline.cursorTo(process.stdout, 0);
     readline.clearScreenDown(process.stdout);
     process.stdout.write(
