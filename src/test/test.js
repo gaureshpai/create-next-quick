@@ -3,12 +3,159 @@ import { strict as assert } from "node:assert";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
+import { __testing as promptsTesting } from "../lib/prompts.js";
 import { deleteFolder } from "../lib/utils.js";
 import { testCases } from "./test-cases.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const cliPath = path.join(__dirname, "..", "..", "dist", "create-next-quick.js");
+const repoRoot = path.join(__dirname, "..", "..");
+const ansiPattern = new RegExp(`${String.fromCharCode(27)}\\[[0-9;?]*[ -/]*[@-~]`, "g");
+
+const stripAnsi = (value) => value.replace(ansiPattern, "");
+
+const runPromptQuestion = (question, stdinInput = "\n") =>
+  new Promise((resolve, reject) => {
+    const child = spawn(
+      process.execPath,
+      [
+        "--input-type=module",
+        "-e",
+        `
+          import prompts from "./src/lib/prompts.js";
+          const question = JSON.parse(process.argv[1]);
+          const result = await prompts.prompt([question]);
+          prompts.close();
+          console.log("RESULT=" + JSON.stringify(result));
+        `,
+        JSON.stringify(question),
+      ],
+      { cwd: repoRoot },
+    );
+
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout.on("data", (data) => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    child.on("error", reject);
+
+    child.on("close", (code) => {
+      if (code !== 0) {
+        reject(
+          new Error(
+            `Prompt runner exited with code ${code}\nstdout:\n${stdout}\nstderr:\n${stderr}`,
+          ),
+        );
+        return;
+      }
+
+      const cleanOutput = stripAnsi(stdout);
+      const resultLine = cleanOutput.split(/\r?\n/).find((line) => line.includes("RESULT="));
+
+      if (!resultLine) {
+        reject(new Error(`Prompt runner did not emit result.\nstdout:\n${cleanOutput}`));
+        return;
+      }
+
+      resolve({
+        output: cleanOutput,
+        result: JSON.parse(resultLine.slice(resultLine.indexOf("RESULT=") + "RESULT=".length)),
+      });
+    });
+
+    child.stdin.end(stdinInput);
+  });
+
+describe("prompt rendering", () => {
+  it("counts wrapped confirm prompts as multiple terminal rows", () => {
+    assert.strictEqual(
+      promptsTesting.getRenderedRowCount(
+        "? Do you want to use TypeScript? (default: Yes) (Y/n) ",
+        20,
+      ),
+      3,
+    );
+  });
+
+  it("includes typed confirm input in the rendered row count", () => {
+    assert.strictEqual(promptsTesting.getRenderedRowCount("? Example prompt (Y/n) yes", 10), 3);
+  });
+
+  it("does not duplicate explicit confirm defaults in the rendered prompt", async () => {
+    const { output } = await runPromptQuestion({
+      type: "confirm",
+      name: "useTypeScript",
+      message: "Do you want to use TypeScript? (default: Yes)",
+      default: true,
+    });
+
+    assert.strictEqual(
+      (output.match(/\(default: Yes\)/g) || []).length,
+      1,
+      `Expected a single default label in prompt output.\n${output}`,
+    );
+    assert.match(output, /\(Y\/n\)/);
+    assert.doesNotMatch(output, /\(default: Yes\)\s{2}\(Y\/n\)/);
+  });
+
+  it("adds a default suffix when the token appears mid-message", async () => {
+    const { output } = await runPromptQuestion({
+      type: "confirm",
+      name: "useTypeScript",
+      message: "Use (default: Yes) as an example",
+      default: true,
+    });
+
+    assert.strictEqual(
+      (output.match(/\(default: Yes\)/g) || []).length,
+      2,
+      `Expected the default label to be appended at the end.\n${output}`,
+    );
+  });
+
+  it("supports template-literal characters in question content", async () => {
+    const { output } = await runPromptQuestion({
+      type: "confirm",
+      name: "useExample",
+      message: "Use `code` and $" + "{value} literally?",
+      default: true,
+    });
+
+    assert.match(output, /Use `code` and \$\{value\} literally\?/);
+  });
+
+  it("normalizes empty confirm answers to a boolean", async () => {
+    const { result } = await runPromptQuestion({
+      type: "confirm",
+      name: "docker",
+      message: "Do you want to add Docker support?",
+      default: "false",
+    });
+
+    assert.strictEqual(result.docker, false);
+    assert.strictEqual(typeof result.docker, "boolean");
+  });
+
+  it("treats string true defaults as true", async () => {
+    const { result } = await runPromptQuestion({
+      type: "confirm",
+      name: "docker",
+      message: "Do you want to add Docker support?",
+      default: "true",
+    });
+
+    assert.strictEqual(result.docker, true);
+    assert.strictEqual(typeof result.docker, "boolean");
+  });
+});
 
 describe("create-next-quick", function () {
   this.timeout(0);

@@ -17,32 +17,122 @@ const ask = (query) => {
   return new Promise((resolve) => getRl().question(query, resolve));
 };
 
+const getRenderedRowCount = (text, columns = process.stdout.columns ?? 80) => {
+  const safeColumns = Math.max(columns || 80, 1);
+  return Math.max(1, Math.ceil(text.length / safeColumns));
+};
+
+const resolveConfirmInput = (input, defaultValue) => {
+  const trimmed = input.trim().toLowerCase();
+  if (trimmed === "") return defaultValue;
+  if (trimmed === "y" || trimmed === "yes") return true;
+  if (trimmed === "n" || trimmed === "no") return false;
+  return undefined;
+};
+
 const processQuestion = async (question) => {
   let answer;
   const { type, name, message, default: defaultVal, choices, validate, filter } = question;
 
-  const displayMessage = `${message}${defaultVal !== undefined ? ` (default: ${type === "confirm" ? (defaultVal ? "Yes" : "No") : defaultVal})` : ""} `;
+  const hasDefaultSuffix = /\(default:\s*[^)]+\)\s*$/i.test(message);
+  const confirmDefault =
+    defaultVal === true ||
+    (typeof defaultVal === "string" &&
+      ["true", "yes", "1"].includes(defaultVal.trim().toLowerCase()));
+  const defaultDisplay = type === "confirm" ? (confirmDefault ? "Yes" : "No") : defaultVal;
+  const displayMessage = `${message}${defaultVal !== undefined && !hasDefaultSuffix ? ` (default: ${defaultDisplay})` : ""} `;
 
-  const confirmHint = defaultVal ? "(Y/n)" : "(y/N)";
-  if (type === "confirm") {
-    while (true) {
-      const input = await ask(
-        `${chalk.green("?")} ${chalk.bold(message)} ${chalk.dim(confirmHint)} `,
-      );
-      const trimmed = input.trim().toLowerCase();
-      if (trimmed === "") {
-        answer = defaultVal !== undefined ? defaultVal : false;
-        break;
-      }
-      if (trimmed === "y" || trimmed === "yes") {
-        answer = true;
-        break;
-      }
-      if (trimmed === "n" || trimmed === "no") {
-        answer = false;
-        break;
+  const confirmHint = confirmDefault ? "(Y/n)" : "(y/N)";
+  const renderedMessage = displayMessage.trimEnd();
+  const renderConfirmSelection = (value, input = "") => {
+    if (!process.stdout.isTTY) return;
+    const selectedLabel = value ? "Yes" : "No";
+    const promptText = `? ${renderedMessage} ${confirmHint} ${input}`;
+    const promptRows = getRenderedRowCount(promptText);
+    readline.moveCursor(process.stdout, 0, -promptRows);
+    readline.cursorTo(process.stdout, 0);
+    readline.clearScreenDown(process.stdout);
+    process.stdout.write(
+      `${chalk.green("?")} ${chalk.bold(renderedMessage)} ${chalk.cyan(selectedLabel)}\n`,
+    );
+  };
+
+  const askConfirm = async () => {
+    const { stdin, stdout } = process;
+    const confirmPrompt = `${chalk.green("?")} ${chalk.bold(renderedMessage)} ${chalk.dim(confirmHint)} `;
+
+    if (!stdin.isTTY || !stdout.isTTY) {
+      while (true) {
+        const input = await ask(confirmPrompt);
+        const resolved = resolveConfirmInput(input, confirmDefault);
+        if (resolved !== undefined) return resolved;
       }
     }
+
+    return new Promise((resolve) => {
+      let input = "";
+
+      const cleanup = () => {
+        stdin.removeListener("keypress", handleKeypress);
+        stdin.setRawMode(false);
+      };
+
+      const resetPrompt = () => {
+        const promptRows = getRenderedRowCount(`? ${renderedMessage} ${confirmHint} ${input}`);
+        readline.moveCursor(stdout, 0, -(promptRows - 1));
+        readline.cursorTo(stdout, 0);
+        readline.clearScreenDown(stdout);
+        input = "";
+        stdout.write(confirmPrompt);
+      };
+
+      const complete = (value) => {
+        cleanup();
+        renderConfirmSelection(value, input);
+        resolve(value);
+      };
+
+      const handleKeypress = (str, key) => {
+        if (key?.ctrl && key.name === "c") {
+          cleanup();
+          process.exit(0);
+        }
+
+        if (key?.name === "return" || key?.name === "enter") {
+          const resolved = resolveConfirmInput(input, confirmDefault);
+          if (resolved === undefined) {
+            resetPrompt();
+            return;
+          }
+
+          complete(resolved);
+          return;
+        }
+
+        if (key?.name === "backspace") {
+          if (input.length === 0) return;
+          input = input.slice(0, -1);
+          readline.moveCursor(stdout, -1, 0);
+          readline.clearLine(stdout, 1);
+          return;
+        }
+
+        if (str && str >= " " && !key?.ctrl && !key?.meta) {
+          input += str;
+          stdout.write(str);
+        }
+      };
+
+      stdout.write(confirmPrompt);
+      readline.emitKeypressEvents(stdin);
+      stdin.setRawMode(true);
+      stdin.resume();
+      stdin.on("keypress", handleKeypress);
+    });
+  };
+
+  if (type === "confirm") {
+    answer = await askConfirm();
   } else if (type === "list") {
     const { stdin, stdout } = process;
 
@@ -201,4 +291,8 @@ const close = () => {
 export default {
   prompt,
   close,
+};
+
+export const __testing = {
+  getRenderedRowCount,
 };
