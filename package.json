@@ -39,6 +39,7 @@
     "javascript",
     "frontend"
   ],
+  "packageManager": "pnpm@10.28.2",
   "author": "gaureshpai",
   "license": "MIT",
   "repository": {
