@@ -17,9 +17,16 @@ const ask = (query) => {
   return new Promise((resolve) => getRl().question(query, resolve));
 };
 
+// biome-ignore lint/suspicious/noControlCharactersInRegex: ESC char is required to match ANSI escape codes
+const ansiRegex = /\u001b\[[0-9;?]*[ -/]*[@-~]/g;
+const stripAnsi = (str) => {
+  return str.replace(ansiRegex, "");
+};
+
 const getRenderedRowCount = (text, columns = process.stdout.columns ?? 80) => {
   const safeColumns = Math.max(columns || 80, 1);
-  return Math.max(1, Math.ceil(text.length / safeColumns));
+  const visibleLength = stripAnsi(text).length;
+  return Math.max(1, Math.ceil(visibleLength / safeColumns));
 };
 
 const resolveConfirmInput = (input, defaultValue) => {
@@ -228,7 +235,8 @@ const processQuestion = async (question) => {
 
             readline.clearLine(stdout, 0);
             readline.cursorTo(stdout, 0);
-            process.stdout.write(`${prefix} ${indexLabel}${label}${explanation}\n`);
+            const line = `${prefix} ${indexLabel}${label}${explanation}`;
+            process.stdout.write(`${line}\n`);
           });
         };
 
