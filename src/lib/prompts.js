@@ -17,9 +17,10 @@ const ask = (query) => {
   return new Promise((resolve) => getRl().question(query, resolve));
 };
 
+// biome-ignore lint/suspicious/noControlCharactersInRegex: ESC char is required to match ANSI escape codes
+const ansiRegex = /\u001b\[[0-9;?]*[ -/]*[@-~]/g;
 const stripAnsi = (str) => {
-  const ansiEscape = String.fromCharCode(27);
-  return str.replace(new RegExp(`${ansiEscape}\\[[0-9;]*m`, "g"), "");
+  return str.replace(ansiRegex, "");
 };
 
 const getRenderedRowCount = (text, columns = process.stdout.columns ?? 80) => {
